@@ -1,0 +1,13 @@
+discord.py
+mypy
+python_dotenv
+pillow
+httpx
+pymongo
+dnspython
+graphene
+FastAPI
+uvicorn
+pytest
+requests
+PyJWT
