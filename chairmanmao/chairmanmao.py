@@ -267,9 +267,58 @@ async def on_voice_state_update(member, before, after):
         await member.remove_roles(voice_role)
 
 
+GUILD = None
+
+
+def set_guild():
+    global GUILD
+    GUILD = client.guilds[0]
+
+
+def get_guild():
+    return GUILD
+
+
+INVITES = {}
+
+
+async def init_invites():
+    invites = await get_guild().invites()
+    for invite in invites:
+        INVITES[invite.code] = invite
+
+
+async def get_current_invite():
+    old_invites = INVITES
+
+    new_invites = {}
+    for invite in await get_guild().invites():
+        new_invites[invite.code] = invite
+
+    for code, old_invite in old_invites.items():
+        code = old_invite.code
+        new_invite = new_invites[code]
+
+        if old_invite.uses < new_invite.uses:
+            old_invites[code] = new_invite
+            return new_invite
+
+    return None
+
+
 @client.event
 async def on_ready():
+    set_guild()
+    await init_invites()
+
     loop.start()
+
+
+@client.event
+async def on_member_join(member):
+    guild = client.guilds[0]
+    invite = await get_current_invite()
+    print(member.name, 'joined with invite code', invite.code, 'from', member_to_username(invite.inviter))
 
 
 def member_to_username(member) -> str:
