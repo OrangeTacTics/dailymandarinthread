@@ -55,6 +55,17 @@ async def  cmd_stepdown(ctx):
     await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
 
 
+@client.command(name='recognize', help="Remove 共产党员 role.")
+@commands.has_role('共产党员')
+async def cmd_recognize(ctx, member: commands.MemberConverter):
+    message = ctx.message
+    comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
+    username = member_to_username(ctx.author)
+    assert comrade_role not in member.roles, 'Member is already a 同志.'
+    await member.add_roles(comrade_role)
+    await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
+
+
 @client.command(name='setsocialcredit', help="Set a user's social credit score.")
 @commands.has_role('主席')
 async def cmd_setsocialcredit(ctx, member: commands.MemberConverter, score: int):
