@@ -435,6 +435,9 @@ async def update_member_nick(profile: Profile):
     if new_nick == member.nick:
         return
 
+    if member.bot:
+        return
+
     print('Updating nick:')
     print('Nick:', member.nick)
     print('Disp:', member.display_name)
