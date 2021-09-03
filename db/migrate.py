@@ -12,7 +12,12 @@ load_dotenv()
 # vvvvvv DANGER!
 ################################################################################
 
-MIGRATE_PRODUCION = False
+if os.getenv('MIGRATE_PRODUCTION') == 'True':
+    MIGRATE_PRODUCION = True
+elif os.getenv('MIGRATE_PRODUCTION') == 'False':
+    MIGRATE_PRODUCION = False
+else:
+    raise Exception('Environment variable MIGRATE_PRODUCTION must be set to "True" or "False"')
 
 ################################################################################
 # ^^^^^^ DANGER!
