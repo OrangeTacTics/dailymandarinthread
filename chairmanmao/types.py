@@ -16,8 +16,10 @@ class Profile:
     display_name: str
 
     credit: int
-    hanzi: t.List[str]
     yuan: int
+
+    hanzi: t.List[str]
+    mined_words: t.List[str]
 
 
 class Role(Enum):

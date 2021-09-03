@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import db.migrations.migration_0000_objectids_not_memberids as m0000
 import db.migrations.migration_0001_created_last_message_yuan as m0001
 import db.migrations.migration_0002_strip_discriminator_from_displayname as m0002
+import db.migrations.migration_0003_add_mined as m0003
 
 load_dotenv()
 
@@ -54,6 +55,7 @@ MIGRATIONS = [
     m0000,
     m0001,
     m0002,
+    m0003,
 ]
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from chairmanmao.types import Profile, Role
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 Json = t.Any
 
@@ -27,9 +27,10 @@ def create_profile(db: Database, username: str) -> Profile:
         last_message=now,
         display_name=username,
         credit=1000,
-        hanzi=[],
         roles=[],
         yuan=0,
+        hanzi=[],
+        mined_words=[],
     )
     assert len(list(db['Profiles'].find({'username': username}))) == 0
     db['Profiles'].insert_one(profile_to_json(profile))
@@ -74,8 +75,9 @@ def profile_to_json(profile: Profile) -> Json:
         'roles': roles,
         'display_name': profile.display_name,
         'credit': profile.credit,
-        'hanzi': profile.hanzi,
         'yuan': profile.yuan,
+        'hanzi': profile.hanzi,
+        'mined_words': profile.mined_words,
         'schema_version': SCHEMA_VERSION,
     }
 
@@ -93,5 +95,6 @@ def profile_from_json(profile_json: Json) -> Profile:
         display_name=profile_json['display_name'],
         credit=profile_json['credit'],
         hanzi=profile_json['hanzi'],
+        mined_words=profile_json['mined_words'],
         yuan=profile_json['yuan'],
     )

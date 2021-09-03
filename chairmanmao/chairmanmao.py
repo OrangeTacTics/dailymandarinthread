@@ -242,6 +242,20 @@ async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
     await ctx.send('\n'.join(lines))
 
 
+@client.command(name='mine', help='Mine a word.')
+@commands.has_role('同志')
+async def cmd_mine(ctx, word: str):
+    print(f'{ctx.author.display_name}: cmd_mine({word})')
+
+    username = member_to_username(ctx.message.author)
+    profile = get_profile(db, username)
+    assert profile is not None, f"No profile exists for {username}"
+    profile.mined_words.append(word)
+    set_profile(db, username, profile)
+
+    await ctx.send(f'{username} has mined: {word}')
+
+
 @client.command(name='debug')
 @commands.has_role('主席')
 async def cmd_debug(ctx):
