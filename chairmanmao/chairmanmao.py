@@ -28,6 +28,7 @@ load_dotenv()
 
 MONGODB_URL = os.getenv('MONGODB_URL')
 MONGODB_DB = os.getenv('MONGODB_DB')
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
 
 mongo_client = pymongo.MongoClient(MONGODB_URL)
 db = mongo_client[MONGODB_DB]
@@ -128,7 +129,7 @@ async def cmd_name(ctx, name: str):
     profile.display_name = name
     set_profile(db, username, profile)
 
-    await ctx.author.edit(nick=name)
+    await update_member_nick(profile)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
@@ -407,33 +408,34 @@ def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[disc
     return None
 
 
+async def update_member_nick(profile: Profile):
+    guild = client.guilds[0]
+    member = profile_to_member(guild, profile)
+    if member is None:
+        return
+
+    username = member_to_username(member)
+    if username == ADMIN_USERNAME:
+        return
+
+    credit_str = f' [{profile.credit}]'
+    cutoff = 32 - len(credit_str)
+    new_nick = profile.display_name[:cutoff] + credit_str
+
+    if new_nick == member.nick:
+        return
+
+    print('Updating nick:')
+    print('Nick:', member.nick)
+    print('Disp:', member.display_name)
+    print('New: ', new_nick)
+    print()
+    await member.edit(nick=new_nick)
+    await asyncio.sleep(1)
+
+
 @tasks.loop(minutes=1)
 async def loop_socialcreditrename():
-    guild = client.guilds[0]
     profiles = get_all_profiles(db)
     for profile in profiles:
-        member = profile_to_member(guild, profile)
-        if member is None:
-            continue
-
-        credit_str = f' [{profile.credit}]'
-        cutoff = 32 - len(credit_str)
-        new_nick = profile.display_name[:cutoff] + credit_str
-
-        if new_nick != member.nick:
-            print(member)
-            print()
-            print(profile)
-            print()
-            print('Nick:', member.nick)
-            print('Disp:', member.display_name)
-            print('New: ', new_nick)
-            print()
-            print('-'*80)
-            print()
-            try:
-                await member.edit(nick=new_nick)
-            except:
-                print("Can't update for:", profile.username)
-
-            await asyncio.sleep(1)
+        await update_member_nick(profile)
