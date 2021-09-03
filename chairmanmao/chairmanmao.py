@@ -150,9 +150,19 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
 @commands.has_role('主席')
 async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
     print(f'{ctx.author.display_name}: cmd_setname({member.display_name}, {name})')
-    member_name = member.name + '#' + member.discriminator
-    await member.edit(nick=name)
-    await ctx.send(f'{member_name} has been changed to {name}')
+    username = member_to_username(member)
+
+    if len(name) > 32:
+        await ctx.send("Names are 32 character max.")
+        return
+
+    profile = get_profile(db, username)
+    assert profile is not None, f"No profile exists for {username}"
+    profile.display_name = name
+    set_profile(db, username, profile)
+
+    await update_member_nick(profile)
+    await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
 @client.command(name='draw', help="Draw a simplified hanzi character.")
