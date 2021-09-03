@@ -220,6 +220,28 @@ async def cmd_yuan(ctx):
     await ctx.send(f"{ctx.author.display_name} has {profile.yuan} RNB.")
 
 
+@client.command(name='leaderboard', help='Show the DMT leaderboard.')
+@commands.has_role('同志')
+@commands.cooldown(1, 5 * 60, commands.BucketType.guild)
+async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
+    print(f'{ctx.author.display_name}: cmd_leaderboard()')
+    lines = [
+        "The DMT Leaderboard",
+        "```",
+    ]
+
+    profiles = get_all_profiles(db)
+    profiles.sort(reverse=True, key=lambda profile: profile.credit)
+
+    for profile in profiles[:10]:
+        line = f'{profile.credit} ... {profile.display_name}'
+        lines.append(discord.utils.remove_markdown(line))
+
+    lines.append("```")
+
+    await ctx.send('\n'.join(lines))
+
+
 @client.command(name='debug')
 @commands.has_role('主席')
 async def cmd_debug(ctx):
