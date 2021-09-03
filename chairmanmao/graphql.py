@@ -153,8 +153,14 @@ class SeeHanzi(g.Mutation):
         }
 
 
+class LeaderboardEntry(g.ObjectType):
+    name = g.String()
+    credit = g.Int()
+
+
 class Query(g.ObjectType):
     me = g.Field(Profile)
+    leaderboard = g.List(LeaderboardEntry)
     profile = g.Field(Profile, username=g.String())
     all_usernames = g.List(g.String)
     all_hanzi = g.List(g.String)
@@ -164,6 +170,18 @@ class Query(g.ObjectType):
         if profile is not None:
             return profile_to_graphql(profile)
         return None
+
+    def resolve_leaderboard(root, info):
+        db = db_from_info(info)
+        entries = []
+        profiles = get_all_profiles(db)
+        profiles.sort(reverse=True, key=lambda profile: profile.credit)
+        for profile in profiles[:10]:
+            entries.append(LeaderboardEntry(
+                name=profile.display_name,
+                credit=profile.credit,
+            ))
+        return entries
 
     def resolve_profile(root, info, username):
         assert_admin(info)
