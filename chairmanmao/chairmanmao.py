@@ -198,6 +198,13 @@ async def cmd_yuan(ctx):
     await ctx.send(f"{ctx.author.display_name} has {profile.yuan} RNB.")
 
 
+@client.command(name='debug')
+@commands.has_role('主席')
+async def cmd_debug(ctx):
+    print(f'{ctx.author.display_name}: cmd_debug()')
+    breakpoint()
+
+
 @client.event
 async def on_message(message):
     comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
