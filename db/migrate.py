@@ -4,12 +4,26 @@ from dotenv import load_dotenv
 
 import db.migrations.migration_0000_objectids_not_memberids as m0000
 import db.migrations.migration_0001_created_last_message_yuan as m0001
+import db.migrations.migration_0002_strip_discriminator_from_displayname as m0002
 
 load_dotenv()
 
+################################################################################
+# vvvvvv DANGER!
+################################################################################
 
-MONGODB_TEST_URL = os.getenv('MONGODB_TEST_URL')
-MONGODB_TEST_DB = os.getenv('MONGODB_TEST_DB')
+MIGRATE_PRODUCION = False
+
+################################################################################
+# ^^^^^^ DANGER!
+################################################################################
+
+if MIGRATE_PRODUCION:
+    MONGODB_URL = os.getenv('MONGODB_URL')
+    MONGODB_DB = os.getenv('MONGODB_DB')
+else:
+    MONGODB_URL = os.getenv('MONGODB_TEST_URL')
+    MONGODB_DB = os.getenv('MONGODB_TEST_DB')
 
 
 def connect():
@@ -34,6 +48,7 @@ def apply(db, transform, old_version):
 MIGRATIONS = [
     m0000,
     m0001,
+    m0002,
 ]
 
 if __name__ == "__main__":

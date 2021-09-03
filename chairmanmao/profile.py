@@ -5,7 +5,7 @@ from datetime import datetime
 
 from chairmanmao.types import Profile, Role
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 Json = t.Any
 
@@ -19,6 +19,7 @@ def assert_username(username: str) -> None:
 def create_profile(db: Database, username: str) -> Profile:
     assert_username(username)
     now = datetime.now().replace(microsecond=0)
+    display_name = username[:-5]
     profile = Profile(
         username=username,
         memberid=None,

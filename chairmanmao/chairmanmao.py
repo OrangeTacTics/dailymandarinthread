@@ -12,9 +12,10 @@ import pymongo
 from dotenv import load_dotenv
 
 from chairmanmao.hanzi import get_seen_hanzi, see_hanzi
-from chairmanmao.profile import get_profile, set_profile, create_profile, set_profile_last_message
+from chairmanmao.profile import get_profile, set_profile, create_profile, set_profile_last_message, get_all_profiles
 from chairmanmao.draw import draw, get_font_names
 from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
+from chairmanmao.types import Profile
 
 
 intents = discord.Intents.default()
@@ -318,7 +319,8 @@ async def on_ready():
     set_guild()
     await init_invites()
 
-    loop.start()
+    loop_dmtthread.start()
+    loop_socialcreditrename.start()
 
 
 @client.event
@@ -374,7 +376,7 @@ def thread_channel():
 
 
 @tasks.loop(seconds=60)
-async def loop():
+async def loop_dmtthread():
     thread = await get_dmt_thread()
     if thread is not None:
         if not is_url_seen(thread.url):
@@ -386,3 +388,42 @@ async def loop():
                 thread.url,
             ]
             await channel.send('\n'.join(lines))
+
+
+def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[discord.Member]:
+    for member in client.guilds[0].members:
+        if member_to_username(member) == profile.username:
+            return member
+    return None
+
+
+@tasks.loop(minutes=10)
+async def loop_socialcreditrename():
+    guild = client.guilds[0]
+    profiles = get_all_profiles(db)
+    for profile in profiles:
+        member = profile_to_member(guild, profile)
+        if member is None:
+            continue
+
+        credit_str = f' [{profile.credit}]'
+        cutoff = 32 - len(credit_str)
+        new_nick = profile.display_name[:cutoff] + credit_str
+
+        if new_nick != member.nick:
+            print(member)
+            print()
+            print(profile)
+            print()
+            print('Nick:', member.nick)
+            print('Disp:', member.display_name)
+            print('New: ', new_nick)
+            print()
+            print('-'*80)
+            print()
+            try:
+                await member.edit(nick=new_nick)
+            except:
+                print("Can't update for:", profile.username)
+
+            await asyncio.sleep(1)
