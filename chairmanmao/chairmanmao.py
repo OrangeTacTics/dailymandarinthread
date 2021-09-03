@@ -117,9 +117,19 @@ async def cmd_learner(ctx, flag: bool = True):
 async def cmd_name(ctx, name: str):
     print(f'{ctx.author.display_name}: cmd_name({name})')
     member = ctx.author
-    member_name = member.name + '#' + member.discriminator
+    username = member_to_username(member)
+
+    if len(name) > 32:
+        await ctx.send("Names are 32 character max.")
+        return
+
+    profile = get_profile(db, username)
+    assert profile is not None, f"No profile exists for {username}"
+    profile.display_name = name
+    set_profile(db, username, profile)
+
     await ctx.author.edit(nick=name)
-    await ctx.send(f'{member_name} has been changed to {name}')
+    await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
 @client.command(name='hanzi', help='Show the count and list of all hanzi a user has taken.')
@@ -397,7 +407,7 @@ def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[disc
     return None
 
 
-@tasks.loop(minutes=10)
+@tasks.loop(minutes=1)
 async def loop_socialcreditrename():
     guild = client.guilds[0]
     profiles = get_all_profiles(db)
