@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 
 from chairmanmao.hanzi import get_seen_hanzi, see_hanzi
 from chairmanmao.profile import get_profile, set_profile, create_profile, set_profile_last_message, get_all_profiles
+from chairmanmao.api import Api
 from chairmanmao.draw import draw, get_font_names
 from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
 from chairmanmao.types import Profile
@@ -26,27 +27,28 @@ client = commands.Bot(command_prefix='$', intents=intents)
 load_dotenv()
 
 
-MONGODB_URL = os.getenv('MONGODB_URL')
-MONGODB_DB = os.getenv('MONGODB_DB')
-ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
+MONGODB_URL = os.getenv('MONGODB_URL', '')
+MONGODB_DB = os.getenv('MONGODB_DB', '')
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '')
 
 mongo_client = pymongo.MongoClient(MONGODB_URL)
 db = mongo_client[MONGODB_DB]
+api = Api.connect(MONGODB_URL, MONGODB_DB)
 
 
 @client.command(name='socialcredit', help='See your social credit score.')
 @commands.has_role('同志')
 async def cmd_socialcredit(ctx, member: commands.MemberConverter = None):
     print(f'{ctx.author.display_name}: cmd_socialcredit({member})')
+    username = member_to_username(ctx.author)
 
-    if member is None:
-        social_credit = get_social_credit(db, member_to_username(ctx.author))
-        await ctx.send(f'{ctx.author.display_name} has a credit score of {social_credit}.')
+    if member is not None:
+        target_username = member_to_username(member)
     else:
-        ccp_role = discord.utils.get(ctx.guild.roles, name="共产党员")
-        assert ccp_role in ctx.author.roles, 'Member does not have role to use this command'
-        social_credit = get_social_credit(db, member_to_username(member))
-        await ctx.send(f'{member.display_name} has a credit score of {social_credit}.')
+        target_username = username
+
+    credit = api.as_comrade(username).social_credit(target_username)
+    await ctx.send(f'{target_username} has a credit score of {credit}.')
 
 
 @client.command(name='stepdown', help="Remove 共产党员 role.")

@@ -34,33 +34,31 @@ class LeaderboardEntry:
 @dataclass
 class Api:
     db: pymongo.MongoClient
-    user_id: UserId
 
     @staticmethod
-    def connect(mongo_url: str, mongo_db: str, user_id: UserId) -> Api:
-        mongo_client = pymongo.MongoClient(MONGODB_URL)
+    def connect(mongo_url: str, mongo_db: str) -> Api:
+        mongo_client = pymongo.MongoClient(mongo_url)
         db = mongo_client[mongo_db]
         return Api(
             db=db,
+        )
+
+    def as_chairman(self, user_id: UserId) -> ChairmanApi:
+        return ChairmanApi(
+            db=self.db,
             user_id=user_id,
         )
 
-    def as_chairman(self) -> ChairmanApi:
-        return ChairmanApi(
-            db=self.db,
-            user_id=self.user_id,
-        )
-
-    def as_party(self) -> PartyApi:
+    def as_party(self, user_id: UserId) -> PartyApi:
         return PartyApi(
             db=self.db,
-            user_id=self.user_id,
+            user_id=user_id,
         )
 
-    def as_comrade(self) -> ComradeApi:
+    def as_comrade(self, user_id: UserId) -> ComradeApi:
         return ComradeApi(
             db=self.db,
-            user_id=self.user_id,
+            user_id=user_id,
         )
 
 
@@ -173,9 +171,11 @@ if __name__ == '__main__':
     MONGODB_URL = os.getenv('MONGODB_URL', '')
     MONGODB_DB = os.getenv('MONGODB_DB', '')
 
-    api = Api.connect(MONGODB_URL, MONGODB_DB, 'OrangeTacTics#0949')
-    chairman_api = api.as_chairman()
-    comrade_api = api.as_comrade()
+    username =  'OrangeTacTics#0949'
+
+    api = Api.connect(MONGODB_URL, MONGODB_DB)
+    chairman_api = api.as_chairman(username)
+    comrade_api = api.as_comrade(username)
 
     print('credit:', comrade_api.social_credit('OrangeTacTics#0949'))
 
@@ -187,11 +187,11 @@ if __name__ == '__main__':
     print()
     print('Yuan:', comrade_api.yuan())
 
-    for hanzi in comrade_api.get_hanzi('OrangeTacTics#0949')[:3]:
+    for hanzi in comrade_api.get_hanzi(username)[:3]:
         print('-', hanzi)
 
     print('Display name:', comrade_api.get_name())
-    comrade_api.set_name('OrangeTacTics')
+    comrade_api.set_name(username)
     print('Display name:', comrade_api.get_name())
     print()
 
