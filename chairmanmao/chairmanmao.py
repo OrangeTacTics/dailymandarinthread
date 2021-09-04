@@ -12,7 +12,7 @@ import pymongo
 from dotenv import load_dotenv
 
 from chairmanmao.hanzi import get_seen_hanzi, see_hanzi
-from chairmanmao.profile import get_profile, set_profile, create_profile, set_profile_last_message, get_all_profiles
+from chairmanmao.profile import get_profile, set_profile_last_message, get_all_profiles
 from chairmanmao.api import Api
 from chairmanmao.draw import draw, get_font_names
 from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
@@ -390,25 +390,6 @@ async def on_member_join(member):
 
 def member_to_username(member) -> str:
     return member.name + '#' + member.discriminator
-
-
-def get_social_credit(db, username):
-    profile = get_profile(db, username)
-    return profile.credit
-
-
-def set_social_credit(db, username, new_credit):
-    profile = get_profile(db, username)
-    profile.credit = new_credit
-    set_profile(db, username, profile)
-
-
-def inc_social_credit(db, username, amount):
-    profile = get_profile(db, username)
-    old_credit = profile.credit
-    new_credit = old_credit + amount
-    profile.credit = new_credit
-    set_profile(db, username, profile)
 
 
 def news_channel():
