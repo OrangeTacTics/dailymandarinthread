@@ -62,7 +62,7 @@ async def  cmd_stepdown(ctx):
 async def cmd_recognize(ctx, member: commands.MemberConverter):
     message = ctx.message
     comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
-    username = member_to_username(ctx.author)
+    username = member_to_username(member)
     assert comrade_role not in member.roles, 'Member is already a 同志.'
     await member.add_roles(comrade_role)
     await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
