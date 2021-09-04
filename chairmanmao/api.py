@@ -12,7 +12,7 @@ import pymongo
 from chairmanmao.types import Profile
 from chairmanmao.profile import get_profile, create_profile, set_profile_last_message, get_all_profiles, open_profile
 
-#from chairmanmao.hanzi import get_seen_hanzi, see_hanzi
+from chairmanmao.hanzi import get_seen_hanzi
 #from chairmanmao.draw import draw, get_font_names
 #from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
 
@@ -109,15 +109,6 @@ class ComradeApi:
     db: pymongo.MongoClient
     user_id: UserId
 
-    @staticmethod
-    def connect(mongo_url: str, mongo_db: str, user_id: UserId) -> ComradeApi:
-        mongo_client = pymongo.MongoClient(MONGODB_URL)
-        db = mongo_client[mongo_db]
-        return ComradeApi(
-            db=db,
-            user_id=user_id,
-        )
-
     def social_credit(self, user_id: UserId) -> int:
         profile = get_profile(self.db, user_id)
         assert profile is not None
@@ -142,7 +133,7 @@ class ComradeApi:
         assert profile is not None, f"No profile exists for {self.user_id}"
         return profile.mined_words
 
-    def get_hanzi(self, user_id: UserId) -> t.List[str]:
+    def get_hanzis(self, user_id: UserId) -> t.List[str]:
         profile = get_profile(self.db, user_id)
         assert profile is not None, f"No profile exists for {user_id}"
         return profile.hanzi
@@ -182,18 +173,42 @@ class ComradeApi:
         last_message = last_message.replace(microsecond=0)
         return last_message
 
+    def see_hanzis(self, hanzis: t.List[str]) -> t.List[str]:
+        seen_hanzis = get_seen_hanzi(self.db)
+        new_hanzis = set(hanzis).difference(seen_hanzis)
 
-if __name__ == '__main__':
+        with open_profile(self.db, self.user_id) as profile:
+            existing_hanzi = set(profile.hanzi)
+            profile.hanzi = sorted(existing_hanzi.union(new_hanzis))
+            return profile.hanzi
+
+    def alert_activity(self) -> None:
+        with open_profile(self.db, self.user_id) as profile:
+            profile.last_message = datetime.now(timezone.utc).replace(microsecond=0)
+
+
+def main():
     load_dotenv()
 
     MONGODB_URL = os.getenv('MONGODB_URL', '')
     MONGODB_DB = os.getenv('MONGODB_DB', '')
 
     username =  'OrangeTacTics#0949'
+    snickers = 'Snickers#0486'
 
     api = Api.connect(MONGODB_URL, MONGODB_DB)
     chairman_api = api.as_chairman(username)
-    comrade_api = api.as_comrade(username)
+    comrade_api = api.as_comrade(snickers)
+
+    print('hanzis before', comrade_api.get_hanzis(snickers))
+    comrade_api.see_hanzis(['喘', '猫'])
+    print('hanzis after', comrade_api.get_hanzis(snickers))
+    return
+
+    print(comrade_api.last_seen(snickers))
+    comrade_api.alert_activity()
+    print(comrade_api.last_seen(snickers))
+
 
     print('credit:', comrade_api.social_credit('OrangeTacTics#0949'))
 
@@ -205,7 +220,7 @@ if __name__ == '__main__':
     print()
     print('Yuan:', comrade_api.yuan())
 
-    for hanzi in comrade_api.get_hanzi(username)[:3]:
+    for hanzi in comrade_api.get_hanzis(username)[:3]:
         print('-', hanzi)
 
     print('Display name:', comrade_api.get_name())
@@ -226,7 +241,6 @@ if __name__ == '__main__':
     print()
 
 
-    snickers = 'Snickers#0486'
     print('Snickers credit:', comrade_api.social_credit(snickers))
     print('dishonor 10...')
     chairman_api.dishonor(snickers, 10)
@@ -247,3 +261,7 @@ if __name__ == '__main__':
     print(snickers, 'was last seen', int(havent_seen_in.total_seconds() / 60), 'minutes ago')
     print('at', last_seen)
     print()
+
+
+if __name__ == '__main__':
+    main()

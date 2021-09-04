@@ -11,7 +11,6 @@ import os
 import pymongo
 from dotenv import load_dotenv
 
-from chairmanmao.hanzi import get_seen_hanzi, see_hanzi
 from chairmanmao.profile import get_profile, set_profile_last_message, get_all_profiles
 from chairmanmao.api import Api
 from chairmanmao.draw import draw, get_font_names
@@ -142,7 +141,7 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
     username = member_to_username(ctx.author)
     target_username = member_to_username(member)
 
-    hanzi = api.as_comrade(username).get_hanzi(target_username)
+    hanzi = api.as_comrade(username).get_hanzis(target_username)
     hanzi_str = ' '.join(hanzi)
     num_hanzi = len(hanzi)
     await ctx.send(f'{target_username} has {num_hanzi} hanzi: {hanzi_str}')
@@ -266,23 +265,17 @@ async def cmd_debug(ctx):
 async def on_message(message):
     comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
     if comrade_role in message.author.roles:
-        take_hanzi_from_message(message)
+        username = member_to_username(message.author)
+        api.as_comrade(username).alert_activity()
 
-    username = member_to_username(message.author)
-
-    try:
-        set_profile_last_message(db, username)
-    except Exception as e:
-        print(e)
+        hanzis = hanzis_in(message.content)
+        api.as_comrade(username).see_hanzis(hanzis)
 
     await client.process_commands(message)
 
 
-def take_hanzi_from_message(message):
-    seen_hanzi = get_seen_hanzi(db)
-    for char in message.content:
-        if is_hanzi(char) and char not in seen_hanzi:
-            see_hanzi(db, member_to_username(message.author), char)
+def hanzis_in(text: str) -> t.List[str]:
+    return [char for char in text if is_hanzi(char)]
 
 
 def is_hanzi(char):
