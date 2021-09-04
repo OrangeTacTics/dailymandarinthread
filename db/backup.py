@@ -37,4 +37,4 @@ if __name__ == "__main__":
     profiles_filepath = date_dir / 'Profiles.json'
     print('Saving Profiles:', profiles_filepath)
     with open(profiles_filepath, 'w') as outfile:
-        json.dump(records, outfile, indent=4)
+        json.dump(records, outfile, ensure_ascii=False, indent=4)
