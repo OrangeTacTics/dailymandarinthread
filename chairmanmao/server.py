@@ -68,6 +68,8 @@ async def route_test(request: Request, response: JSONResponse, code: t.Optional[
                     credit
                     yuan
                     roles
+                    minedWords
+                    hanzi
                 }
             }
         '''

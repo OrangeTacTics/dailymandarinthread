@@ -28,6 +28,7 @@ class Profile(g.ObjectType):
     display_name = g.String()
     credit = g.Int()
     hanzi = g.List(g.String)
+    mined_words = g.List(g.String)
     roles = g.List(Role)
     created = g.String()
     last_message = g.String()
@@ -42,6 +43,7 @@ def profile_to_graphql(profile: types.Profile) -> Profile:
         display_name=profile.display_name,
         credit=profile.credit,
         hanzi=profile.hanzi,
+        mined_words=profile.mined_words,
         roles=roles,
         created=profile.created,
         last_message=profile.last_message,
