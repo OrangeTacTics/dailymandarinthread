@@ -118,15 +118,15 @@ async def cmd_name(ctx, name: str):
     member = ctx.author
     username = member_to_username(member)
 
-    if len(name) > 32:
-        await ctx.send("Names are 32 character max.")
-        return
+    try:
+        api.as_comrade(username).set_name(name)
+    except:
+#        await ctx.send("Names are 32 character max.")
+#        return
+        raise
 
     profile = get_profile(db, username)
-    assert profile is not None, f"No profile exists for {username}"
-    profile.display_name = name
-    set_profile(db, username, profile)
-
+    assert profile is not None
     await update_member_nick(profile)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
 
@@ -137,28 +137,31 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
     if member is None:
         member = ctx.author
 
-    profile = get_profile(db, member_to_username(member))
-    assert profile is not None
-    taken_hanzi = profile.hanzi
-    hanzi_str = ' '.join(taken_hanzi)
-    await ctx.send(f'{member_to_username(member)} has {len(taken_hanzi)} hanzi: {hanzi_str}')
+    username = member_to_username(ctx.author)
+    target_username = member_to_username(member)
+
+    hanzi = api.as_comrade(username).get_hanzi(target_username)
+    hanzi_str = ' '.join(hanzi)
+    num_hanzi = len(hanzi)
+    await ctx.send(f'{target_username} has {num_hanzi} hanzi: {hanzi_str}')
 
 
 @client.command(name='setname', help="Sets the name of another user.")
 @commands.has_role('主席')
 async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
     print(f'{ctx.author.display_name}: cmd_setname({member.display_name}, {name})')
-    username = member_to_username(member)
+    username = member_to_username(ctx.author)
+    target_username = member_to_username(member)
 
-    if len(name) > 32:
-        await ctx.send("Names are 32 character max.")
-        return
+    try:
+        api.as_chairman(username).set_name(target_username, name)
+    except:
+#        await ctx.send("Names are 32 character max.")
+#        return
+        raise
 
-    profile = get_profile(db, username)
-    assert profile is not None, f"No profile exists for {username}"
-    profile.display_name = name
-    set_profile(db, username, profile)
-
+    profile = get_profile(db, target_username)
+    assert profile is not None
     await update_member_nick(profile)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
 

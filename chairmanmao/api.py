@@ -68,14 +68,19 @@ class ChairmanApi:
     user_id: UserId
 
     def honor(self, user_id: UserId, credit: int) -> int:
+        assert credit > 0
         with open_profile(self.db, user_id) as profile:
             profile.credit += credit
             return profile.credit
 
     def dishonor(self, user_id: UserId, credit: int) -> int:
-        return self.honor(user_id, -credit)
+        assert credit > 0
+        with open_profile(self.db, user_id) as profile:
+            profile.credit -= credit
+            return profile.credit
 
-    def setname(self, user_id: UserId, name: str) -> None:
+    def set_name(self, user_id: UserId, name: str) -> None:
+        assert len(name) < 32, 'Name must be 32 characters or less.'
         with open_profile(self.db, user_id) as profile:
             profile.display_name = name
 
@@ -153,8 +158,8 @@ class ComradeApi:
         return entries
 
     def set_name(self, name: str) -> None:
+        assert len(name) < 32, 'Name must be 32 characters or less.'
         with open_profile(self.db, self.user_id) as profile:
-            assert len(name) < 32, 'Name must be 32 characters or less.'
             profile.display_name = name
 
     def get_name(self) -> str:
