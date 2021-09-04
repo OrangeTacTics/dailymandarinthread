@@ -8,6 +8,7 @@ from chairmanmao.types import Profile, Role
 SCHEMA_VERSION = 4
 
 Json = t.Any
+UserId = str
 
 
 def assert_username(username: str) -> None:
@@ -98,3 +99,20 @@ def profile_from_json(profile_json: Json) -> Profile:
         mined_words=profile_json['mined_words'],
         yuan=profile_json['yuan'],
     )
+
+
+class open_profile:
+    def __init__(self, db, user_id: UserId) -> None:
+        self.db = db
+        self.user_id = user_id
+        self.profile: t.Optional[Profile] = None
+
+    def __enter__(self) -> Profile:
+        profile = get_profile(self.db, self.user_id)
+        assert profile is not None, f"No profile exists for {self.user_id}"
+        self.profile = profile
+        return self.profile
+
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
+        assert self.profile is not None
+        set_profile(self.db, self.user_id, self.profile)
