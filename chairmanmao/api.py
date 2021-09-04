@@ -73,9 +73,7 @@ class ChairmanApi:
             return profile.credit
 
     def dishonor(self, user_id: UserId, credit: int) -> int:
-        with open_profile(self.db, user_id) as profile:
-            profile.credit -= credit
-            return profile.credit
+        return self.honor(user_id, -credit)
 
     def setname(self, user_id: UserId, name: str) -> None:
         with open_profile(self.db, user_id) as profile:

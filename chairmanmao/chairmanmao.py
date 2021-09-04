@@ -70,36 +70,32 @@ async def cmd_recognize(ctx, member: commands.MemberConverter):
     await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
 
 
-@client.command(name='setsocialcredit', help="Set a user's social credit score.")
-@commands.has_role('主席')
-async def cmd_setsocialcredit(ctx, member: commands.MemberConverter, score: int):
-    print(f'{ctx.author.display_name}: cmd_setsocialcredit({member}, {score})')
-    set_social_credit(db, member_to_username(member), score)
-    await ctx.send(f'{member.display_name} has had their credit score set to {score}.')
-
-
 @client.command(name='honor', help="Add social credit to a user.")
 @commands.has_role('主席')
-async def cmd_honor(ctx, member: commands.MemberConverter, delta: t.Optional[int] = None):
-    print(f'{ctx.author.display_name}: cmd_honor({member}, {delta})')
-    if delta is None:
-        delta = 1
+async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
+    print(f'{ctx.author.display_name}: cmd_honor({member}, {credit})')
+    assert credit > 0
 
-    assert delta > 0
-    inc_social_credit(db, member_to_username(member), delta)
-    await ctx.send(f'{member.display_name} has had their credit score increased.')
+    username = member_to_username(ctx.author)
+    target_username = member_to_username(member)
+    new_credit = api.as_chairman(username).honor(target_username, credit)
+    old_credit = new_credit - credit
+
+    await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
 
 
 @client.command(name='dishonor', help="Remove social credit from a user.")
 @commands.has_role('主席')
-async def cmd_dishonor(ctx, member: commands.MemberConverter, delta: t.Optional[int] = None):
-    print(f'{ctx.author.display_name}: cmd_dishonor({member}, {delta})')
-    if delta is None:
-        delta = 1
+async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
+    print(f'{ctx.author.display_name}: cmd_dishonor({member}, {credit})')
+    assert credit > 0
 
-    assert delta > 0
-    inc_social_credit(db, member_to_username(member), -delta)
-    await ctx.send(f'{member.display_name} has had their credit score decreased.')
+    username = member_to_username(ctx.author)
+    target_username = member_to_username(member)
+    new_credit = api.as_chairman(username).dishonor(target_username, credit)
+    old_credit = new_credit + credit
+
+    await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
 
 
 @client.command(name='learner', help='Add or remove 中文学习者 role.')
