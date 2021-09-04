@@ -217,8 +217,9 @@ async def cmd_font(ctx, font_name: str):
 @commands.has_role('同志')
 async def cmd_yuan(ctx):
     print(f'{ctx.author.display_name}: cmd_yuan()')
-    profile = get_profile(db, member_to_username(ctx.author))
-    await ctx.send(f"{ctx.author.display_name} has {profile.yuan} RNB.")
+    username = member_to_username(ctx.author)
+    yuan = api.as_comrade(username).get_yuan()
+    await ctx.send(f"{username} has {yuan} RNB.")
 
 
 @client.command(name='leaderboard', help='Show the DMT leaderboard.')
@@ -231,11 +232,9 @@ async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
         "```",
     ]
 
-    profiles = get_all_profiles(db)
-    profiles.sort(reverse=True, key=lambda profile: profile.credit)
-
-    for profile in profiles[:10]:
-        line = f'{profile.credit} ... {profile.display_name}'
+    username = member_to_username(ctx.author)
+    for entry in api.as_comrade(username).leaderboard():
+        line = f'{entry.credit} ... {entry.display_name}'
         lines.append(discord.utils.remove_markdown(line))
 
     lines.append("```")
@@ -248,11 +247,8 @@ async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
 async def cmd_mine(ctx, word: str):
     print(f'{ctx.author.display_name}: cmd_mine({word})')
 
-    username = member_to_username(ctx.message.author)
-    profile = get_profile(db, username)
-    assert profile is not None, f"No profile exists for {username}"
-    profile.mined_words.append(word)
-    set_profile(db, username, profile)
+    username = member_to_username(ctx.author)
+    api.as_comrade(username).mine(word)
 
     await ctx.send(f'{username} has mined: {word}')
 
