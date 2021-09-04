@@ -4,7 +4,7 @@ import json
 import httpx
 import graphene
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse
 from starlette.graphql import GraphQLApp
 from chairmanmao.graphql import schema
 
@@ -19,6 +19,7 @@ MONGODB_DB = os.getenv('MONGODB_DB')
 CLIENT_ID = os.getenv('DISCORD_CLIENT_ID')
 CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
 JWT_KEY = t.cast(str, os.getenv('JWT_KEY'))
+SERVER_HOSTNAME = os.getenv('SERVER_HOSTNAME', '')
 
 
 client = pymongo.MongoClient(MONGODB_URL)
@@ -33,7 +34,13 @@ Json = t.Any
 async def add_graphql_context(request: Request, call_next):
     request.state.db = db
 
-    if 'token' in request.cookies:
+    if 'Authorization' in request.headers:
+        auth_header = request.headers['Authorization']
+        assert auth_header.startswith('BEARER ')
+        token = auth_header[len('BEARER '):]
+        request.state.token = jwt.decode(token, JWT_KEY, algorithms=["HS256"])
+
+    elif 'token' in request.cookies:
         request.state.token = jwt.decode(request.cookies['token'], JWT_KEY, algorithms=["HS256"])
     else:
         request.state.token = None
@@ -47,8 +54,37 @@ app.add_route("/graphql", GraphQLApp(schema=schema))
 
 @app.get("/profile")
 async def route_test(request: Request, response: JSONResponse, code: t.Optional[str] = None):
-    username = request.state.token['username']
-    return username
+    if request.state.token is None:
+        return RedirectResponse( "/login")
+    else:
+        username = request.state.token['username']
+
+        cookie = request.cookies["token"]
+        query = '''
+            {
+                me {
+                    username
+                    displayName
+                    credit
+                    yuan
+                    roles
+                }
+            }
+        '''
+
+        async with httpx.AsyncClient() as client:
+            headers = {
+                'Authorization': f'BEARER {cookie}',
+                'Content-Type': 'application/json',
+            }
+            payload = {
+                'query': query,
+            }
+            resp = await client.post(SERVER_HOSTNAME + '/graphql', json=payload, headers=headers)
+            resp.raise_for_status()
+
+        json_str = json.dumps(resp.json()['data'], indent=4, ensure_ascii=False)
+        return PlainTextResponse(content=json_str)
 
 
 @app.get("/logout")
