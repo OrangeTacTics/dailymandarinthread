@@ -25,7 +25,7 @@ def create_profile(db: Database, username: str) -> Profile:
         memberid=None,
         created=now,
         last_message=now,
-        display_name=username,
+        display_name=display_name,
         credit=1000,
         roles=[],
         yuan=0,
