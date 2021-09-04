@@ -29,7 +29,9 @@ load_dotenv()
 
 MONGODB_URL = os.getenv('MONGODB_URL', '')
 MONGODB_DB = os.getenv('MONGODB_DB', '')
+
 ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '')
+BOT_USERNAME = os.getenv('BOT_USERNAME', '')
 
 mongo_client = pymongo.MongoClient(MONGODB_URL)
 db = mongo_client[MONGODB_DB]
@@ -305,7 +307,8 @@ def is_hanzi(char):
 async def on_reaction_add(reaction, user):
     user_to_credit = reaction.message.author
     if user_to_credit != user:
-        credit = inc_social_credit(db, member_to_username(user_to_credit), 1)
+        target_username = member_to_username(user_to_credit)
+        credit = api.as_chairman(BOT_USERNAME).honor(target_username, 1)
         print(f'User reaction added to {user_to_credit}: {credit}')
 
 
@@ -313,7 +316,8 @@ async def on_reaction_add(reaction, user):
 async def on_reaction_remove(reaction, user):
     user_to_credit = reaction.message.author
     if user_to_credit != user:
-        credit = inc_social_credit(db, member_to_username(user_to_credit), -1)
+        target_username = member_to_username(user_to_credit)
+        credit = api.as_chairman(BOT_USERNAME).dishonor(target_username, 1)
         print(f'User reaction removed from {user_to_credit}: {credit}')
 
 

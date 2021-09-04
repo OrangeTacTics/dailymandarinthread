@@ -218,3 +218,6 @@ if __name__ == '__main__':
     print('honor 11...')
     chairman_api.honor(snickers, 11)
     print('Snickers credit:', comrade_api.social_credit(snickers))
+
+    for word in api.as_comrade(snickers).get_mined():
+        print('-', word)
