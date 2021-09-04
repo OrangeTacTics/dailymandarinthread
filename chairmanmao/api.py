@@ -3,6 +3,7 @@ import typing as t
 from dataclasses import dataclass
 
 import os
+from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 import jwt
@@ -83,6 +84,12 @@ class ChairmanApi:
         assert len(name) < 32, 'Name must be 32 characters or less.'
         with open_profile(self.db, user_id) as profile:
             profile.display_name = name
+
+    def list_users(self) -> t.List[UserId]:
+        user_ids = []
+        for profile in get_all_profiles(self.db):
+            user_ids.append(profile.username)
+        return user_ids
 
 
 @dataclass
@@ -167,6 +174,14 @@ class ComradeApi:
         assert profile is not None, f"No profile exists for {self.user_id}"
         return profile.display_name
 
+    def last_seen(self, user_id: UserId) -> datetime:
+        profile = get_profile(self.db, user_id)
+        assert profile is not None, f"No profile exists for {self.user_id}"
+        last_message = profile.last_message
+        last_message = last_message.replace(tzinfo=timezone.utc)
+        last_message = last_message.replace(microsecond=0)
+        return last_message
+
 
 if __name__ == '__main__':
     load_dotenv()
@@ -208,6 +223,7 @@ if __name__ == '__main__':
 
     lines.append("```")
     print('\n'.join(lines))
+    print()
 
 
     snickers = 'Snickers#0486'
@@ -218,6 +234,16 @@ if __name__ == '__main__':
     print('honor 11...')
     chairman_api.honor(snickers, 11)
     print('Snickers credit:', comrade_api.social_credit(snickers))
+    print()
 
     for word in api.as_comrade(snickers).get_mined():
         print('-', word)
+    print()
+
+    last_seen = api.as_comrade(snickers).last_seen(snickers)
+    last_seen = last_seen.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    havent_seen_in = now - last_seen
+    print(snickers, 'was last seen', int(havent_seen_in.total_seconds() / 60), 'minutes ago')
+    print('at', last_seen)
+    print()

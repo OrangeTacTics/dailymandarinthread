@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     client = pymongo.MongoClient(MONGODB_URL)
     db = client[MONGODB_DB]
 
-    now = str(datetime.now().replace(microsecond=0))
+    now = str(datetime.now(timezone.utc).replace(microsecond=0))
     now = now.replace(' ', '_').replace(':', '_').replace('-', '_')
     date_dir = backup_dir / f'{now}'
     date_dir.mkdir()

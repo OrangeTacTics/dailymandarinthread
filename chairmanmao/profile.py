@@ -1,7 +1,7 @@
 from __future__ import annotations
 import typing as t
 from pymongo.database import Database
-from datetime import datetime
+from datetime import datetime, timezone
 
 from chairmanmao.types import Profile, Role
 
@@ -19,7 +19,7 @@ def assert_username(username: str) -> None:
 
 def create_profile(db: Database, username: str) -> Profile:
     assert_username(username)
-    now = datetime.now().replace(microsecond=0)
+    now = datetime.now(timezone.utc).replace(microsecond=0)
     display_name = username[:-5]
     profile = Profile(
         username=username,
@@ -58,7 +58,7 @@ def get_all_profiles(db: Database) -> t.List[Profile]:
 
 
 def set_profile_last_message(db: Database, username: str) -> None:
-    now = datetime.now().replace(microsecond=0)
+    now = datetime.now(timezone.utc).replace(microsecond=0)
 
     profile = get_profile(db, username)
     assert profile is not None
