@@ -263,13 +263,14 @@ async def cmd_debug(ctx):
 
 @client.event
 async def on_message(message):
-    comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
-    if comrade_role in message.author.roles:
-        username = member_to_username(message.author)
-        api.as_comrade(username).alert_activity()
+    if isinstance(message.channel, discord.channel.TextChannel):
+        comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
+        if comrade_role in message.author.roles:
+            username = member_to_username(message.author)
+            api.as_comrade(username).alert_activity()
 
-        hanzis = hanzis_in(message.content)
-        api.as_comrade(username).see_hanzis(hanzis)
+            hanzis = hanzis_in(message.content)
+            api.as_comrade(username).see_hanzis(hanzis)
 
     await client.process_commands(message)
 
