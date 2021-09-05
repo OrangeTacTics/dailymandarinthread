@@ -80,7 +80,7 @@ async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
 
     username = member_to_username(ctx.author)
     target_username = member_to_username(member)
-    new_credit = api.as_chairman(username).honor(target_username, credit)
+    new_credit = api.as_chairman().honor(target_username, credit)
     old_credit = new_credit - credit
 
     await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
@@ -95,7 +95,7 @@ async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
 
     username = member_to_username(ctx.author)
     target_username = member_to_username(member)
-    new_credit = api.as_chairman(username).dishonor(target_username, credit)
+    new_credit = api.as_chairman().dishonor(target_username, credit)
     old_credit = new_credit + credit
 
     await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
@@ -158,7 +158,7 @@ async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
     target_username = member_to_username(member)
 
     try:
-        api.as_chairman(username).set_name(target_username, name)
+        api.as_chairman().set_name(target_username, name)
     except:
 #        await ctx.send("Names are 32 character max.")
 #        return
@@ -306,7 +306,7 @@ async def on_reaction_add(reaction, user):
     user_to_credit = reaction.message.author
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
-        credit = api.as_chairman(BOT_USERNAME).honor(target_username, 1)
+        credit = api.as_chairman().honor(target_username, 1)
         print(f'User reaction added to {user_to_credit}: {credit}')
 
 
@@ -315,7 +315,7 @@ async def on_reaction_remove(reaction, user):
     user_to_credit = reaction.message.author
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
-        credit = api.as_chairman(BOT_USERNAME).dishonor(target_username, 1)
+        credit = api.as_chairman().dishonor(target_username, 1)
         print(f'User reaction removed from {user_to_credit}: {credit}')
 
 

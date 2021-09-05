@@ -44,10 +44,9 @@ class Api:
             db=db,
         )
 
-    def as_chairman(self, user_id: UserId) -> ChairmanApi:
+    def as_chairman(self) -> ChairmanApi:
         return ChairmanApi(
             db=self.db,
-            user_id=user_id,
         )
 
     def as_party(self, user_id: UserId) -> PartyApi:
@@ -66,7 +65,6 @@ class Api:
 @dataclass
 class ChairmanApi:
     db: pymongo.MongoClient
-    user_id: UserId
 
     def honor(self, user_id: UserId, credit: int) -> int:
         assert credit > 0
@@ -197,7 +195,7 @@ def main():
     snickers = 'Snickers#0486'
 
     api = Api.connect(MONGODB_URL, MONGODB_DB)
-    chairman_api = api.as_chairman(username)
+    chairman_api = api.as_chairman()
     comrade_api = api.as_comrade(snickers)
 
     print('hanzis before', comrade_api.get_hanzis(snickers))

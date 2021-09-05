@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     api = Api.connect(MONGODB_URL, MONGODB_DB)
     comrade_api = api.as_comrade(ADMIN_USERNAME)
-    chairman_api = api.as_chairman(ADMIN_USERNAME)
+    chairman_api = api.as_chairman()
 
     user_ids = chairman_api.list_users()
     now = datetime.now(timezone.utc).replace(microsecond=0)
