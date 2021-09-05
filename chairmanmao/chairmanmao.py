@@ -72,7 +72,8 @@ async def cmd_recognize(ctx, member: commands.MemberConverter):
 
 
 @client.command(name='honor', help="Add social credit to a user.")
-@commands.has_role('主席')
+@commands.has_role('共产党员')
+@commands.is_owner()
 async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
     print(f'{ctx.author.display_name}: cmd_honor({member}, {credit})')
     assert credit > 0
@@ -86,7 +87,8 @@ async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
 
 
 @client.command(name='dishonor', help="Remove social credit from a user.")
-@commands.has_role('主席')
+@commands.has_role('共产党员')
+@commands.is_owner()
 async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
     print(f'{ctx.author.display_name}: cmd_dishonor({member}, {credit})')
     assert credit > 0
@@ -148,7 +150,8 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
 
 
 @client.command(name='setname', help="Sets the name of another user.")
-@commands.has_role('主席')
+@commands.has_role('共产党员')
+@commands.is_owner()
 async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
     print(f'{ctx.author.display_name}: cmd_setname({member.display_name}, {name})')
     username = member_to_username(ctx.author)
@@ -255,7 +258,8 @@ async def cmd_mine(ctx, word: str):
 
 
 @client.command(name='debug')
-@commands.has_role('主席')
+@commands.has_role("共产党员")
+@commands.is_owner()
 async def cmd_debug(ctx):
     print(f'{ctx.author.display_name}: cmd_debug()')
     breakpoint()
