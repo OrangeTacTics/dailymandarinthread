@@ -129,7 +129,7 @@ async def get_discord_profile(access_token: str) -> Json:
 
 
 @app.get("/login")
-async def route_login(request: Request, response: JSONResponse, code: t.Optional[str] = None):
+async def route_login(request: Request, code: t.Optional[str] = None):
     if request.state.token is not None:
         return RedirectResponse("/profile")
 
@@ -138,7 +138,6 @@ async def route_login(request: Request, response: JSONResponse, code: t.Optional
         return RedirectResponse(redirect_url)
 
     else:
-
         access_token = await code_to_access_token(code)
         profile = await get_discord_profile(access_token)
 
@@ -150,5 +149,7 @@ async def route_login(request: Request, response: JSONResponse, code: t.Optional
             algorithm="HS256",
         )
         assert isinstance(cookie_json, bytes)
+
+        response =  RedirectResponse("/profile")
         response.set_cookie(key="token", value=cookie_json.decode())
-        return "Hi"
+        return response
