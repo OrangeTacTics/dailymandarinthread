@@ -11,7 +11,7 @@ import os
 import pymongo
 from dotenv import load_dotenv
 
-from chairmanmao.profile import get_profile, set_profile_last_message, get_all_profiles
+from chairmanmao.profile import get_profile, get_all_profiles
 from chairmanmao.api import Api
 from chairmanmao.draw import draw, get_font_names
 from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
@@ -48,7 +48,7 @@ async def cmd_socialcredit(ctx, member: commands.MemberConverter = None):
     else:
         target_username = username
 
-    credit = api.as_comrade(username).social_credit(target_username)
+    credit = api.as_comrade(ctx.author.id).social_credit(member.id)
     await ctx.send(f'{target_username} has a credit score of {credit}.')
 
 
@@ -80,7 +80,7 @@ async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
 
     username = member_to_username(ctx.author)
     target_username = member_to_username(member)
-    new_credit = api.as_chairman().honor(target_username, credit)
+    new_credit = api.as_chairman().honor(member.id, credit)
     old_credit = new_credit - credit
 
     await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
@@ -95,7 +95,7 @@ async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
 
     username = member_to_username(ctx.author)
     target_username = member_to_username(member)
-    new_credit = api.as_chairman().dishonor(target_username, credit)
+    new_credit = api.as_chairman().dishonor(member.id, credit)
     old_credit = new_credit + credit
 
     await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
@@ -122,13 +122,13 @@ async def cmd_name(ctx, name: str):
     username = member_to_username(member)
 
     try:
-        api.as_comrade(username).set_name(name)
+        api.as_comrade(member.id).set_name(name)
     except:
 #        await ctx.send("Names are 32 character max.")
 #        return
         raise
 
-    profile = get_profile(db, username)
+    profile = get_profile(db, member.id)
     assert profile is not None
     await update_member_nick(profile)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
@@ -143,7 +143,7 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
     username = member_to_username(ctx.author)
     target_username = member_to_username(member)
 
-    hanzi = api.as_comrade(username).get_hanzis(target_username)
+    hanzi = api.as_comrade(ctx.author.id).get_hanzis(member.id)
     hanzi_str = ' '.join(hanzi)
     num_hanzi = len(hanzi)
     await ctx.send(f'{target_username} has {num_hanzi} hanzi: {hanzi_str}')
@@ -158,13 +158,13 @@ async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
     target_username = member_to_username(member)
 
     try:
-        api.as_chairman().set_name(target_username, name)
+        api.as_chairman().set_name(member.id, name)
     except:
 #        await ctx.send("Names are 32 character max.")
 #        return
         raise
 
-    profile = get_profile(db, target_username)
+    profile = get_profile(db, member.id)
     assert profile is not None
     await update_member_nick(profile)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
@@ -237,7 +237,7 @@ async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
     ]
 
     username = member_to_username(ctx.author)
-    for entry in api.as_comrade(username).leaderboard():
+    for entry in api.as_comrade(ctx.author.id).leaderboard():
         line = f'{entry.credit} ... {entry.display_name}'
         lines.append(discord.utils.remove_markdown(line))
 
@@ -252,7 +252,7 @@ async def cmd_mine(ctx, word: str):
     print(f'{ctx.author.display_name}: cmd_mine({word})')
 
     username = member_to_username(ctx.author)
-    api.as_comrade(username).mine(word)
+    api.as_comrade(ctx.author.id).mine(word)
 
     await ctx.send(f'{username} has mined: {word}')
 
@@ -270,11 +270,10 @@ async def on_message(message):
     if isinstance(message.channel, discord.channel.TextChannel):
         comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
         if comrade_role in message.author.roles:
-            username = member_to_username(message.author)
-            api.as_comrade(username).alert_activity()
+            api.as_comrade(message.author.id).alert_activity()
 
             hanzis = hanzis_in(message.content)
-            api.as_comrade(username).see_hanzis(hanzis)
+            api.as_comrade(message.author.id).see_hanzis(hanzis)
 
     await client.process_commands(message)
 
@@ -372,6 +371,7 @@ async def get_current_invite():
 
 @client.event
 async def on_ready():
+    print('Ready.')
     set_guild()
     await init_invites()
 
@@ -429,7 +429,7 @@ async def loop_dmtthread():
 
 def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[discord.Member]:
     for member in client.guilds[0].members:
-        if member_to_username(member) == profile.username:
+        if member.id == profile.user_id:
             return member
     return None
 

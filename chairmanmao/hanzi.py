@@ -1,5 +1,6 @@
 from __future__ import annotations
 import typing as t
+from chairmanmao.types import UserId
 from chairmanmao.profile import get_all_profiles, get_profile, set_profile
 
 
@@ -16,19 +17,19 @@ def get_seen_hanzi(db: Database) -> t.Set[str]:
     return hanzis
 
 
-def see_hanzi(db: Database, username: str, hanzi: t.List[str]) -> None:
+def see_hanzi(db: Database, user_id: UserId, hanzi: t.List[str]) -> None:
     seen_hanzi = get_seen_hanzi(db)
     for h in hanzi:
         assert h not in seen_hanzi
 
-    profile = get_profile(db, username)
+    profile = get_profile(db, user_id)
     assert profile is not None
 
     profile_hanzi = set(profile.hanzi)
     profile_hanzi.update(hanzi)
 
     profile.hanzi = list(profile_hanzi)
-    set_profile(db, username, profile)
+    set_profile(db, user_id, profile)
 
 
 def is_hanzi(char):

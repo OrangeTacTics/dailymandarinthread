@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import graphene as g
 from graphene import ObjectType, Field, String, Schema, Int
 
-from chairmanmao.profile import create_profile, get_profile, set_profile, profile_from_json, get_all_profiles
+from chairmanmao.profile import create_profile, get_profile, set_profile, profile_from_json, get_all_profiles, get_user_id
 from chairmanmao.hanzi import get_seen_hanzi, see_hanzi
 import chairmanmao.types as types
 
@@ -23,8 +23,8 @@ class Role(g.Enum):
 
 
 class Profile(g.ObjectType):
+    user_id = g.Int()
     username = g.String()
-    # memberid = g.Int()
     display_name = g.String()
     credit = g.Int()
     hanzi = g.List(g.String)
@@ -38,15 +38,15 @@ class Profile(g.ObjectType):
 def profile_to_graphql(profile: types.Profile) -> Profile:
     roles = [role.value for role in profile.roles]
     return Profile(
-        username=profile.username,
-        # memberid=profile.memberid,
+        user_id=profile.user_id,
+        username=profile.discord_username,
         display_name=profile.display_name,
         credit=profile.credit,
         hanzi=profile.hanzi,
         mined_words=profile.mined_words,
         roles=roles,
         created=profile.created,
-        last_message=profile.last_message,
+        # last_seen=profile.last_seen,
         yuan=profile.yuan,
     )
 
@@ -202,7 +202,7 @@ class Query(g.ObjectType):
         db = db_from_info(info)
         usernames = set()
         for profile in get_all_profiles(db):
-            usernames.add(profile.username)
+            usernames.add(profile.discord_username)
         return sorted(usernames)
 
     def resolve_all_hanzi(root, info):
@@ -237,7 +237,8 @@ def profile_from_info(info) -> t.Optional[types.Profile]:
     db = db_from_info(info)
     username = username_from_info(info)
     if username is not None:
-        profile = get_profile(db, username)
+        user_id = get_user_id(db, username)
+        profile = get_profile(db, user_id)
         return profile
     else:
         return None

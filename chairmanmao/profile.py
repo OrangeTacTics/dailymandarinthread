@@ -3,29 +3,20 @@ import typing as t
 from pymongo.database import Database
 from datetime import datetime, timezone
 
-from chairmanmao.types import Profile, Role
+from chairmanmao.types import Profile, Role, UserId, Json
 
-SCHEMA_VERSION = 4
-
-Json = t.Any
-UserId = str
+SCHEMA_VERSION = 5
 
 
-def assert_username(username: str) -> None:
-    assert username[0] != '@'
-    assert username[-5] == '#'
-    assert all(ch.isnumeric() for ch in username[-4:])
-
-
-def create_profile(db: Database, username: str) -> Profile:
-    assert_username(username)
+def create_profile(db: Database, user_id: UserId, discord_username: str) -> Profile:
+    assert discord_username[-5] == '#'
     now = datetime.now(timezone.utc).replace(microsecond=0)
-    display_name = username[:-5]
+    display_name = discord_username[:-5]
     profile = Profile(
-        username=username,
-        memberid=None,
+        discord_username=discord_username,
+        user_id=user_id,
         created=now,
-        last_message=now,
+        last_seen=now,
         display_name=display_name,
         credit=1000,
         roles=[],
@@ -33,23 +24,22 @@ def create_profile(db: Database, username: str) -> Profile:
         hanzi=[],
         mined_words=[],
     )
-    assert len(list(db['Profiles'].find({'username': username}))) == 0
+    assert len(list(db['Profiles'].find({'user_id': user_id}))) == 0
     db['Profiles'].insert_one(profile_to_json(profile))
     return profile
 
 
-def get_profile(db: Database, username: str) -> t.Optional[Profile]:
-    assert_username(username)
-    profile_json = db['Profiles'].find_one({'username': username})
-    if profile_json is not None:
-        return profile_from_json(profile_json)
-    else:
-        return create_profile(db, username)
+def profile_exists(db: Database, user_id: UserId) -> bool:
+    return len(list(db['Profiles'].find({'user_id': user_id}))) > 0
 
 
-def set_profile(db: Database, username: str, profile: Profile) -> None:
-    assert_username(username)
-    query = { 'username': username }
+def get_profile(db: Database, user_id: UserId) -> Profile:
+    profile_json = db['Profiles'].find_one({'user_id': user_id})
+    return profile_from_json(profile_json)
+
+
+def set_profile(db: Database, user_id: UserId, profile: Profile) -> None:
+    query = { 'user_id': user_id }
     db['Profiles'].replace_one(query, profile_to_json(profile))
 
 
@@ -57,22 +47,19 @@ def get_all_profiles(db: Database) -> t.List[Profile]:
     return [profile_from_json(p) for p in db['Profiles'].find({})]
 
 
-def set_profile_last_message(db: Database, username: str) -> None:
+def set_profile_last_seen(db: Database, user_id: UserId) -> None:
     now = datetime.now(timezone.utc).replace(microsecond=0)
-
-    profile = get_profile(db, username)
-    assert profile is not None
-    profile.last_message = now
-    set_profile(db, username, profile)
+    with open_profile(db, user_id) as profile:
+        profile.last_seen = now
 
 
 def profile_to_json(profile: Profile) -> Json:
     roles = [role.value for role in profile.roles]
     return {
-        'username': profile.username,
-        'memberid': profile.memberid,
+        'user_id': profile.user_id,
+        'discord_username': profile.discord_username,
         'created': profile.created,
-        'last_message': profile.last_message,
+        'last_seen': profile.last_seen,
         'roles': roles,
         'display_name': profile.display_name,
         'credit': profile.credit,
@@ -84,14 +71,13 @@ def profile_to_json(profile: Profile) -> Json:
 
 
 def profile_from_json(profile_json: Json) -> Profile:
-    assert_username(profile_json['username'])
     assert profile_json['schema_version'] == SCHEMA_VERSION, f'schema_version of {profile_json} is not {SCHEMA_VERSION}'
     roles = [Role.from_str(role) for role in profile_json['roles']]
     return Profile(
-        username=profile_json['username'],
-        memberid=profile_json['memberid'],
+        user_id=profile_json['user_id'],
+        discord_username=profile_json['discord_username'],
         created=profile_json['created'],
-        last_message=profile_json['last_message'],
+        last_seen=profile_json['last_seen'],
         roles=roles,
         display_name=profile_json['display_name'],
         credit=profile_json['credit'],
@@ -116,3 +102,8 @@ class open_profile:
     def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
         assert self.profile is not None
         set_profile(self.db, self.user_id, self.profile)
+
+
+def get_user_id(db: Database, discord_username: str) -> UserId:
+    profile_json = db['Profiles'].find_one({'discord_username': discord_username})
+    return t.cast(UserId, profile_json['user_id'])

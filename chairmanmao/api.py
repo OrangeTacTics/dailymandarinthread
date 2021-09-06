@@ -10,20 +10,14 @@ import jwt
 import pymongo
 
 from chairmanmao.types import Profile
-from chairmanmao.profile import get_profile, create_profile, set_profile_last_message, get_all_profiles, open_profile
+from chairmanmao.profile import get_profile, create_profile, get_all_profiles, open_profile, get_user_id
 
 from chairmanmao.hanzi import get_seen_hanzi
 #from chairmanmao.draw import draw, get_font_names
 #from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
 
 
-UserId = str
-
-
-#class Rank:
-#    CHAIRMAN
-#    PARTY_MEMBER
-#    COMRADE
+UserId = int
 
 
 @dataclass
@@ -43,6 +37,9 @@ class Api:
         return Api(
             db=db,
         )
+
+    def get_user_id(self, discord_username: str) -> UserId:
+        return get_user_id(self.db, discord_username)
 
     def as_chairman(self) -> ChairmanApi:
         return ChairmanApi(
@@ -86,7 +83,7 @@ class ChairmanApi:
     def list_users(self) -> t.List[UserId]:
         user_ids = []
         for profile in get_all_profiles(self.db):
-            user_ids.append(profile.username)
+            user_ids.append(profile.user_id)
         return user_ids
 
 
@@ -166,10 +163,10 @@ class ComradeApi:
     def last_seen(self, user_id: UserId) -> datetime:
         profile = get_profile(self.db, user_id)
         assert profile is not None, f"No profile exists for {self.user_id}"
-        last_message = profile.last_message
-        last_message = last_message.replace(tzinfo=timezone.utc)
-        last_message = last_message.replace(microsecond=0)
-        return last_message
+        last_seen = profile.last_seen
+        last_seen = last_seen.replace(tzinfo=timezone.utc)
+        last_seen = last_seen.replace(microsecond=0)
+        return last_seen
 
     def see_hanzis(self, hanzis: t.List[str]) -> t.List[str]:
         seen_hanzis = get_seen_hanzi(self.db)
@@ -182,33 +179,32 @@ class ComradeApi:
 
     def alert_activity(self) -> None:
         with open_profile(self.db, self.user_id) as profile:
-            profile.last_message = datetime.now(timezone.utc).replace(microsecond=0)
+            profile.last_seen = datetime.now(timezone.utc).replace(microsecond=0)
 
 
 def main():
     load_dotenv()
 
-    MONGODB_URL = os.getenv('MONGODB_URL', '')
-    MONGODB_DB = os.getenv('MONGODB_DB', '')
-
-    username =  'OrangeTacTics#0949'
-    snickers = 'Snickers#0486'
+    MONGODB_URL = os.getenv('MONGODB_TEST_URL', '')
+    MONGODB_DB = os.getenv('MONGODB_TEST_DB', '')
 
     api = Api.connect(MONGODB_URL, MONGODB_DB)
+
+    user_id =  api.get_user_id('OrangeTacTics#0949')
+    snickers_id = api.get_user_id('Snickers#0486')
+
     chairman_api = api.as_chairman()
-    comrade_api = api.as_comrade(snickers)
+    comrade_api = api.as_comrade(snickers_id)
 
-    print('hanzis before', comrade_api.get_hanzis(snickers))
+    print('hanzis before', comrade_api.get_hanzis(snickers_id))
     comrade_api.see_hanzis(['喘', '猫'])
-    print('hanzis after', comrade_api.get_hanzis(snickers))
-    return
+    print('hanzis after', comrade_api.get_hanzis(snickers_id))
 
-    print(comrade_api.last_seen(snickers))
+    print(comrade_api.last_seen(snickers_id))
     comrade_api.alert_activity()
-    print(comrade_api.last_seen(snickers))
+    print(comrade_api.last_seen(snickers_id))
 
-
-    print('credit:', comrade_api.social_credit('OrangeTacTics#0949'))
+    print('credit:', comrade_api.social_credit(user_id))
 
     comrade_api.mine('猫')
 
@@ -218,11 +214,13 @@ def main():
     print()
     print('Yuan:', comrade_api.yuan())
 
-    for hanzi in comrade_api.get_hanzis(username)[:3]:
+    for hanzi in comrade_api.get_hanzis(user_id)[:3]:
         print('-', hanzi)
 
     print('Display name:', comrade_api.get_name())
-    comrade_api.set_name(username)
+    comrade_api.set_name('Snick')
+    print('Display name:', comrade_api.get_name())
+    comrade_api.set_name('Snickers')
     print('Display name:', comrade_api.get_name())
     print()
 
@@ -239,24 +237,24 @@ def main():
     print()
 
 
-    print('Snickers credit:', comrade_api.social_credit(snickers))
+    print('Snickers credit:', comrade_api.social_credit(snickers_id))
     print('dishonor 10...')
-    chairman_api.dishonor(snickers, 10)
-    print('Snickers credit:', comrade_api.social_credit(snickers))
+    chairman_api.dishonor(snickers_id, 10)
+    print('Snickers credit:', comrade_api.social_credit(snickers_id))
     print('honor 11...')
-    chairman_api.honor(snickers, 11)
-    print('Snickers credit:', comrade_api.social_credit(snickers))
+    chairman_api.honor(snickers_id, 11)
+    print('Snickers credit:', comrade_api.social_credit(snickers_id))
     print()
 
-    for word in api.as_comrade(snickers).get_mined():
+    for word in api.as_comrade(snickers_id).get_mined():
         print('-', word)
     print()
 
-    last_seen = api.as_comrade(snickers).last_seen(snickers)
+    last_seen = api.as_comrade(snickers_id).last_seen(snickers_id)
     last_seen = last_seen.replace(tzinfo=timezone.utc)
     now = datetime.now(timezone.utc).replace(microsecond=0)
     havent_seen_in = now - last_seen
-    print(snickers, 'was last seen', int(havent_seen_in.total_seconds() / 60), 'minutes ago')
+    print(snickers_id, 'was last seen', int(havent_seen_in.total_seconds() / 60), 'minutes ago')
     print('at', last_seen)
     print()
 

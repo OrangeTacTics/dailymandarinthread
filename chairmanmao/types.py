@@ -7,13 +7,15 @@ from enum import Enum
 
 @dataclass
 class Profile:
-    username: str
-    memberid: t.Optional[int]
-    created: datetime
+    user_id: UserId
 
-    last_message: datetime
-    roles: t.List[Role]
+    discord_username: str
     display_name: str
+
+    created: datetime
+    last_seen: datetime
+
+    roles: t.List[Role]
 
     credit: int
     yuan: int
@@ -23,10 +25,9 @@ class Profile:
 
 
 class Role(Enum):
-    COMRADE = "Comrade"
-    PARTY_MEMBER = "PartyMember"
-    CHAIRMAN = "Chairman"
-    LEARNER = "Learner"
+    Comrade = "Comrade"
+    Party = "Party"
+    Learner = "Learner"
 
     @staticmethod
     def from_str(role_name: str) -> Role:
@@ -34,3 +35,7 @@ class Role(Enum):
             if role.value == role_name:
                 return role
         raise ValueError(f'{role_name} is not a valid Role.')
+
+
+UserId = int
+Json = t.Any
