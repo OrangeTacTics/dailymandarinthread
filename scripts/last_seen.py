@@ -45,4 +45,4 @@ if __name__ == '__main__':
 
     print('Last seens:')
     for last_seen, user_id in sorted(last_seens):
-        print('   ', pretty(last_seen).ljust(14), user_id)
+        print('   ', pretty(last_seen).ljust(14), comrade_api.get_discord_username(user_id))

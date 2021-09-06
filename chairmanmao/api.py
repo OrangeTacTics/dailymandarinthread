@@ -104,6 +104,14 @@ class ComradeApi:
     db: pymongo.MongoClient
     user_id: UserId
 
+    def get_discord_username(self, user_id: UserId) -> str:
+        profile = get_profile(self.db, user_id)
+        return profile.discord_username
+
+    def get_display_name(self, user_id: UserId) -> str:
+        profile = get_profile(self.db, user_id)
+        return profile.display_name
+
     def social_credit(self, user_id: UserId) -> int:
         profile = get_profile(self.db, user_id)
         assert profile is not None
