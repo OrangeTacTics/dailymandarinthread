@@ -92,8 +92,8 @@ class PartyApi:
     db: pymongo.MongoClient
     user_id: UserId
 
-    def recognize(self, user_id, credit: int) -> None:
-        ...
+    def recognize(self, user_id: UserId, discord_username: str):
+        create_profile(self.db, user_id, discord_username)
 
     def stepdown(self) -> None:
         ...

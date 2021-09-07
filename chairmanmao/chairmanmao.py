@@ -67,6 +67,9 @@ async def cmd_recognize(ctx, member: commands.MemberConverter):
     comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
     username = member_to_username(member)
     assert comrade_role not in member.roles, 'Member is already a 同志.'
+
+    api.as_party(ctx.author.id).recognize(member.id, username)
+
     await member.add_roles(comrade_role)
     await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
 
