@@ -308,7 +308,7 @@ async def on_reaction_add(reaction, user):
     user_to_credit = reaction.message.author
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
-        credit = api.as_chairman().honor(target_username, 1)
+        credit = api.as_chairman().honor(user_to_credit.id, 1)
         print(f'User reaction added to {user_to_credit}: {credit}')
 
 
@@ -317,7 +317,7 @@ async def on_reaction_remove(reaction, user):
     user_to_credit = reaction.message.author
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
-        credit = api.as_chairman().dishonor(target_username, 1)
+        credit = api.as_chairman().dishonor(user_to_credit.id, 1)
         print(f'User reaction removed from {user_to_credit}: {credit}')
 
 
