@@ -5,6 +5,7 @@ import requests
 import typing as t
 from datetime import datetime, timezone
 from pathlib import Path
+import logging
 
 import discord
 from discord.ext import commands, tasks
@@ -40,13 +41,22 @@ db = mongo_client[MONGODB_DB]
 api = Api.connect(MONGODB_URL, MONGODB_DB)
 
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+stream = logging.StreamHandler()
+streamformat = logging.Formatter("%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+stream.setFormatter(streamformat)
+logger.addHandler(stream)
+
+
 @client.before_invoke
 async def log(ctx):
     now = datetime.now(timezone.utc).replace(microsecond=0)
     now_str = str(now)[:-6]
     author = member_to_username(ctx.author)
     command_name = ctx.command.name
-    print(f'{now_str} {author}: {command_name}()')
+    logger.info(f'{author}: {command_name}()')
 
 
 ################################################################################
@@ -323,7 +333,7 @@ async def on_reaction_add(reaction, user):
         target_username = member_to_username(user_to_credit)
         credit = api.as_chairman().honor(user_to_credit.id, 1)
         queue_rename(user_to_credit.id)
-        print(f'User reaction added to {user_to_credit}: {credit}')
+        logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
 
 @client.event
@@ -333,7 +343,7 @@ async def on_reaction_remove(reaction, user):
         target_username = member_to_username(user_to_credit)
         credit = api.as_chairman().dishonor(user_to_credit.id, 1)
         queue_rename(user_to_credit.id)
-        print(f'User reaction removed from {user_to_credit}: {credit}')
+        logger.info(f'User reaction removed from {user_to_credit}: {credit}')
 
 
 @client.event
@@ -389,7 +399,7 @@ async def get_current_invite():
 
 @client.event
 async def on_ready():
-    print('Ready.')
+    logger.info('Ready.')
     set_guild()
     await init_invites()
 
@@ -402,7 +412,7 @@ async def on_ready():
 async def on_member_join(member):
     guild = client.guilds[0]
     invite = await get_current_invite()
-    print(member.name, 'joined with invite code', invite.code, 'from', member_to_username(invite.inviter))
+    logger.info(member.name, 'joined with invite code', invite.code, 'from', member_to_username(invite.inviter))
 
 
 ################################################################################
@@ -425,7 +435,7 @@ async def loop_dmtthread():
     thread = await get_dmt_thread()
     if thread is not None:
         if not is_url_seen(thread.url):
-            print('Found DMT thread:', thread.url)
+            logger.info('Found DMT thread:', thread.url)
             see_url(thread.url)
             channel = thread_channel()
             lines = [
@@ -466,7 +476,7 @@ async def update_member_nick(profile: Profile):
     if member.bot:
         return
 
-    print('Rename', member.nick, '->', new_nick)
+    logger.info('Rename', member.nick, '->', new_nick)
     await member.edit(nick=new_nick)
     await asyncio.sleep(1)
 
