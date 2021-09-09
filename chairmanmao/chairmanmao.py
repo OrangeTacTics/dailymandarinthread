@@ -412,7 +412,7 @@ async def on_ready():
 async def on_member_join(member):
     guild = client.guilds[0]
     invite = await get_current_invite()
-    logger.info(member.name, 'joined with invite code', invite.code, 'from', member_to_username(invite.inviter))
+    logger.info(f'{member.name} joined with invite code {invite.code} from {member_to_username(invite.inviter)}')
 
 
 ################################################################################
@@ -435,7 +435,7 @@ async def loop_dmtthread():
     thread = await get_dmt_thread()
     if thread is not None:
         if not is_url_seen(thread.url):
-            logger.info('Found DMT thread:', thread.url)
+            logger.info(f'Found DMT thread: {thread.url}')
             see_url(thread.url)
             channel = thread_channel()
             lines = [
@@ -476,7 +476,7 @@ async def update_member_nick(profile: Profile):
     if member.bot:
         return
 
-    logger.info('Rename', member.nick, '->', new_nick)
+    logger.info(f'Rename {member.nick} -> {new_nick}')
     await member.edit(nick=new_nick)
     await asyncio.sleep(1)
 
