@@ -63,6 +63,14 @@ class Api:
 class ChairmanApi:
     db: pymongo.MongoClient
 
+    def get_profile(self, user_id: UserId) -> Profile:
+        profile = get_profile(self.db, user_id)
+        return profile
+
+    def get_all_profiles(self) -> t.List[Profile]:
+        profiles = get_all_profiles(self.db)
+        return profiles
+
     def honor(self, user_id: UserId, credit: int) -> int:
         assert credit > 0
         with open_profile(self.db, user_id) as profile:

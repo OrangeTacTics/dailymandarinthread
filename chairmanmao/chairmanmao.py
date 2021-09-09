@@ -11,7 +11,6 @@ import os
 import pymongo
 from dotenv import load_dotenv
 
-from chairmanmao.profile import get_profile, get_all_profiles
 from chairmanmao.api import Api
 from chairmanmao.draw import draw, get_font_names
 from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
@@ -35,6 +34,11 @@ BOT_USERNAME = os.getenv('BOT_USERNAME', '')
 mongo_client = pymongo.MongoClient(MONGODB_URL)
 db = mongo_client[MONGODB_DB]
 api = Api.connect(MONGODB_URL, MONGODB_DB)
+
+
+################################################################################
+# Commands
+################################################################################
 
 
 @client.command(name='socialcredit', help='See your social credit score.')
@@ -131,7 +135,7 @@ async def cmd_name(ctx, name: str):
 #        return
         raise
 
-    profile = get_profile(db, member.id)
+    profile = api.as_chairman().get_profile(member.id)
     assert profile is not None
     await update_member_nick(profile)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
@@ -167,7 +171,7 @@ async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
 #        return
         raise
 
-    profile = get_profile(db, member.id)
+    profile = api.as_chairman().get_profile(member.id)
     assert profile is not None
     await update_member_nick(profile)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
@@ -266,6 +270,11 @@ async def cmd_mine(ctx, word: str):
 async def cmd_debug(ctx):
     print(f'{ctx.author.display_name}: cmd_debug()')
     breakpoint()
+
+
+################################################################################
+# Events
+################################################################################
 
 
 @client.event
@@ -468,6 +477,6 @@ async def update_member_nick(profile: Profile):
 
 @tasks.loop(minutes=1)
 async def loop_socialcreditrename():
-    profiles = get_all_profiles(db)
+    profiles = api.as_chairman().get_all_profiles()
     for profile in profiles:
         await update_member_nick(profile)
