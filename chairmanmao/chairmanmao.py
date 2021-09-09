@@ -471,18 +471,17 @@ async def update_member_nick(profile: Profile):
     await asyncio.sleep(1)
 
 
-rename_queue = []
+rename_queue = set()
 
 
 def queue_rename(user_id: UserId) -> None:
-    rename_queue.append(user_id)
+    rename_queue.add(user_id)
 
 
 def flush_rename_queue() -> t.List[UserId]:
-    global rename_queue
-    results = rename_queue
-    rename_queue = []
-    return results
+    user_ids = list(rename_queue)
+    rename_queue.clear()
+    return user_ids
 
 
 @tasks.loop(seconds=1)
