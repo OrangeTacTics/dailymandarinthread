@@ -1,7 +1,9 @@
+from __future__ import annotations
+from dataclasses import dataclass
 import asyncio
 import requests
 import typing as t
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from pathlib import Path
 
 import discord
@@ -14,7 +16,9 @@ from dotenv import load_dotenv
 from chairmanmao.api import Api
 from chairmanmao.draw import draw, get_font_names
 from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
-from chairmanmao.types import Profile
+
+if t.TYPE_CHECKING:
+    from chairmanmao.types import Profile, UserId, Json
 
 
 intents = discord.Intents.default()
@@ -36,6 +40,15 @@ db = mongo_client[MONGODB_DB]
 api = Api.connect(MONGODB_URL, MONGODB_DB)
 
 
+@client.before_invoke
+async def log(ctx):
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    now_str = str(now)[:-6]
+    author = member_to_username(ctx.author)
+    command_name = ctx.command.name
+    print(f'{now_str} {author}: {command_name}()')
+
+
 ################################################################################
 # Commands
 ################################################################################
@@ -44,7 +57,6 @@ api = Api.connect(MONGODB_URL, MONGODB_DB)
 @client.command(name='socialcredit', help='See your social credit score.')
 @commands.has_role('同志')
 async def cmd_socialcredit(ctx, member: commands.MemberConverter = None):
-    print(f'{ctx.author.display_name}: cmd_socialcredit({member})')
     username = member_to_username(ctx.author)
 
     if member is not None:
@@ -82,7 +94,6 @@ async def cmd_recognize(ctx, member: commands.MemberConverter):
 @commands.has_role('共产党员')
 @commands.is_owner()
 async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
-    print(f'{ctx.author.display_name}: cmd_honor({member}, {credit})')
     assert credit > 0
 
     username = member_to_username(ctx.author)
@@ -90,6 +101,7 @@ async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
     new_credit = api.as_chairman().honor(member.id, credit)
     old_credit = new_credit - credit
 
+    queue_rename(member.id)
     await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
 
 
@@ -97,7 +109,6 @@ async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
 @commands.has_role('共产党员')
 @commands.is_owner()
 async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
-    print(f'{ctx.author.display_name}: cmd_dishonor({member}, {credit})')
     assert credit > 0
 
     username = member_to_username(ctx.author)
@@ -105,13 +116,13 @@ async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
     new_credit = api.as_chairman().dishonor(member.id, credit)
     old_credit = new_credit + credit
 
+    queue_rename(member.id)
     await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
 
 
 @client.command(name='learner', help='Add or remove 中文学习者 role.')
 @commands.has_role('同志')
 async def cmd_learner(ctx, flag: bool = True):
-    print(f'{ctx.author.display_name}: cmd_learner({flag})')
     learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
     if flag:
         await ctx.author.add_roles(learner_role)
@@ -124,7 +135,6 @@ async def cmd_learner(ctx, flag: bool = True):
 @client.command(name='name', help='Set your name.')
 @commands.has_role('同志')
 async def cmd_name(ctx, name: str):
-    print(f'{ctx.author.display_name}: cmd_name({name})')
     member = ctx.author
     username = member_to_username(member)
 
@@ -137,7 +147,8 @@ async def cmd_name(ctx, name: str):
 
     profile = api.as_chairman().get_profile(member.id)
     assert profile is not None
-    await update_member_nick(profile)
+
+    queue_rename(member.id)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
@@ -160,7 +171,6 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
 @commands.has_role('共产党员')
 @commands.is_owner()
 async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
-    print(f'{ctx.author.display_name}: cmd_setname({member.display_name}, {name})')
     username = member_to_username(ctx.author)
     target_username = member_to_username(member)
 
@@ -173,14 +183,13 @@ async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
 
     profile = api.as_chairman().get_profile(member.id)
     assert profile is not None
-    await update_member_nick(profile)
+    queue_rename(member.id)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
 @client.command(name='draw', help="Draw a simplified hanzi character.")
 @commands.has_role('同志')
 async def cmd_draw(ctx, chars: str, font: t.Optional[str] = None):
-    print(f'{ctx.author.display_name}: cmd_draw({chars})')
     for char in chars:
         assert is_hanzi(char)
     image_buffer = draw(chars, font)
@@ -195,7 +204,6 @@ async def cmd_draw(ctx, chars: str, font: t.Optional[str] = None):
 @commands.has_role('同志')
 @commands.cooldown(1, 5 * 60, type)
 async def cmd_font(ctx, font_name: str):
-    print(f'{ctx.author.display_name}: cmd_font({font_name})')
 
     if font_name == 'list':
         font_names = get_font_names()
@@ -227,7 +235,6 @@ async def cmd_font(ctx, font_name: str):
 @client.command(name='yuan')
 @commands.has_role('同志')
 async def cmd_yuan(ctx):
-    print(f'{ctx.author.display_name}: cmd_yuan()')
     username = member_to_username(ctx.author)
     yuan = api.as_comrade(username).get_yuan()
     await ctx.send(f"{username} has {yuan} RNB.")
@@ -237,7 +244,6 @@ async def cmd_yuan(ctx):
 @commands.has_role('同志')
 @commands.cooldown(1, 5 * 60, commands.BucketType.guild)
 async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
-    print(f'{ctx.author.display_name}: cmd_leaderboard()')
     lines = [
         "The DMT Leaderboard",
         "```",
@@ -256,7 +262,6 @@ async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
 @client.command(name='mine', help='Mine a word.')
 @commands.has_role('同志')
 async def cmd_mine(ctx, word: str):
-    print(f'{ctx.author.display_name}: cmd_mine({word})')
 
     username = member_to_username(ctx.author)
     api.as_comrade(ctx.author.id).mine(word)
@@ -268,7 +273,6 @@ async def cmd_mine(ctx, word: str):
 @commands.has_role("共产党员")
 @commands.is_owner()
 async def cmd_debug(ctx):
-    print(f'{ctx.author.display_name}: cmd_debug()')
     breakpoint()
 
 
@@ -318,6 +322,7 @@ async def on_reaction_add(reaction, user):
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
         credit = api.as_chairman().honor(user_to_credit.id, 1)
+        queue_rename(user_to_credit.id)
         print(f'User reaction added to {user_to_credit}: {credit}')
 
 
@@ -327,6 +332,7 @@ async def on_reaction_remove(reaction, user):
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
         credit = api.as_chairman().dishonor(user_to_credit.id, 1)
+        queue_rename(user_to_credit.id)
         print(f'User reaction removed from {user_to_credit}: {credit}')
 
 
@@ -389,6 +395,7 @@ async def on_ready():
 
     loop_dmtthread.start()
     loop_socialcreditrename.start()
+    loop_fullsocialcreditrename.start()
 
 
 @client.event
@@ -398,20 +405,9 @@ async def on_member_join(member):
     print(member.name, 'joined with invite code', invite.code, 'from', member_to_username(invite.inviter))
 
 
-def member_to_username(member) -> str:
-    return member.name + '#' + member.discriminator
-
-
-def news_channel():
-    guild = client.guilds[0]
-    assert guild.name == 'Daily Mandarin Thread'
-
-    for channel in guild.channels:
-        if channel.name.startswith('🧵'):
-            return channel
-
-    raise Exception()
-
+################################################################################
+# 4chan Threads
+################################################################################
 
 def thread_channel():
     guild = client.guilds[0]
@@ -438,6 +434,10 @@ async def loop_dmtthread():
             ]
             await channel.send('\n'.join(lines))
 
+
+################################################################################
+# Profile renaming
+################################################################################
 
 def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[discord.Member]:
     for member in client.guilds[0].members:
@@ -466,17 +466,62 @@ async def update_member_nick(profile: Profile):
     if member.bot:
         return
 
-    print('Updating nick:')
-    print('Nick:', member.nick)
-    print('Disp:', member.display_name)
-    print('New: ', new_nick)
-    print()
+    print('Rename', member.nick, '->', new_nick)
     await member.edit(nick=new_nick)
     await asyncio.sleep(1)
 
 
-@tasks.loop(minutes=1)
+rename_queue = []
+
+
+def queue_rename(user_id: UserId) -> None:
+    rename_queue.append(user_id)
+
+
+def flush_rename_queue() -> t.List[UserId]:
+    global rename_queue
+    results = rename_queue
+    rename_queue = []
+    return results
+
+
+@tasks.loop(seconds=1)
 async def loop_socialcreditrename():
+    await incremental_rename()
+
+
+@tasks.loop(hours=24)
+async def loop_fullsocialcreditrename():
+    await full_rename()
+
+
+async def incremental_rename() -> None:
+    for user_id in flush_rename_queue():
+        profile = api.as_chairman().get_profile(user_id)
+        await update_member_nick(profile)
+
+
+async def full_rename() -> None:
     profiles = api.as_chairman().get_all_profiles()
     for profile in profiles:
         await update_member_nick(profile)
+
+
+################################################################################
+# Utils
+################################################################################
+
+
+def member_to_username(member) -> str:
+    return member.name + '#' + member.discriminator
+
+
+def news_channel():
+    guild = client.guilds[0]
+    assert guild.name == 'Daily Mandarin Thread'
+
+    for channel in guild.channels:
+        if channel.name.startswith('🧵'):
+            return channel
+
+    raise Exception()
