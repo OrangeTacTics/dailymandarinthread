@@ -53,6 +53,9 @@ class FileManager:
         response = self.client.list_objects(Bucket=self.config.DO_SPACES_BUCKETNAME)
         for obj in response['Contents']:
             key = obj['Key']
+            if key == dirname + '/':
+                continue
+
             if key.startswith(dirname + '/'):
                 results.append(key)
         return results

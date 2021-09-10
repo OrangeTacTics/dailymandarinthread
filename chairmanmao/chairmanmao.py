@@ -1,5 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
+from io import BytesIO
 import asyncio
 import requests
 import typing as t
@@ -14,8 +15,9 @@ import os
 import pymongo
 from dotenv import load_dotenv
 
+from chairmanmao.filemanager import DoSpacesConfig, FileManager
 from chairmanmao.api import Api
-from chairmanmao.draw import draw, get_font_names
+from chairmanmao.draw import DrawManager
 from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
 
 if t.TYPE_CHECKING:
@@ -30,15 +32,9 @@ client = commands.Bot(command_prefix='$', intents=intents)
 load_dotenv()
 
 
-MONGODB_URL = os.getenv('MONGODB_URL', '')
-MONGODB_DB = os.getenv('MONGODB_DB', '')
-
-ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '')
-BOT_USERNAME = os.getenv('BOT_USERNAME', '')
-
-mongo_client = pymongo.MongoClient(MONGODB_URL)
-db = mongo_client[MONGODB_DB]
-api = Api.connect(MONGODB_URL, MONGODB_DB)
+################################################################################
+# Logging
+################################################################################
 
 
 logger = logging.getLogger(__name__)
@@ -57,6 +53,32 @@ async def log(ctx):
     author = member_to_username(ctx.author)
     command_name = ctx.command.name
     logger.info(f'{author}: {command_name}()')
+
+
+################################################################################
+# MongoDB
+################################################################################
+
+
+MONGODB_URL = os.getenv('MONGODB_URL', '')
+MONGODB_DB = os.getenv('MONGODB_DB', '')
+
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '')
+BOT_USERNAME = os.getenv('BOT_USERNAME', '')
+
+mongo_client = pymongo.MongoClient(MONGODB_URL)
+db = mongo_client[MONGODB_DB]
+api = Api.connect(MONGODB_URL, MONGODB_DB)
+
+
+################################################################################
+# Draw Manager
+################################################################################
+
+
+do_spaces_config = DoSpacesConfig.from_environment()
+file_manager = FileManager(do_spaces_config)
+draw_manager = DrawManager(file_manager)
 
 
 ################################################################################
@@ -200,14 +222,15 @@ async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
 @client.command(name='draw', help="Draw a simplified hanzi character.")
 @commands.has_role('同志')
 async def cmd_draw(ctx, chars: str, font: t.Optional[str] = None):
+    if font is None:
+        font = 'kuaile'
+
     for char in chars:
         assert is_hanzi(char)
-    image_buffer = draw(chars, font)
-    if image_buffer is not None:
-        filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in chars) + '.png'
-        await ctx.channel.send(file=discord.File(fp=image_buffer, filename=filename))
-    else:
-        await ctx.send(f"I cannot render {chars} with this font.")
+
+    image_buffer = draw_manager.draw(font, chars)
+    filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in chars) + '.png'
+    await ctx.channel.send(file=discord.File(fp=image_buffer, filename=filename))
 
 
 @client.command(name='font')
@@ -216,7 +239,7 @@ async def cmd_draw(ctx, chars: str, font: t.Optional[str] = None):
 async def cmd_font(ctx, font_name: str):
 
     if font_name == 'list':
-        font_names = get_font_names()
+        font_names = draw_manager.get_font_names()
         await ctx.send(f"The available fonts are: " + ' '.join(font_names))
         return
 
@@ -234,11 +257,7 @@ async def cmd_font(ctx, font_name: str):
         return
 
     resp = requests.get(attachment.url)
-    font_dir = Path('fonts')
-    filename = f'{ctx.author.id}_{font_name}.ttf'
-    with open(font_dir / filename, 'wb') as outfile:
-        outfile.write(resp.content)
-
+    draw_manager.upload_font(ctx.author.id, font_name, BytesIO(resp.content))
     await ctx.send(f"Uploaded font: {font_name}.")
 
 

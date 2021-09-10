@@ -1,73 +1,66 @@
+from __future__ import annotations
 import typing as t
 from io import BytesIO
 from PIL import Image, ImageFont, ImageDraw
 from pathlib import Path
+from functools import lru_cache
+from shutil import copyfileobj
+
+if t.TYPE_CHECKING:
+    from chairmanmao.filemanager import FileManager
+    from chairmanmao.types import UserId
 
 
-FONTS = {
-    'kuaile': ImageFont.truetype("fonts/ZCOOLKuaiLe-Regular.ttf",  128),
-    'senty': ImageFont.truetype("fonts/HanyiSentyCandy.ttf",  128),
-}
+class DrawManager:
+    def __init__(self, file_manager: FileManager) -> None:
+        self.file_manager = file_manager
 
+    def get_font_names(self) -> t.List[str]:
+        return sorted(self.get_fonts().keys())
 
-def get_font_names():
-    font_names = set(FONTS.keys())
+    def get_fonts(self) -> t.Dict[str, str]:
+        results = {}
 
-    font_dir = Path('fonts')
-    for path in font_dir.iterdir():
-        if path.name == 'ZCOOLKuaiLe-Regular.ttf' or path.name == 'HanyiSentyCandy.ttf':
-            continue
-        font_name = str(path.name)
-        try:
-            underscore_idx = font_name.index('_')
-            font_name = font_name[underscore_idx+1:]
-        except:
-            pass
-        dot_idx = font_name.index('.')
-        font_name = font_name[:dot_idx]
-        font_names.add(font_name)
+        filenames = self.file_manager.list('fonts')
+        for filename in filenames:
+            if not filename.endswith('.ttf'):
+                continue
 
-    return sorted(font_names)
+            if '_' not in filename:
+                continue
 
+            idx = filename.index('_')
+            font = filename[idx + 1:]
+            font = font[:-len('.ttf')]
+            results[font] = filename
 
+        return results
 
+    @lru_cache(maxsize=2)
+    def load_font(self, font_name: str) -> ImageFont:
+        fonts = self.get_fonts()
+        font_key = fonts[font_name]
 
-def get_font(name):
-    if name in FONTS:
-        return FONTS[name]
+        temp_filename = 'temp.tff'
 
-    font_dir = Path('fonts')
-    for path in font_dir.iterdir():
-        font_name = str(path.name)
-        try:
-            underscore_idx = font_name.index('_')
-            font_name = font_name[underscore_idx+1:]
-        except:
-            pass
-        dot_idx = font_name.index('.')
-        font_name = font_name[:dot_idx]
+        with open(temp_filename, 'wb') as outfile:
+            infile = self.file_manager.download(font_key)
+            copyfileobj(infile, outfile)
 
-        print(f'{name} vs {font_name}')
-        if name == font_name:
-            return ImageFont.truetype(str(path), 128)
+        return ImageFont.truetype(temp_filename, 128)
 
-    return FONTS[DEFAULT_FONT_NAME]
+    def upload_font(self, user_id: UserId, font_name: str, fp: t.BinaryIO) -> None:
+        filename = f'fonts/{user_id}_{font_name}.ttf'
+        self.file_manager.upload(filename, fp)
 
+    def draw(self, font_name: str, text : str) -> BytesIO:
+        font = self.load_font(font_name)
 
-DEFAULT_FONT_NAME = 'kuaile'
+        image = Image.new('RGBA', (128 * len(text), 128))
+        draw = ImageDraw.Draw(image)
+        draw.text((0, 0), text, fill=(255, 0, 0), font=font)
 
-
-def draw(chars: str, font_name: t.Optional[str] = None) -> t.Optional[BytesIO]:
-    if font_name is None:
-        font_name = DEFAULT_FONT_NAME
-
-    font = get_font(font_name)
-
-    image = Image.new('RGBA', (128 * len(chars), 128))
-    draw = ImageDraw.Draw(image)
-    draw.text((0, 0), chars, fill=(255, 0, 0), font=font)
-
-    img_buffer = BytesIO()
-    image.save(img_buffer, format="PNG")
-    img_buffer.seek(0)
-    return img_buffer
+        img_buffer = BytesIO()
+        image.save(img_buffer, format="PNG")
+        img_buffer.seek(0)
+        return img_buffer
