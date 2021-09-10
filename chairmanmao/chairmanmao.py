@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 from chairmanmao.filemanager import DoSpacesConfig, FileManager
 from chairmanmao.api import Api
 from chairmanmao.draw import DrawManager
-from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
+from chairmanmao.fourchan import FourChanManager
 
 if t.TYPE_CHECKING:
     from chairmanmao.types import Profile, UserId, Json
@@ -72,13 +72,14 @@ api = Api.connect(MONGODB_URL, MONGODB_DB)
 
 
 ################################################################################
-# Draw Manager
+# Managers
 ################################################################################
 
 
 do_spaces_config = DoSpacesConfig.from_environment()
 file_manager = FileManager(do_spaces_config)
 draw_manager = DrawManager(file_manager)
+fourchan_manager = FourChanManager(file_manager)
 
 
 ################################################################################
@@ -451,11 +452,11 @@ def thread_channel():
 
 @tasks.loop(seconds=60)
 async def loop_dmtthread():
-    thread = await get_dmt_thread()
+    thread = await fourchan_manager.get_dmt_thread()
     if thread is not None:
-        if not is_url_seen(thread.url):
+        if not fourchan_manager.is_url_seen(thread.url):
             logger.info(f'Found DMT thread: {thread.url}')
-            see_url(thread.url)
+            fourchan_manager.see_url(thread.url)
             channel = thread_channel()
             lines = [
                 thread.title,
