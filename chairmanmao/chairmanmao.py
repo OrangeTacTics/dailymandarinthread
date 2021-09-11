@@ -549,7 +549,9 @@ async def full_member_update(guild: discord.Guild) -> None:
     profiles = api.as_chairman().get_all_profiles()
     for profile in profiles:
         await update_member_nick(guild, profile)
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
+        await update_member_roles(guild, profile)
+        await asyncio.sleep(0.5)
 
 
 ################################################################################
