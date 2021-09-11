@@ -21,7 +21,7 @@ from chairmanmao.draw import DrawManager
 from chairmanmao.fourchan import FourChanManager
 
 if t.TYPE_CHECKING:
-    from chairmanmao.types import Profile, UserId, Json
+    from chairmanmao.types import Profile, UserId, Json, Role
 
 
 intents = discord.Intents.default()
@@ -192,11 +192,12 @@ async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
 @commands.has_role('同志')
 async def cmd_learner(ctx, flag: bool = True):
     learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
+
+    api.as_comrade(ctx.author.id).set_learner(flag)
+    queue_member_update(ctx.author.id)
     if flag:
-        await ctx.author.add_roles(learner_role)
         await ctx.send(f'{ctx.author.display_name} has been added to {learner_role.name}')
     else:
-        await ctx.author.remove_roles(learner_role)
         await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
 
 
@@ -590,21 +591,40 @@ async def update_member_roles(guild: discord.Guild, profile: Profile) -> None:
     if member is None:
         return
 
+    roles = list(roles_for(guild, profile))
+    nonroles = list(nonroles_for(guild, profile))
+
+    await member.add_roles(*roles)
+    await member.remove_roles(*nonroles)
+
+
+def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[Role]:
     comrade_role = discord.utils.get(guild.roles, name='同志')
     ccp_role     = discord.utils.get(guild.roles, name="共产党员")
     jailed_role  = discord.utils.get(guild.roles, name="JAILED")
+    learner_role = discord.utils.get(guild.roles, name="中文学习者")
 
     if profile.is_jailed():
-        await member.remove_roles(comrade_role, ccp_role)
-        await member.add_roles(jailed_role)
-
-    elif profile.is_party():
-        await member.remove_roles(jailed_role)
-        await member.add_roles(comrade_role, ccp_role)
-
+        return {jailed_role}
     else:
-        await member.remove_roles(jailed_role, ccp_role)
-        await member.add_roles(comrade_role)
+        if profile.is_party():
+            roles = {comrade_role, ccp_role}
+        else:
+            roles = {comrade_role}
+
+        if profile.is_learner():
+            roles.add(learner_role)
+
+        return roles
+
+
+def nonroles_for(guild: discord.Guild, profile: Profile) -> t.Set[Role]:
+    comrade_role = discord.utils.get(guild.roles, name='同志')
+    ccp_role     = discord.utils.get(guild.roles, name="共产党员")
+    jailed_role  = discord.utils.get(guild.roles, name="JAILED")
+    learner_role = discord.utils.get(guild.roles, name="中文学习者")
+    all_roles = {comrade_role, ccp_role, jailed_role, learner_role}
+    return all_roles.difference(roles_for(guild, profile))
 
 
 ################################################################################

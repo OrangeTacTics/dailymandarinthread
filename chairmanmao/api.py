@@ -153,7 +153,13 @@ class ComradeApi:
         return profile.credit
 
     def set_learner(self, flag: bool) -> None:
-        ...
+        with open_profile(self.db, self.user_id) as profile:
+            if flag:
+                profile.roles.append(Role.Learner)
+            else:
+                profile.roles = [role for role in profile.roles if role != Role.Learner]
+
+            profile.roles = sorted(set(profile.roles))
 
     def draw(self, font_name: str, text: str) -> None:
         ...
