@@ -134,7 +134,7 @@ async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
     new_credit = api.as_chairman().honor(member.id, credit)
     old_credit = new_credit - credit
 
-    queue_rename(member.id)
+    queue_member_update(member.id)
     await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
 
 
@@ -149,7 +149,7 @@ async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
     new_credit = api.as_chairman().dishonor(member.id, credit)
     old_credit = new_credit + credit
 
-    queue_rename(member.id)
+    queue_member_update(member.id)
     await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
 
 
@@ -181,7 +181,7 @@ async def cmd_name(ctx, name: str):
     profile = api.as_chairman().get_profile(member.id)
     assert profile is not None
 
-    queue_rename(member.id)
+    queue_member_update(member.id)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
@@ -216,7 +216,7 @@ async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
 
     profile = api.as_chairman().get_profile(member.id)
     assert profile is not None
-    queue_rename(member.id)
+    queue_member_update(member.id)
     await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
@@ -352,7 +352,7 @@ async def on_reaction_add(reaction, user):
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
         credit = api.as_chairman().honor(user_to_credit.id, 1)
-        queue_rename(user_to_credit.id)
+        queue_member_update(user_to_credit.id)
         logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
 
@@ -362,7 +362,7 @@ async def on_reaction_remove(reaction, user):
     if user_to_credit != user:
         target_username = member_to_username(user_to_credit)
         credit = api.as_chairman().dishonor(user_to_credit.id, 1)
-        queue_rename(user_to_credit.id)
+        queue_member_update(user_to_credit.id)
         logger.info(f'User reaction removed from {user_to_credit}: {credit}')
 
 
@@ -424,8 +424,8 @@ async def on_ready():
     await init_invites()
 
     loop_dmtthread.start()
-    loop_socialcreditrename.start()
-    loop_fullsocialcreditrename.start()
+    loop_incremental_member_update.start()
+    loop_full_member_update.start()
 
 
 @client.event
@@ -466,20 +466,64 @@ async def loop_dmtthread():
 
 
 ################################################################################
-# Profile renaming
+# Member Update Queue
 ################################################################################
 
-def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[discord.Member]:
-    for member in client.guilds[0].members:
-        if member.id == profile.user_id:
-            return member
-    return None
+
+member_update_queue = set()
 
 
-async def update_member_nick(profile: Profile):
+def queue_member_update(user_id: UserId) -> None:
+    member_update_queue.add(user_id)
+
+
+def flush_member_update_queue() -> t.List[UserId]:
+    user_ids = list(member_update_queue)
+    member_update_queue.clear()
+    return user_ids
+
+
+################################################################################
+# Member Update
+################################################################################
+
+
+@tasks.loop(seconds=1)
+async def loop_incremental_member_update():
+    await incremental_member_update()
+
+
+@tasks.loop(hours=24)
+async def loop_full_member_update():
+    await full_member_update()
+
+
+async def incremental_member_update() -> None:
+    for user_id in flush_member_update_queue():
+        profile = api.as_chairman().get_profile(user_id)
+        await update_member_nick(profile)
+        await asyncio.sleep(1)
+
+
+async def full_member_update() -> None:
+    profiles = api.as_chairman().get_all_profiles()
+    for profile in profiles:
+        await update_member_nick(profile)
+        await asyncio.sleep(1)
+
+
+################################################################################
+# Member Renaming
+################################################################################
+
+
+async def update_member_nick(profile: Profile) -> None:
     guild = client.guilds[0]
     member = profile_to_member(guild, profile)
     if member is None:
+        return
+
+    if member.bot:
         return
 
     username = member_to_username(member)
@@ -493,52 +537,20 @@ async def update_member_nick(profile: Profile):
     if new_nick == member.nick:
         return
 
-    if member.bot:
-        return
-
     logger.info(f'Rename {member.nick} -> {new_nick}')
     await member.edit(nick=new_nick)
-    await asyncio.sleep(1)
-
-
-rename_queue = set()
-
-
-def queue_rename(user_id: UserId) -> None:
-    rename_queue.add(user_id)
-
-
-def flush_rename_queue() -> t.List[UserId]:
-    user_ids = list(rename_queue)
-    rename_queue.clear()
-    return user_ids
-
-
-@tasks.loop(seconds=1)
-async def loop_socialcreditrename():
-    await incremental_rename()
-
-
-@tasks.loop(hours=24)
-async def loop_fullsocialcreditrename():
-    await full_rename()
-
-
-async def incremental_rename() -> None:
-    for user_id in flush_rename_queue():
-        profile = api.as_chairman().get_profile(user_id)
-        await update_member_nick(profile)
-
-
-async def full_rename() -> None:
-    profiles = api.as_chairman().get_all_profiles()
-    for profile in profiles:
-        await update_member_nick(profile)
 
 
 ################################################################################
 # Utils
 ################################################################################
+
+
+def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[discord.Member]:
+    for member in client.guilds[0].members:
+        if member.id == profile.user_id:
+            return member
+    return None
 
 
 def member_to_username(member) -> str:
