@@ -574,7 +574,11 @@ async def update_member_nick(guild: discord.Guild, profile: Profile) -> None:
     if profile.is_jailed():
         new_nick = add_label_to_nick(profile.display_name, "JAILED")
     else:
-        new_nick = add_label_to_nick(profile.display_name, str(profile.credit))
+        label = f' [{profile.credit}]'
+        if profile.is_learner():
+            label += '✍'
+
+        new_nick = add_label_to_nick(profile.display_name, label)
 
     if new_nick == member.nick:
         return
@@ -635,9 +639,8 @@ def nonroles_for(guild: discord.Guild, profile: Profile) -> t.Set[Role]:
 
 
 def add_label_to_nick(display_name: str, label: str) -> str:
-    label_str = f' [{label}]'
-    cutoff = 32 - len(label_str)
-    return display_name[:cutoff] + label_str
+    cutoff = 32 - len(label)
+    return display_name[:cutoff] + label
 
 
 def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[discord.Member]:
