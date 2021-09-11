@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import jwt
 import pymongo
 
-from chairmanmao.types import Profile
+from chairmanmao.types import Profile, Role
 from chairmanmao.profile import get_profile, create_profile, get_all_profiles, open_profile, get_user_id
 
 from chairmanmao.hanzi import get_seen_hanzi
@@ -94,6 +94,14 @@ class ChairmanApi:
             user_ids.append(profile.user_id)
         return user_ids
 
+    def promote(self, user_id: UserId) -> None:
+        with open_profile(self.db, user_id) as profile:
+            if Role.Party not in profile.roles:
+                profile.roles.append(Role.Party)
+                profile.roles.sort()
+            else:
+                raise Exception("Already a party member")
+
 
 @dataclass
 class PartyApi:
@@ -103,8 +111,27 @@ class PartyApi:
     def recognize(self, user_id: UserId, discord_username: str):
         create_profile(self.db, user_id, discord_username)
 
+    def jail(self, user_id: UserId) -> None:
+        with open_profile(self.db, user_id) as profile:
+            if Role.Jailed not in profile.roles:
+                profile.roles.append(Role.Jailed)
+                profile.roles.sort()
+            else:
+                raise Exception("Already jailed")
+
+    def unjail(self, user_id: UserId) -> None:
+        with open_profile(self.db, user_id) as profile:
+            if Role.Jailed in profile.roles:
+                profile.roles = sorted(role for role in profile.roles if role != Role.Jailed)
+            else:
+                raise Exception("Not jailed")
+
     def stepdown(self) -> None:
-        ...
+        with open_profile(self.db, self.user_id) as profile:
+            if Role.Party in profile.roles:
+                profile.roles = sorted(role for role in profile.roles if role != Role.Party)
+            else:
+                raise Exception("Not a party member")
 
 
 @dataclass

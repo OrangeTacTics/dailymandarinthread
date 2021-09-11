@@ -23,11 +23,21 @@ class Profile:
     hanzi: t.List[str]
     mined_words: t.List[str]
 
+    def is_jailed(self) -> bool:
+        return Role.Jailed in self.roles
+
+    def is_party(self) -> bool:
+        return Role.Party in self.roles
+
+    def is_learner(self) -> bool:
+        return Role.Learner in self.roles
+
 
 class Role(Enum):
     Comrade = "Comrade"
     Party = "Party"
     Learner = "Learner"
+    Jailed = "Jailed"
 
     @staticmethod
     def from_str(role_name: str) -> Role:
@@ -35,6 +45,10 @@ class Role(Enum):
             if role.value == role_name:
                 return role
         raise ValueError(f'{role_name} is not a valid Role.')
+
+    def __lt__(self, other: object) -> bool:
+        assert isinstance(other, Role)
+        return self.value < other.value
 
 
 UserId = int

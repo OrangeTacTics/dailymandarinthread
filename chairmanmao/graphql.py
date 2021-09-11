@@ -18,8 +18,8 @@ ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
 class Role(g.Enum):
     Comrade = "Comrade"
     PartyMember = "PartyMember"
-    Chairman = "Chairman"
     Learner = "Learner"
+    Jailed = "Jailed"
 
 
 class Profile(g.ObjectType):

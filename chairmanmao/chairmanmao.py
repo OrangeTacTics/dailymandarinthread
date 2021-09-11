@@ -104,9 +104,26 @@ async def cmd_socialcredit(ctx, member: commands.MemberConverter = None):
 @client.command(name='stepdown', help="Remove 共产党员 role.")
 @commands.has_role('共产党员')
 async def  cmd_stepdown(ctx):
-    ccp_role = discord.utils.get(ctx.guild.roles, name="共产党员")
-    await ctx.author.remove_roles(ccp_role)
+    api.as_party(ctx.author.id).stepdown()
+    queue_member_update(ctx.author.id)
     await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
+
+
+@client.command(name='promote')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def  cmd_promote(ctx, member: commands.MemberConverter, flag: t.Optional[bool] = None):
+    api.as_chairman().promote(member.id)
+    queue_member_update(member.id)
+    await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
+
+
+@client.command(name='sync')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def  cmd_sync(ctx, member: commands.MemberConverter):
+    queue_member_update(member.id)
+    await ctx.send('Sync complete')
 
 
 @client.command(name='recognize', help="Remove 共产党员 role.")
@@ -119,8 +136,26 @@ async def cmd_recognize(ctx, member: commands.MemberConverter):
 
     api.as_party(ctx.author.id).recognize(member.id, username)
 
-    await member.add_roles(comrade_role)
+    queue_member_update(member.id)
     await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
+
+
+@client.command(name='jail')
+@commands.has_role('共产党员')
+async def cmd_jail(ctx, member: commands.MemberConverter):
+    api.as_party(ctx.author.id).jail(member.id)
+    username = member_to_username(member)
+    queue_member_update(member.id)
+    await ctx.send(f'{ctx.author.display_name} has jailed Comrade {username}.')
+
+
+@client.command(name='unjail')
+@commands.has_role('共产党员')
+async def cmd_unjail(ctx, member: commands.MemberConverter):
+    api.as_party(ctx.author.id).unjail(member.id)
+    username = member_to_username(member)
+    queue_member_update(member.id)
+    await ctx.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
 
 
 @client.command(name='honor', help="Add social credit to a user.")
@@ -490,25 +525,29 @@ def flush_member_update_queue() -> t.List[UserId]:
 
 @tasks.loop(seconds=1)
 async def loop_incremental_member_update():
-    await incremental_member_update()
+    guild = client.guilds[0]
+    await incremental_member_update(guild)
 
 
 @tasks.loop(hours=24)
 async def loop_full_member_update():
-    await full_member_update()
+    guild = client.guilds[0]
+    await full_member_update(guild)
 
 
-async def incremental_member_update() -> None:
+async def incremental_member_update(guild: discord.Guild) -> None:
     for user_id in flush_member_update_queue():
         profile = api.as_chairman().get_profile(user_id)
-        await update_member_nick(profile)
-        await asyncio.sleep(1)
+        await update_member_nick(guild, profile)
+        await asyncio.sleep(0.5)
+        await update_member_roles(guild, profile)
+        await asyncio.sleep(0.5)
 
 
-async def full_member_update() -> None:
+async def full_member_update(guild: discord.Guild) -> None:
     profiles = api.as_chairman().get_all_profiles()
     for profile in profiles:
-        await update_member_nick(profile)
+        await update_member_nick(guild, profile)
         await asyncio.sleep(1)
 
 
@@ -517,8 +556,7 @@ async def full_member_update() -> None:
 ################################################################################
 
 
-async def update_member_nick(profile: Profile) -> None:
-    guild = client.guilds[0]
+async def update_member_nick(guild: discord.Guild, profile: Profile) -> None:
     member = profile_to_member(guild, profile)
     if member is None:
         return
@@ -530,9 +568,10 @@ async def update_member_nick(profile: Profile) -> None:
     if username == ADMIN_USERNAME:
         return
 
-    credit_str = f' [{profile.credit}]'
-    cutoff = 32 - len(credit_str)
-    new_nick = profile.display_name[:cutoff] + credit_str
+    if profile.is_jailed():
+        new_nick = add_label_to_nick(profile.display_name, "JAILED")
+    else:
+        new_nick = add_label_to_nick(profile.display_name, str(profile.credit))
 
     if new_nick == member.nick:
         return
@@ -542,8 +581,41 @@ async def update_member_nick(profile: Profile) -> None:
 
 
 ################################################################################
+# Member Rolesetting
+################################################################################
+
+
+async def update_member_roles(guild: discord.Guild, profile: Profile) -> None:
+    member = profile_to_member(guild, profile)
+    if member is None:
+        return
+
+    comrade_role = discord.utils.get(guild.roles, name='同志')
+    ccp_role     = discord.utils.get(guild.roles, name="共产党员")
+    jailed_role  = discord.utils.get(guild.roles, name="JAILED")
+
+    if profile.is_jailed():
+        await member.remove_roles(comrade_role, ccp_role)
+        await member.add_roles(jailed_role)
+
+    elif profile.is_party():
+        await member.remove_roles(jailed_role)
+        await member.add_roles(comrade_role, ccp_role)
+
+    else:
+        await member.remove_roles(jailed_role, ccp_role)
+        await member.add_roles(comrade_role)
+
+
+################################################################################
 # Utils
 ################################################################################
+
+
+def add_label_to_nick(display_name: str, label: str) -> str:
+    label_str = f' [{label}]'
+    cutoff = 32 - len(label_str)
+    return display_name[:cutoff] + label_str
 
 
 def profile_to_member(guild: discord.Guild, profile: Profile) -> t.Optional[discord.Member]:
