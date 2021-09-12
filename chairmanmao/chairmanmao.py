@@ -103,6 +103,23 @@ async def cmd_socialcredit(ctx, member: commands.MemberConverter = None):
     await ctx.send(f'{target_username} has a credit score of {credit}.')
 
 
+@client.command(name='hsk', help='See your HSK rank.')
+@commands.has_role('同志')
+async def cmd_hsk(ctx, member: commands.MemberConverter = None):
+    if member is not None:
+        target_member = member
+    else:
+        target_member = ctx.author
+
+    target_username = member_to_username(target_member)
+    hsk_level = api.as_chairman().get_hsk(target_member.id)
+
+    if hsk_level is None:
+        await ctx.send(f'{target_username} is unranked.')
+    else:
+        await ctx.send(f'{target_username} has reached HSK {hsk_level}.')
+
+
 @client.command(name='stepdown', help="Remove 共产党员 role.")
 @commands.has_role('共产党员')
 async def  cmd_stepdown(ctx):
