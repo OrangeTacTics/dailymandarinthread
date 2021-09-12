@@ -7,10 +7,13 @@ import typing as t
 from datetime import datetime, timezone
 from pathlib import Path
 import logging
+import re
+import json
 
 import discord
 from discord.ext import commands, tasks
 
+import httpx
 import os
 import pymongo
 from dotenv import load_dotenv
@@ -65,6 +68,7 @@ MONGODB_DB = os.getenv('MONGODB_DB', '')
 
 ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '')
 BOT_USERNAME = os.getenv('BOT_USERNAME', '')
+MEMBER_ID_KOTOBA = int(os.getenv('MEMBER_ID_KOTOBA', ''))
 
 mongo_client = pymongo.MongoClient(MONGODB_URL)
 db = mongo_client[MONGODB_DB]
@@ -357,7 +361,127 @@ async def on_message(message):
             hanzis = hanzis_in(message.content)
             api.as_comrade(message.author.id).see_hanzis(hanzis)
 
+    if message.author.bot and message.author.id == MEMBER_ID_KOTOBA:
+        await handle_kotoba(message)
+
     await client.process_commands(message)
+
+
+@dataclass
+class QuizResults:
+    user_id: UserId
+    quiz_name: str
+    quiz_id: str
+
+
+async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResult]:
+    fields = {}
+
+    for embed in message.embeds:
+        for field in embed.fields:
+            fields[field.name] = field.value
+
+    if 'Final Scores' in fields:
+        final_score = fields['Final Scores']
+        assert final_score.startswith('<@')
+        assert '>' in final_score
+        idx = final_score.index('>')
+        user_id = int(final_score[2:idx])
+
+        game_report = fields['Game Report']
+        quiz_id = re.search(r'game_reports/([a-f0-9]+)\)', game_report).group(1)
+
+        url = f"https://kotobaweb.com/api/game_reports/{quiz_id}"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            response_json = response.json()
+            print(json.dumps(response_json, indent=4, ensure_ascii=False))
+
+        settings_json = response_json['settings']
+        if not allowable_settings(settings_json):
+            return None
+
+        assert len(response_json['participants']) == 1
+        assert response_json['participants'][0]['discordUser']['id'] == str(user_id)
+        assert len(response_json['scores']) == 1
+        assert len(response_json['decks']) == 1
+
+        deck = response_json['decks'][0]
+
+        assert deck['uniqueId'] == "bba20c1c-d145-4f1e-8d6b-1255f7b3e1fd"
+        quiz_name = deck['shortName']
+
+        question_count = len(response_json['questions'])
+        score = response_json['scores'][0]['score']
+        max_score = response_json['settings']['scoreLimit']
+
+        if score == question_count:
+            return QuizResults(
+                user_id=user_id,
+                quiz_name=quiz_name,
+                quiz_id=quiz_id
+            )
+        else:
+            return None
+
+    else:
+        return None
+
+
+def allowable_settings(settings_json: Json) -> bool:
+    return settings_json == json.loads('''
+        {
+            "scoreLimit": 1,
+            "unansweredQuestionLimit": 5,
+            "answerTimeLimitInMs": 16000,
+            "newQuestionDelayAfterUnansweredInMs": 0,
+            "newQuestionDelayAfterAnsweredInMs": 0,
+            "additionalAnswerWaitTimeInMs": 0,
+            "fontSize": 92,
+            "fontColor": "rgb(0, 0, 0)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "font": "Noto Sans CJK",
+            "maxMissedQuestions": 1,
+            "shuffle": true,
+            "serverSettings": {
+                "bgColor": "rgb(255, 255, 255)",
+                "fontFamily": "Noto Sans CJK",
+                "color": "rgb(0, 0, 0)",
+                "size": 92,
+                "additionalAnswerWaitWindow": 2.1,
+                "answerTimeLimit": 16,
+                "conquestAndInfernoEnabled": true,
+                "internetDecksEnabled": true,
+                "delayAfterAnsweredQuestion": 2.2,
+                "delayAfterUnansweredQuestion": 3,
+                "scoreLimit": 10,
+                "unansweredQuestionLimit": 5,
+                "maxMissedQuestions": 0,
+                "shuffle": true
+            },
+            "inlineSettings": {
+                "delayAfterUnansweredQuestion": 0,
+                "delayAfterAnsweredQuestion": 0,
+                "additionalAnswerWaitWindow": 0,
+                "aliases": [
+                    "nodelay",
+                    "nd"
+                ],
+                "maxMissedQuestions": 1,
+                "scoreLimit": 1
+            }
+        }
+    ''')
+
+
+
+async def handle_kotoba(message):
+    quiz_results = await get_quiz_results(message)
+    if quiz_results is not None:
+
+        profile = api.as_chairman().get_profile(quiz_results.user_id)
+        await message.channel.send(f'{profile.discord_username} has passed the {quiz_results.quiz_name} quiz.')
 
 
 def hanzis_in(text: str) -> t.List[str]:
