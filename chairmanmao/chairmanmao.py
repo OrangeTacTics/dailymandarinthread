@@ -203,13 +203,23 @@ async def cmd_learner(ctx, flag: bool = True):
         await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
 
 
-#@client.command(name='quiz')
-#@commands.has_role("中文学习者")
-#async def cmd_quiz(ctx, level: int = 1):
-#    if level == 1:
-#        await ctx.send('k!quiz hsk1 1 nodelay mmq=1')
-#    else:
-#        await ctx.send('Please use a level between 1 and 6.')
+@client.command(name='quiz')
+@commands.has_role("中文学习者")
+async def cmd_quiz(ctx):
+    hsk_level = api.as_chairman().get_hsk(ctx.author.id)
+
+    if hsk_level is None:
+        aiming_for = 1
+    else:
+        aiming_for = hsk_level + 1
+
+    if hsk_level == 6:
+        msg = 'You are at the max HSK level.'
+    else:
+        num_questions = SCORE_LIMIT_BY_DECK.get(f'hsk{aiming_for}')
+        msg = f'For the next quiz, use:\n`k!quiz hsk{aiming_for} mmq=1 atl=10 {num_questions}`'
+
+    await ctx.send(msg)
 
 
 @client.command(name='name', help='Set your name.')
@@ -251,7 +261,6 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
 @commands.has_role('共产党员')
 @commands.is_owner()
 async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
-    username = member_to_username(ctx.author)
     target_username = member_to_username(member)
 
     try:
@@ -264,7 +273,27 @@ async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
     profile = api.as_chairman().get_profile(member.id)
     assert profile is not None
     queue_member_update(member.id)
-    await ctx.send(f"{username}'s nickname has been changed to {name}")
+    await ctx.send(f"{target_username}'s nickname has been changed to {name}")
+
+
+@client.command(name='setlearner')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def cmd_setlearner(ctx, member: commands.MemberConverter, flag: bool = True):
+    target_username = member_to_username(member)
+    api.as_comrade(member.id).set_learner(flag)
+    queue_member_update(member.id)
+    await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
+
+
+@client.command(name='sethsk')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def cmd_sethsk(ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
+    target_username = member_to_username(member)
+    api.as_chairman().set_hsk(member.id, hsk_level)
+    queue_member_update(member.id)
+    await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 
 
 @client.command(name='draw', help="Draw a simplified hanzi character.")
@@ -469,22 +498,21 @@ async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResults]:
         return None
 
 
-# k!quiz n4 nodelay atl=10 14 size=80 mmq=2
+SCORE_LIMIT_BY_DECK = {
+    'hsk1': 1,
+    'hsk2': 1,
+    'hsk3': 15,
+    'hsk4': 20,
+    'hsk5': 20,
+    'hsk6': 20,
+}
 
 
 def allowable_settings(deck_name: str, settings_json: Json) -> bool:
-    score_limit_by_deck = {
-        'hsk1': 1,
-        'hsk2': 1,
-        'hsk3': 15,
-        'hsk4': 20,
-        'hsk5': 20,
-        'hsk6': 20,
-    }
 
     required_settings = {
         'shuffle': True,
-        'scoreLimit': score_limit_by_deck[deck_name],
+        'scoreLimit': SCORE_LIMIT_BY_DECK[deck_name],
         'maxMissedQuestions': 1,
         'answerTimeLimitInMs': 10000,
 #        "fontSize": 80,
@@ -725,6 +753,19 @@ async def update_member_nick(guild: discord.Guild, profile: Profile) -> None:
         new_nick = add_label_to_nick(profile.display_name, "JAILED")
     else:
         label = f' [{profile.credit}]'
+
+        hsk_level = profile.hsk_level()
+        if hsk_level is not None:
+            hsk_label = {
+                1: '➀',
+                2: '➁',
+                3: '➂',
+                4: '➃',
+                5: '➄',
+                6: '➅',
+            }
+            label += ' HSK' + hsk_label[hsk_level]
+
         if profile.is_learner():
             label += '✍'
 
@@ -769,10 +810,10 @@ def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[discord.Role]:
     if profile.is_jailed():
         return {jailed_role}
     else:
+        roles = {comrade_role}
+
         if profile.is_party():
-            roles = {comrade_role, ccp_role}
-        else:
-            roles = {comrade_role}
+            roles.add(ccp_role)
 
         if profile.is_learner():
             roles.add(learner_role)
