@@ -727,25 +727,32 @@ async def loop_incremental_member_update():
 @tasks.loop(hours=24)
 async def loop_full_member_update():
     guild = client.guilds[0]
+    logger.info('Starting full member update')
     await full_member_update(guild)
+    logger.info('Full member update complete')
 
 
 async def incremental_member_update(guild: discord.Guild) -> None:
     for user_id in flush_member_update_queue():
         profile = api.as_chairman().get_profile(user_id)
-        await update_member_nick(guild, profile)
-        await asyncio.sleep(0.5)
-        await update_member_roles(guild, profile)
-        await asyncio.sleep(0.5)
+        did_update = await update_member_nick(guild, profile)
+        if did_update:
+            await asyncio.sleep(0.5)
+        did_update = await update_member_roles(guild, profile)
+        if did_update:
+            await asyncio.sleep(0.5)
 
 
 async def full_member_update(guild: discord.Guild) -> None:
-    profiles = api.as_chairman().get_all_profiles()
-    for profile in profiles:
-        await update_member_nick(guild, profile)
-        await asyncio.sleep(0.5)
-        await update_member_roles(guild, profile)
-        await asyncio.sleep(0.5)
+    user_ids = api.as_chairman().list_users()
+    for user_id in user_ids:
+        profile = api.as_chairman().get_profile(user_id)
+        did_update = await update_member_nick(guild, profile)
+        if did_update:
+            await asyncio.sleep(0.5)
+        did_update = await update_member_roles(guild, profile)
+        if did_update:
+            await asyncio.sleep(0.5)
 
 
 ################################################################################
@@ -753,17 +760,20 @@ async def full_member_update(guild: discord.Guild) -> None:
 ################################################################################
 
 
-async def update_member_nick(guild: discord.Guild, profile: Profile) -> None:
+async def update_member_nick(guild: discord.Guild, profile: Profile) -> bool:
+    '''
+        Return if nick updated.
+    '''
     member = profile_to_member(guild, profile)
     if member is None:
-        return
+        return False
 
     if member.bot:
-        return
+        return False
 
     username = member_to_username(member)
     if username == ADMIN_USERNAME:
-        return
+        return False
 
     if profile.is_jailed():
         new_nick = add_label_to_nick(profile.display_name, "JAILED")
@@ -788,10 +798,11 @@ async def update_member_nick(guild: discord.Guild, profile: Profile) -> None:
         new_nick = add_label_to_nick(profile.display_name, label)
 
     if new_nick == member.nick:
-        return
+        return False
 
     logger.info(f'Rename {member.nick} -> {new_nick}')
     await member.edit(nick=new_nick)
+    return True
 
 
 ################################################################################
@@ -799,16 +810,29 @@ async def update_member_nick(guild: discord.Guild, profile: Profile) -> None:
 ################################################################################
 
 
-async def update_member_roles(guild: discord.Guild, profile: Profile) -> None:
+async def update_member_roles(guild: discord.Guild, profile: Profile) -> bool:
+    '''
+        Return if roles updated.
+    '''
     member = profile_to_member(guild, profile)
     if member is None:
-        return
+        return False
 
-    roles = list(roles_for(guild, profile))
-    nonroles = list(nonroles_for(guild, profile))
+    current_roles = set(member.roles)
 
-    await member.add_roles(*roles)
-    await member.remove_roles(*nonroles)
+    roles_to_add = roles_for(guild, profile).difference(current_roles)
+    roles_to_remove = nonroles_for(guild, profile).intersection(current_roles)
+
+    if not roles_to_add and not roles_to_remove:
+        return False
+
+    await member.add_roles(*roles_to_add)
+    await member.remove_roles(*roles_to_remove)
+
+    added_roles = sorted(r.name for r in roles_to_add)
+    removed_roles = sorted(r.name for r in roles_to_remove)
+    logger.info(f'Updating roles: {member.nick}: add {added_roles}, remove {removed_roles}')
+    return True
 
 
 def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[discord.Role]:
