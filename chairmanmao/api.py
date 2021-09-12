@@ -51,7 +51,6 @@ class Api:
             db=self.db,
             user_id=user_id,
         )
-
     def as_comrade(self, user_id: UserId) -> ComradeApi:
         return ComradeApi(
             db=self.db,
@@ -101,6 +100,43 @@ class ChairmanApi:
                 profile.roles.sort()
             else:
                 raise Exception("Already a party member")
+
+    def get_hsk(self, user_id: UserId) -> t.Optional[int]:
+        level_by_role = {
+            Role.Hsk1: 1,
+            Role.Hsk2: 2,
+            Role.Hsk3: 3,
+            Role.Hsk4: 4,
+            Role.Hsk5: 5,
+            Role.Hsk6: 6,
+        }
+
+        profile = get_profile(self.db, user_id)
+        for role, level in level_by_role.items():
+            if role in profile.roles:
+                return level
+
+        return None
+
+    def set_hsk(self, user_id: UserId, hsk_level: t.Optional[int]) -> None:
+        role_by_level = {
+            1: Role.Hsk1,
+            2: Role.Hsk2,
+            3: Role.Hsk3,
+            4: Role.Hsk4,
+            5: Role.Hsk5,
+            6: Role.Hsk6,
+        }
+
+        with open_profile(self.db, user_id) as profile:
+            # Remove all roles
+            for role in role_by_level.values():
+                remove_role(profile, role)
+
+            if hsk_level is not None:
+                # Then add the right one
+                role_to_add = role_by_level[hsk_level]
+                add_role(profile, role_to_add)
 
 
 @dataclass
@@ -229,6 +265,37 @@ class ComradeApi:
     def alert_activity(self) -> None:
         with open_profile(self.db, self.user_id) as profile:
             profile.last_seen = datetime.now(timezone.utc).replace(microsecond=0)
+
+
+def add_role(profile: Profile, role: Role) -> bool:
+    '''
+        Returns whether the profile was changed.
+    '''
+    roles_set = set(profile.roles)
+    if not role in roles_set:
+        roles_set.add(role)
+        profile.roles = sorted(roles_set)
+        changed = True
+    else:
+        changed = False
+
+    return changed
+
+
+
+def remove_role(profile: Profile, role: Role) -> bool:
+    '''
+        Returns whether the profile was changed.
+    '''
+    roles_set = set(profile.roles)
+    if role in roles_set:
+        roles_set.remove(role)
+        profile.roles = sorted(roles_set)
+        changed = True
+    else:
+        changed = False
+
+    return changed
 
 
 def main():

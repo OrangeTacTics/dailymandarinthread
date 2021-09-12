@@ -22,9 +22,7 @@ from chairmanmao.filemanager import DoSpacesConfig, FileManager
 from chairmanmao.api import Api
 from chairmanmao.draw import DrawManager
 from chairmanmao.fourchan import FourChanManager
-
-if t.TYPE_CHECKING:
-    from chairmanmao.types import Profile, UserId, Json, Role
+from chairmanmao.types import Profile, UserId, Json, Role
 
 
 intents = discord.Intents.default()
@@ -205,6 +203,15 @@ async def cmd_learner(ctx, flag: bool = True):
         await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
 
 
+#@client.command(name='quiz')
+#@commands.has_role("中文学习者")
+#async def cmd_quiz(ctx, level: int = 1):
+#    if level == 1:
+#        await ctx.send('k!quiz hsk1 1 nodelay mmq=1')
+#    else:
+#        await ctx.send('Please use a level between 1 and 6.')
+
+
 @client.command(name='name', help='Set your name.')
 @commands.has_role('同志')
 async def cmd_name(ctx, name: str):
@@ -370,11 +377,11 @@ async def on_message(message):
 @dataclass
 class QuizResults:
     user_id: UserId
-    quiz_name: str
+    deck_name: str
     quiz_id: str
 
 
-async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResult]:
+async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResults]:
     fields = {}
 
     for embed in message.embeds:
@@ -389,39 +396,72 @@ async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResult]:
         user_id = int(final_score[2:idx])
 
         game_report = fields['Game Report']
-        quiz_id = re.search(r'game_reports/([a-f0-9]+)\)', game_report).group(1)
+        quiz_id = re.search(r'game_reports/([a-f0-9]+)\)', game_report).group(1)  # type: ignore
 
         url = f"https://kotobaweb.com/api/game_reports/{quiz_id}"
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
-            response_json = response.json()
-            print(json.dumps(response_json, indent=4, ensure_ascii=False))
+            kotoba_json = response.json()
 
-        settings_json = response_json['settings']
-        if not allowable_settings(settings_json):
+        if len(kotoba_json['decks']) != 1:
             return None
 
-        assert len(response_json['participants']) == 1
-        assert response_json['participants'][0]['discordUser']['id'] == str(user_id)
-        assert len(response_json['scores']) == 1
-        assert len(response_json['decks']) == 1
+        deck = kotoba_json['decks'][0]
 
-        deck = response_json['decks'][0]
+        deck_unique_id = deck['uniqueId']
+        deck_start_index = deck.get('startIndex')
+        deck_end_index = deck.get('endIndex')
+        deck_mc = deck['mc']
 
-        assert deck['uniqueId'] == "bba20c1c-d145-4f1e-8d6b-1255f7b3e1fd"
-        quiz_name = deck['shortName']
+        allowed_decks = {
+            'bba20c1c-d145-4f1e-8d6b-1255f7b3e1fd': 'hsk1',
+            '9ec40e85-c286-409a-9345-f904e642a517': 'hsk2',
+            '3885e46e-c8c8-4f61-9f2e-4f3beafea7a5': 'hsk3',
+            'e4b6a777-9bc2-46ed-825d-dabb5259273a': 'hsk4',
+            'ebf64032-7959-4005-93c4-5276203c24ce': 'hsk5',
+            'eb7a83ed-d18a-4ab0-92cc-73b13546280b': 'hsk6',
+        }
 
-        question_count = len(response_json['questions'])
-        score = response_json['scores'][0]['score']
-        max_score = response_json['settings']['scoreLimit']
+        deck_name = allowed_decks.get(deck_unique_id)
+        if deck_name is None:
+            return None
+
+        settings_json = kotoba_json['settings']
+        if not allowable_settings(deck_name, settings_json):
+            return None
+
+        is_loaded = kotoba_json['isLoaded']
+
+        assert is_loaded is False
+        assert len(kotoba_json['participants']) == 1
+        assert kotoba_json['participants'][0]['discordUser']['id'] == str(user_id)
+        assert len(kotoba_json['scores']) == 1
+
+        assert deck_start_index is None
+        assert deck_end_index is None
+        assert deck_mc is False
+
+        question_count = len(kotoba_json['questions'])
+        score = kotoba_json['scores'][0]['score']
 
         if score == question_count:
-            return QuizResults(
-                user_id=user_id,
-                quiz_name=quiz_name,
-                quiz_id=quiz_id
-            )
+            hsk_level = int(deck_name[-1])
+
+            old_hsk_level = api.as_chairman().get_hsk(user_id)
+
+            if old_hsk_level is None or old_hsk_level < hsk_level:
+                api.as_chairman().set_hsk(user_id, hsk_level)
+                queue_member_update(user_id)
+
+                return QuizResults(
+                    user_id=user_id,
+                    deck_name=deck_name,
+                    quiz_id=quiz_id
+                )
+
+            else:
+                return None
         else:
             return None
 
@@ -429,51 +469,37 @@ async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResult]:
         return None
 
 
-def allowable_settings(settings_json: Json) -> bool:
-    return settings_json == json.loads('''
-        {
-            "scoreLimit": 1,
-            "unansweredQuestionLimit": 5,
-            "answerTimeLimitInMs": 16000,
-            "newQuestionDelayAfterUnansweredInMs": 0,
-            "newQuestionDelayAfterAnsweredInMs": 0,
-            "additionalAnswerWaitTimeInMs": 0,
-            "fontSize": 92,
-            "fontColor": "rgb(0, 0, 0)",
-            "backgroundColor": "rgb(255, 255, 255)",
-            "font": "Noto Sans CJK",
-            "maxMissedQuestions": 1,
-            "shuffle": true,
-            "serverSettings": {
-                "bgColor": "rgb(255, 255, 255)",
-                "fontFamily": "Noto Sans CJK",
-                "color": "rgb(0, 0, 0)",
-                "size": 92,
-                "additionalAnswerWaitWindow": 2.1,
-                "answerTimeLimit": 16,
-                "conquestAndInfernoEnabled": true,
-                "internetDecksEnabled": true,
-                "delayAfterAnsweredQuestion": 2.2,
-                "delayAfterUnansweredQuestion": 3,
-                "scoreLimit": 10,
-                "unansweredQuestionLimit": 5,
-                "maxMissedQuestions": 0,
-                "shuffle": true
-            },
-            "inlineSettings": {
-                "delayAfterUnansweredQuestion": 0,
-                "delayAfterAnsweredQuestion": 0,
-                "additionalAnswerWaitWindow": 0,
-                "aliases": [
-                    "nodelay",
-                    "nd"
-                ],
-                "maxMissedQuestions": 1,
-                "scoreLimit": 1
-            }
-        }
-    ''')
+# k!quiz n4 nodelay atl=10 14 size=80 mmq=2
 
+
+def allowable_settings(deck_name: str, settings_json: Json) -> bool:
+    score_limit_by_deck = {
+        'hsk1': 1,
+        'hsk2': 1,
+        'hsk3': 15,
+        'hsk4': 20,
+        'hsk5': 20,
+        'hsk6': 20,
+    }
+
+    required_settings = {
+        'shuffle': True,
+        'scoreLimit': score_limit_by_deck[deck_name],
+        'maxMissedQuestions': 1,
+        'answerTimeLimitInMs': 10000,
+#        "fontSize": 80,
+        "fontColor": "rgb(0, 0, 0)",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "font": "Noto Sans CJK",
+    }
+
+    for setting_name, required_value in required_settings.items():
+        actual_value = settings_json[setting_name]
+        if actual_value != required_value:
+            print('bad setting:', setting_name, 'has value', actual_value, 'but needs to be', required_value)
+            return False
+
+    return True
 
 
 async def handle_kotoba(message):
@@ -481,7 +507,7 @@ async def handle_kotoba(message):
     if quiz_results is not None:
 
         profile = api.as_chairman().get_profile(quiz_results.user_id)
-        await message.channel.send(f'{profile.discord_username} has passed the {quiz_results.quiz_name} quiz.')
+        await message.channel.send(f'{profile.discord_username} has passed the {quiz_results.deck_name} quiz.')
 
 
 def hanzis_in(text: str) -> t.List[str]:
@@ -728,11 +754,17 @@ async def update_member_roles(guild: discord.Guild, profile: Profile) -> None:
     await member.remove_roles(*nonroles)
 
 
-def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[Role]:
+def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[discord.Role]:
     comrade_role = discord.utils.get(guild.roles, name='同志')
     ccp_role     = discord.utils.get(guild.roles, name="共产党员")
     jailed_role  = discord.utils.get(guild.roles, name="JAILED")
     learner_role = discord.utils.get(guild.roles, name="中文学习者")
+    hsk1         = discord.utils.get(guild.roles, name="HSK1")
+    hsk2         = discord.utils.get(guild.roles, name="HSK2")
+    hsk3         = discord.utils.get(guild.roles, name="HSK3")
+    hsk4         = discord.utils.get(guild.roles, name="HSK4")
+    hsk5         = discord.utils.get(guild.roles, name="HSK5")
+    hsk6         = discord.utils.get(guild.roles, name="HSK6")
 
     if profile.is_jailed():
         return {jailed_role}
@@ -745,6 +777,20 @@ def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[Role]:
         if profile.is_learner():
             roles.add(learner_role)
 
+        dmt_hsk_role = profile.hsk_role()
+
+        if dmt_hsk_role is not None:
+            hsk_discord_role = {
+                Role.Hsk1: hsk1,
+                Role.Hsk2: hsk2,
+                Role.Hsk3: hsk3,
+                Role.Hsk4: hsk4,
+                Role.Hsk5: hsk5,
+                Role.Hsk6: hsk6,
+            }[dmt_hsk_role]
+
+            roles.add(hsk_discord_role)
+
         return roles
 
 
@@ -753,7 +799,13 @@ def nonroles_for(guild: discord.Guild, profile: Profile) -> t.Set[Role]:
     ccp_role     = discord.utils.get(guild.roles, name="共产党员")
     jailed_role  = discord.utils.get(guild.roles, name="JAILED")
     learner_role = discord.utils.get(guild.roles, name="中文学习者")
-    all_roles = {comrade_role, ccp_role, jailed_role, learner_role}
+    hsk1         = discord.utils.get(guild.roles, name="HSK1")
+    hsk2         = discord.utils.get(guild.roles, name="HSK2")
+    hsk3         = discord.utils.get(guild.roles, name="HSK3")
+    hsk4         = discord.utils.get(guild.roles, name="HSK4")
+    hsk5         = discord.utils.get(guild.roles, name="HSK5")
+    hsk6         = discord.utils.get(guild.roles, name="HSK6")
+    all_roles = {comrade_role, ccp_role, jailed_role, learner_role, hsk1, hsk2, hsk3, hsk4, hsk5, hsk6}
     return all_roles.difference(roles_for(guild, profile))
 
 
