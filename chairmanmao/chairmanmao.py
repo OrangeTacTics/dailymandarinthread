@@ -605,7 +605,6 @@ async def on_voice_state_update(member, before, after):
     if after.channel == voice_channel:
         await member.add_roles(voice_role)
     elif after.channel is None:
-        await asyncio.sleep(30)
         await member.remove_roles(voice_role)
 
 
