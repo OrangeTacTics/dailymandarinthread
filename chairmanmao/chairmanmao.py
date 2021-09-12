@@ -518,10 +518,10 @@ async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResults]:
 SCORE_LIMIT_BY_DECK = {
     'hsk1': 1,
     'hsk2': 1,
-    'hsk3': 15,
-    'hsk4': 20,
-    'hsk5': 20,
-    'hsk6': 20,
+    'hsk3': 5,
+    'hsk4': 5,
+    'hsk5': 5,
+    'hsk6': 7,
 }
 
 
