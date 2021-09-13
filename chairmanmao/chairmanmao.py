@@ -85,7 +85,7 @@ fourchan_manager = FourChanManager(file_manager)
 
 
 ################################################################################
-# Commands
+# Comrade Commands
 ################################################################################
 
 
@@ -117,93 +117,6 @@ async def cmd_hsk(ctx, member: commands.MemberConverter = None):
         await ctx.send(f'{target_username} is unranked.')
     else:
         await ctx.send(f'{target_username} has reached HSK {hsk_level}.')
-
-
-@client.command(name='stepdown', help="Remove 共产党员 role.")
-@commands.has_role('共产党员')
-async def  cmd_stepdown(ctx):
-    api.as_party(ctx.author.id).stepdown()
-    queue_member_update(ctx.author.id)
-    await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
-
-
-@client.command(name='promote')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def  cmd_promote(ctx, member: commands.MemberConverter, flag: t.Optional[bool] = None):
-    api.as_chairman().promote(member.id)
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
-
-
-@client.command(name='sync')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def  cmd_sync(ctx, member: commands.MemberConverter):
-    queue_member_update(member.id)
-    await ctx.send('Sync complete')
-
-
-@client.command(name='recognize', help="Remove 共产党员 role.")
-@commands.has_role('共产党员')
-async def cmd_recognize(ctx, member: commands.MemberConverter):
-    message = ctx.message
-    comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
-    username = member_to_username(member)
-    assert comrade_role not in member.roles, 'Member is already a 同志.'
-
-    api.as_party(ctx.author.id).recognize(member.id, username)
-
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
-
-
-@client.command(name='jail')
-@commands.has_role('共产党员')
-async def cmd_jail(ctx, member: commands.MemberConverter):
-    api.as_party(ctx.author.id).jail(member.id)
-    username = member_to_username(member)
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has jailed Comrade {username}.')
-
-
-@client.command(name='unjail')
-@commands.has_role('共产党员')
-async def cmd_unjail(ctx, member: commands.MemberConverter):
-    api.as_party(ctx.author.id).unjail(member.id)
-    username = member_to_username(member)
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
-
-
-@client.command(name='honor', help="Add social credit to a user.")
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
-    assert credit > 0
-
-    username = member_to_username(ctx.author)
-    target_username = member_to_username(member)
-    new_credit = api.as_chairman().honor(member.id, credit)
-    old_credit = new_credit - credit
-
-    queue_member_update(member.id)
-    await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
-
-
-@client.command(name='dishonor', help="Remove social credit from a user.")
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
-    assert credit > 0
-
-    username = member_to_username(ctx.author)
-    target_username = member_to_username(member)
-    new_credit = api.as_chairman().dishonor(member.id, credit)
-    old_credit = new_credit + credit
-
-    queue_member_update(member.id)
-    await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
 
 
 @client.command(name='learner', help='Add or remove 中文学习者 role.')
@@ -272,45 +185,6 @@ async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
     hanzi_str = ' '.join(hanzi)
     num_hanzi = len(hanzi)
     await ctx.send(f'{target_username} has {num_hanzi} hanzi: {hanzi_str}')
-
-
-@client.command(name='setname', help="Sets the name of another user.")
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
-    target_username = member_to_username(member)
-
-    try:
-        api.as_chairman().set_name(member.id, name)
-    except:
-#        await ctx.send("Names are 32 character max.")
-#        return
-        raise
-
-    profile = api.as_chairman().get_profile(member.id)
-    assert profile is not None
-    queue_member_update(member.id)
-    await ctx.send(f"{target_username}'s nickname has been changed to {name}")
-
-
-@client.command(name='setlearner')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_setlearner(ctx, member: commands.MemberConverter, flag: bool = True):
-    target_username = member_to_username(member)
-    api.as_comrade(member.id).set_learner(flag)
-    queue_member_update(member.id)
-    await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
-
-
-@client.command(name='sethsk')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_sethsk(ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
-    target_username = member_to_username(member)
-    api.as_chairman().set_hsk(member.id, hsk_level)
-    queue_member_update(member.id)
-    await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 
 
 @client.command(name='draw', help="Draw a simplified hanzi character.")
@@ -390,6 +264,142 @@ async def cmd_mine(ctx, word: str):
     api.as_comrade(ctx.author.id).mine(word)
 
     await ctx.send(f'{username} has mined: {word}')
+
+
+################################################################################
+# Party Commands
+################################################################################
+
+
+@client.command(name='stepdown', help="Remove 共产党员 role.")
+@commands.has_role('共产党员')
+async def  cmd_stepdown(ctx):
+    api.as_party(ctx.author.id).stepdown()
+    queue_member_update(ctx.author.id)
+    await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
+
+
+@client.command(name='promote')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def  cmd_promote(ctx, member: commands.MemberConverter, flag: t.Optional[bool] = None):
+    api.as_chairman().promote(member.id)
+    queue_member_update(member.id)
+    await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
+
+
+@client.command(name='recognize', help="Remove 共产党员 role.")
+@commands.has_role('共产党员')
+async def cmd_recognize(ctx, member: commands.MemberConverter):
+    message = ctx.message
+    comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
+    username = member_to_username(member)
+    assert comrade_role not in member.roles, 'Member is already a 同志.'
+
+    api.as_party(ctx.author.id).recognize(member.id, username)
+
+    queue_member_update(member.id)
+    await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
+
+
+@client.command(name='jail')
+@commands.has_role('共产党员')
+async def cmd_jail(ctx, member: commands.MemberConverter):
+    api.as_party(ctx.author.id).jail(member.id)
+    username = member_to_username(member)
+    queue_member_update(member.id)
+    await ctx.send(f'{ctx.author.display_name} has jailed Comrade {username}.')
+
+
+@client.command(name='unjail')
+@commands.has_role('共产党员')
+async def cmd_unjail(ctx, member: commands.MemberConverter):
+    api.as_party(ctx.author.id).unjail(member.id)
+    username = member_to_username(member)
+    queue_member_update(member.id)
+    await ctx.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
+
+
+################################################################################
+# Owner Commands
+################################################################################
+
+
+@client.command(name='sync')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def  cmd_sync(ctx, member: commands.MemberConverter):
+    queue_member_update(member.id)
+    await ctx.send('Sync complete')
+
+
+@client.command(name='honor', help="Add social credit to a user.")
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
+    assert credit > 0
+
+    username = member_to_username(ctx.author)
+    target_username = member_to_username(member)
+    new_credit = api.as_chairman().honor(member.id, credit)
+    old_credit = new_credit - credit
+
+    queue_member_update(member.id)
+    await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
+
+
+@client.command(name='dishonor', help="Remove social credit from a user.")
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
+    assert credit > 0
+
+    username = member_to_username(ctx.author)
+    target_username = member_to_username(member)
+    new_credit = api.as_chairman().dishonor(member.id, credit)
+    old_credit = new_credit + credit
+
+    queue_member_update(member.id)
+    await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
+
+
+@client.command(name='setname', help="Sets the name of another user.")
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
+    target_username = member_to_username(member)
+
+    try:
+        api.as_chairman().set_name(member.id, name)
+    except:
+#        await ctx.send("Names are 32 character max.")
+#        return
+        raise
+
+    profile = api.as_chairman().get_profile(member.id)
+    assert profile is not None
+    queue_member_update(member.id)
+    await ctx.send(f"{target_username}'s nickname has been changed to {name}")
+
+
+@client.command(name='setlearner')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def cmd_setlearner(ctx, member: commands.MemberConverter, flag: bool = True):
+    target_username = member_to_username(member)
+    api.as_comrade(member.id).set_learner(flag)
+    queue_member_update(member.id)
+    await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
+
+
+@client.command(name='sethsk')
+@commands.has_role('共产党员')
+@commands.is_owner()
+async def cmd_sethsk(ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
+    target_username = member_to_username(member)
+    api.as_chairman().set_hsk(member.id, hsk_level)
+    queue_member_update(member.id)
+    await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 
 
 @client.command(name='debug')
