@@ -230,11 +230,12 @@ async def cmd_quiz(ctx):
     else:
         aiming_for = hsk_level + 1
 
-    if hsk_level == 6:
-        msg = 'You are at the max HSK level.'
+    if aiming_for > 2:
+        # msg = 'You are at the max HSK level.'
+        msg = 'Currently, only HSK 1 and 2 quizzes are available.'
     else:
-        num_questions = SCORE_LIMIT_BY_DECK.get(f'hsk{aiming_for}')
-        msg = f'For the next quiz, use:\n`k!quiz hsk{aiming_for} mmq=1 atl=10 {num_questions}`'
+        num_questions = SCORE_LIMIT_BY_DECK.get(f'dmt_hsk{aiming_for}')
+        msg = f'For the next quiz, use:\n`k!quiz dmt_hsk{aiming_for} mmq=1 atl=10 {num_questions}`'
 
     await ctx.send(msg)
 
@@ -461,12 +462,12 @@ async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResults]:
         deck_mc = deck['mc']
 
         allowed_decks = {
-            'bba20c1c-d145-4f1e-8d6b-1255f7b3e1fd': 'hsk1',
-            '9ec40e85-c286-409a-9345-f904e642a517': 'hsk2',
-            '3885e46e-c8c8-4f61-9f2e-4f3beafea7a5': 'hsk3',
-            'e4b6a777-9bc2-46ed-825d-dabb5259273a': 'hsk4',
-            'ebf64032-7959-4005-93c4-5276203c24ce': 'hsk5',
-            'eb7a83ed-d18a-4ab0-92cc-73b13546280b': 'hsk6',
+            'd4bc0da0-8835-467c-a2c2-5d1d3991ae0f': 'dmt_hsk1',
+            'c102f308-3f1e-44cd-a15d-803de4f16d08': 'dmt_hsk2',
+#            '': 'dmt_hsk3',
+#            '': 'dmt_hsk4',
+#            '': 'dmt_hsk5',
+#            '': 'dmt_hsk6',
         }
 
         deck_name = allowed_decks.get(deck_unique_id)
@@ -516,17 +517,16 @@ async def get_quiz_results(message: discord.Message) -> t.Optional[QuizResults]:
 
 
 SCORE_LIMIT_BY_DECK = {
-    'hsk1': 1,
-    'hsk2': 1,
-    'hsk3': 5,
-    'hsk4': 5,
-    'hsk5': 5,
-    'hsk6': 7,
+    'dmt_hsk1': 10,
+    'dmt_hsk2': 15,
+    'dmt_hsk3': 20,
+    'dmt_hsk4': 20,
+    'dmt_hsk5': 25,
+    'dmt_hsk6': 30,
 }
 
 
 def allowable_settings(deck_name: str, settings_json: Json) -> bool:
-
     required_settings = {
         'shuffle': True,
         'scoreLimit': SCORE_LIMIT_BY_DECK[deck_name],
