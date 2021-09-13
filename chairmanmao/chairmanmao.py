@@ -220,9 +220,9 @@ async def cmd_learner(ctx, flag: bool = True):
         await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
 
 
-@client.command(name='quiz')
+@client.command(name='test')
 @commands.has_role("中文学习者")
-async def cmd_quiz(ctx):
+async def cmd_test(ctx):
     hsk_level = api.as_chairman().get_hsk(ctx.author.id)
 
     if hsk_level is None:
@@ -232,10 +232,10 @@ async def cmd_quiz(ctx):
 
     if aiming_for > 2:
         # msg = 'You are at the max HSK level.'
-        msg = 'Currently, only HSK 1 and 2 quizzes are available.'
+        msg = 'Currently, only HSK 1 and 2 tests are available.'
     else:
         num_questions = SCORE_LIMIT_BY_DECK.get(f'dmt_hsk{aiming_for}')
-        msg = f'For the next quiz, use:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
+        msg = f'For the next test, use:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
 
     await ctx.send(msg)
 
