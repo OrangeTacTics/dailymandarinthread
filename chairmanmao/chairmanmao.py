@@ -655,7 +655,7 @@ async def on_ready():
 
     loop_dmtthread.start()
     loop_incremental_member_update.start()
-    loop_full_member_update.start()
+    # loop_full_member_update.start()
 
 
 @client.event
