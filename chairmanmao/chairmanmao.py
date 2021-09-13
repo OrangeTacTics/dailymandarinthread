@@ -92,12 +92,11 @@ fourchan_manager = FourChanManager(file_manager)
 @client.command(name='socialcredit', help='See your social credit score.')
 @commands.has_role('同志')
 async def cmd_socialcredit(ctx, member: commands.MemberConverter = None):
-    username = member_to_username(ctx.author)
+    if member is None:
+        member = ctx.author
 
-    if member is not None:
-        target_username = member_to_username(member)
-    else:
-        target_username = username
+    username = member_to_username(ctx.author)
+    target_username = member_to_username(member)
 
     credit = api.as_comrade(ctx.author.id).social_credit(member.id)
     await ctx.send(f'{target_username} has a credit score of {credit}.')
