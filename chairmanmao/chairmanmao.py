@@ -785,7 +785,7 @@ async def update_member_nick(guild: discord.Guild, profile: Profile) -> bool:
         return False
 
     if profile.is_jailed():
-        new_nick = add_label_to_nick(profile.display_name, "JAILED")
+        new_nick = add_label_to_nick(profile.display_name, "【劳改】")
     else:
         label = f' [{profile.credit}]'
 
@@ -847,7 +847,7 @@ async def update_member_roles(guild: discord.Guild, profile: Profile) -> bool:
 def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[discord.Role]:
     comrade_role = discord.utils.get(guild.roles, name='同志')
     ccp_role     = discord.utils.get(guild.roles, name="共产党员")
-    jailed_role  = discord.utils.get(guild.roles, name="JAILED")
+    jailed_role  = discord.utils.get(guild.roles, name="劳改")
     learner_role = discord.utils.get(guild.roles, name="中文学习者")
     hsk1         = discord.utils.get(guild.roles, name="HSK1")
     hsk2         = discord.utils.get(guild.roles, name="HSK2")
@@ -887,7 +887,7 @@ def roles_for(guild: discord.Guild, profile: Profile) -> t.Set[discord.Role]:
 def nonroles_for(guild: discord.Guild, profile: Profile) -> t.Set[Role]:
     comrade_role = discord.utils.get(guild.roles, name='同志')
     ccp_role     = discord.utils.get(guild.roles, name="共产党员")
-    jailed_role  = discord.utils.get(guild.roles, name="JAILED")
+    jailed_role  = discord.utils.get(guild.roles, name="劳改")
     learner_role = discord.utils.get(guild.roles, name="中文学习者")
     hsk1         = discord.utils.get(guild.roles, name="HSK1")
     hsk2         = discord.utils.get(guild.roles, name="HSK2")
