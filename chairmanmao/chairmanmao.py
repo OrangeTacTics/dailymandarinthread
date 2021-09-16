@@ -279,15 +279,6 @@ async def  cmd_stepdown(ctx):
     await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
 
 
-@client.command(name='promote')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def  cmd_promote(ctx, member: commands.MemberConverter, flag: t.Optional[bool] = None):
-    api.as_chairman().promote(member.id)
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
-
-
 @client.command(name='recognize', help="Remove 共产党员 role.")
 @commands.has_role('共产党员')
 async def cmd_recognize(ctx, member: commands.MemberConverter):
@@ -325,92 +316,96 @@ async def cmd_unjail(ctx, member: commands.MemberConverter):
 ################################################################################
 
 
-@client.command(name='sync')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def  cmd_sync(ctx, member: commands.MemberConverter):
-    queue_member_update(member.id)
-    await ctx.send('Sync complete')
+class OwnerCog(commands.Cog):
+    @commands.command(name='debug')
+    @commands.has_role("共产党员")
+    @commands.is_owner()
+    async def cmd_debug(self, ctx):
+        breakpoint()
 
+    @commands.command(name='sync')
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def  cmd_sync(self, ctx, member: commands.MemberConverter):
+        queue_member_update(member.id)
+        await ctx.send('Sync complete')
 
-@client.command(name='honor', help="Add social credit to a user.")
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_honor(ctx, member: commands.MemberConverter, credit: int):
-    assert credit > 0
+    @commands.command(name='promote')
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def  cmd_promote(self, ctx, member: commands.MemberConverter, flag: t.Optional[bool] = None):
+        api.as_chairman().promote(member.id)
+        queue_member_update(member.id)
+        await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
 
-    username = member_to_username(ctx.author)
-    target_username = member_to_username(member)
-    new_credit = api.as_chairman().honor(member.id, credit)
-    old_credit = new_credit - credit
+    @commands.command(name='honor', help="Add social credit to a user.")
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def cmd_honor(self, ctx, member: commands.MemberConverter, credit: int):
+        assert credit > 0
 
-    queue_member_update(member.id)
-    await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
+        username = member_to_username(ctx.author)
+        target_username = member_to_username(member)
+        new_credit = api.as_chairman().honor(member.id, credit)
+        old_credit = new_credit - credit
 
+        queue_member_update(member.id)
+        await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
 
-@client.command(name='dishonor', help="Remove social credit from a user.")
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_dishonor(ctx, member: commands.MemberConverter, credit: int):
-    assert credit > 0
+    @commands.command(name='dishonor', help="Remove social credit from a user.")
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def cmd_dishonor(self, ctx, member: commands.MemberConverter, credit: int):
+        assert credit > 0
 
-    username = member_to_username(ctx.author)
-    target_username = member_to_username(member)
-    new_credit = api.as_chairman().dishonor(member.id, credit)
-    old_credit = new_credit + credit
+        username = member_to_username(ctx.author)
+        target_username = member_to_username(member)
+        new_credit = api.as_chairman().dishonor(member.id, credit)
+        old_credit = new_credit + credit
 
-    queue_member_update(member.id)
-    await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
+        queue_member_update(member.id)
+        await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
 
+    @commands.command(name='setname', help="Sets the name of another user.")
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def cmd_setname(self, ctx, member: commands.MemberConverter, name: str):
+        target_username = member_to_username(member)
 
-@client.command(name='setname', help="Sets the name of another user.")
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_setname(ctx, member: commands.MemberConverter, name: str):
-    target_username = member_to_username(member)
-
-    try:
-        api.as_chairman().set_name(member.id, name)
-    except:
+        try:
+            api.as_chairman().set_name(member.id, name)
+        except:
 #        await ctx.send("Names are 32 character max.")
 #        return
-        raise
+            raise
 
-    profile = api.as_chairman().get_profile(member.id)
-    assert profile is not None
-    queue_member_update(member.id)
-    await ctx.send(f"{target_username}'s nickname has been changed to {name}")
+        profile = api.as_chairman().get_profile(member.id)
+        assert profile is not None
+        queue_member_update(member.id)
+        await ctx.send(f"{target_username}'s nickname has been changed to {name}")
 
+    @commands.command(name='setlearner')
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def cmd_setlearner(self, ctx, member: commands.MemberConverter, flag: bool = True):
+        target_username = member_to_username(member)
+        api.as_comrade(member.id).set_learner(flag)
+        queue_member_update(member.id)
+        await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
 
-@client.command(name='setlearner')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_setlearner(ctx, member: commands.MemberConverter, flag: bool = True):
-    target_username = member_to_username(member)
-    api.as_comrade(member.id).set_learner(flag)
-    queue_member_update(member.id)
-    await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
-
-
-@client.command(name='sethsk')
-@commands.has_role('共产党员')
-@commands.is_owner()
-async def cmd_sethsk(ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
-    target_username = member_to_username(member)
-    api.as_chairman().set_hsk(member.id, hsk_level)
-    queue_member_update(member.id)
-    await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
+    @commands.command(name='sethsk')
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def cmd_sethsk(self, ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
+        target_username = member_to_username(member)
+        api.as_chairman().set_hsk(member.id, hsk_level)
+        queue_member_update(member.id)
+        await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 
 
-@client.command(name='debug')
-@commands.has_role("共产党员")
-@commands.is_owner()
-async def cmd_debug(ctx):
-    breakpoint()
+client.add_cog(OwnerCog(client))
 
 
-################################################################################
-# Events
 ################################################################################
 
 
