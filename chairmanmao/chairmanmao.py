@@ -89,181 +89,182 @@ fourchan_manager = FourChanManager(file_manager)
 ################################################################################
 
 
-@client.command(name='socialcredit', help='See your social credit score.')
-@commands.has_role('同志')
-async def cmd_socialcredit(ctx, member: commands.MemberConverter = None):
-    if member is None:
+class ComradeCog(commands.Cog):
+    @commands.command(name='socialcredit', help='See your social credit score.')
+    @commands.has_role('同志')
+    async def cmd_socialcredit(self, ctx, member: commands.MemberConverter = None):
+        if member is None:
+            member = ctx.author
+
+        username = member_to_username(ctx.author)
+        target_username = member_to_username(member)
+
+        credit = api.as_comrade(ctx.author.id).social_credit(member.id)
+        await ctx.send(f'{target_username} has a credit score of {credit}.')
+
+
+    @commands.command(name='hsk', help='See your HSK rank.')
+    @commands.has_role('同志')
+    async def cmd_hsk(self, ctx, member: commands.MemberConverter = None):
+        if member is not None:
+            target_member = member
+        else:
+            target_member = ctx.author
+
+        target_username = member_to_username(target_member)
+        hsk_level = api.as_chairman().get_hsk(target_member.id)
+
+        if hsk_level is None:
+            await ctx.send(f'{target_username} is unranked.')
+        else:
+            await ctx.send(f'{target_username} has reached HSK {hsk_level}.')
+
+
+    @commands.command(name='learner', help='Add or remove 中文学习者 role.')
+    @commands.has_role('同志')
+    async def cmd_learner(self, ctx, flag: bool = True):
+        learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
+
+        api.as_comrade(ctx.author.id).set_learner(flag)
+        queue_member_update(ctx.author.id)
+        if flag:
+            await ctx.send(f'{ctx.author.display_name} has been added to {learner_role.name}')
+        else:
+            await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
+
+
+    @commands.command(name='test')
+    @commands.has_role("中文学习者")
+    async def cmd_test(self, ctx):
+        hsk_level = api.as_chairman().get_hsk(ctx.author.id)
+
+        if hsk_level is None:
+            aiming_for = 1
+        else:
+            aiming_for = hsk_level + 1
+
+        if aiming_for > 2:
+            # msg = 'You are at the max HSK level.'
+            msg = 'Currently, only HSK 1 and 2 tests are available.'
+        else:
+            num_questions = SCORE_LIMIT_BY_DECK.get(f'dmt_hsk{aiming_for}')
+            msg = f'For the next test, use:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
+
+        await ctx.send(msg)
+
+
+    @commands.command(name='name', help='Set your name.')
+    @commands.has_role('同志')
+    async def cmd_name(self, ctx, name: str):
         member = ctx.author
+        username = member_to_username(member)
 
-    username = member_to_username(ctx.author)
-    target_username = member_to_username(member)
-
-    credit = api.as_comrade(ctx.author.id).social_credit(member.id)
-    await ctx.send(f'{target_username} has a credit score of {credit}.')
-
-
-@client.command(name='hsk', help='See your HSK rank.')
-@commands.has_role('同志')
-async def cmd_hsk(ctx, member: commands.MemberConverter = None):
-    if member is not None:
-        target_member = member
-    else:
-        target_member = ctx.author
-
-    target_username = member_to_username(target_member)
-    hsk_level = api.as_chairman().get_hsk(target_member.id)
-
-    if hsk_level is None:
-        await ctx.send(f'{target_username} is unranked.')
-    else:
-        await ctx.send(f'{target_username} has reached HSK {hsk_level}.')
-
-
-@client.command(name='learner', help='Add or remove 中文学习者 role.')
-@commands.has_role('同志')
-async def cmd_learner(ctx, flag: bool = True):
-    learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
-
-    api.as_comrade(ctx.author.id).set_learner(flag)
-    queue_member_update(ctx.author.id)
-    if flag:
-        await ctx.send(f'{ctx.author.display_name} has been added to {learner_role.name}')
-    else:
-        await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
-
-
-@client.command(name='test')
-@commands.has_role("中文学习者")
-async def cmd_test(ctx):
-    hsk_level = api.as_chairman().get_hsk(ctx.author.id)
-
-    if hsk_level is None:
-        aiming_for = 1
-    else:
-        aiming_for = hsk_level + 1
-
-    if aiming_for > 2:
-        # msg = 'You are at the max HSK level.'
-        msg = 'Currently, only HSK 1 and 2 tests are available.'
-    else:
-        num_questions = SCORE_LIMIT_BY_DECK.get(f'dmt_hsk{aiming_for}')
-        msg = f'For the next test, use:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
-
-    await ctx.send(msg)
-
-
-@client.command(name='name', help='Set your name.')
-@commands.has_role('同志')
-async def cmd_name(ctx, name: str):
-    member = ctx.author
-    username = member_to_username(member)
-
-    try:
-        api.as_comrade(member.id).set_name(name)
-    except:
+        try:
+            api.as_comrade(member.id).set_name(name)
+        except:
 #        await ctx.send("Names are 32 character max.")
 #        return
-        raise
+            raise
 
-    profile = api.as_chairman().get_profile(member.id)
-    assert profile is not None
+        profile = api.as_chairman().get_profile(member.id)
+        assert profile is not None
 
-    queue_member_update(member.id)
-    await ctx.send(f"{username}'s nickname has been changed to {name}")
-
-
-@client.command(name='hanzi', help='Show the count and list of all hanzi a user has taken.')
-@commands.has_role('同志')
-async def cmd_hanzi(ctx, member: commands.MemberConverter = None):
-    if member is None:
-        member = ctx.author
-
-    username = member_to_username(ctx.author)
-    target_username = member_to_username(member)
-
-    hanzi = api.as_comrade(ctx.author.id).get_hanzis(member.id)
-    hanzi_str = ' '.join(hanzi)
-    num_hanzi = len(hanzi)
-    await ctx.send(f'{target_username} has {num_hanzi} hanzi: {hanzi_str}')
+        queue_member_update(member.id)
+        await ctx.send(f"{username}'s nickname has been changed to {name}")
 
 
-@client.command(name='draw', help="Draw a simplified hanzi character.")
-@commands.has_role('同志')
-async def cmd_draw(ctx, chars: str, font: t.Optional[str] = None):
-    if font is None:
-        font = 'kuaile'
+    @commands.command(name='hanzi', help='Show the count and list of all hanzi a user has taken.')
+    @commands.has_role('同志')
+    async def cmd_hanzi(self, ctx, member: commands.MemberConverter = None):
+        if member is None:
+            member = ctx.author
 
-    for char in chars:
-        assert is_hanzi(char)
+        username = member_to_username(ctx.author)
+        target_username = member_to_username(member)
 
-    image_buffer = draw_manager.draw(font, chars)
-    filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in chars) + '.png'
-    await ctx.channel.send(file=discord.File(fp=image_buffer, filename=filename))
-
-
-@client.command(name='font')
-@commands.has_role('同志')
-@commands.cooldown(1, 5 * 60, type)
-async def cmd_font(ctx, font_name: str):
-
-    if font_name == 'list':
-        font_names = draw_manager.get_font_names()
-        await ctx.send(f"The available fonts are: " + ' '.join(font_names))
-        return
-
-    if not font_name.isidentifier():
-        await ctx.send(f"Please name the font with no spaces, ASCII-only, beginning with a letter")
-        return
-
-    if len(ctx.message.attachments) != 1:
-        await ctx.send(f"You didn't attach a font to your message")
-        return
-
-    attachment = ctx.message.attachments[0]
-    if not attachment.url.endswith('.ttf'):
-        await ctx.send(f"Your font doesn't look like a TTF font.")
-        return
-
-    resp = requests.get(attachment.url)
-    draw_manager.upload_font(ctx.author.id, font_name, BytesIO(resp.content))
-    await ctx.send(f"Uploaded font: {font_name}.")
+        hanzi = api.as_comrade(ctx.author.id).get_hanzis(member.id)
+        hanzi_str = ' '.join(hanzi)
+        num_hanzi = len(hanzi)
+        await ctx.send(f'{target_username} has {num_hanzi} hanzi: {hanzi_str}')
 
 
-@client.command(name='yuan')
-@commands.has_role('同志')
-async def cmd_yuan(ctx):
-    username = member_to_username(ctx.author)
-    yuan = api.as_comrade(username).get_yuan()
-    await ctx.send(f"{username} has {yuan} RNB.")
+    @commands.command(name='draw', help="Draw a simplified hanzi character.")
+    @commands.has_role('同志')
+    async def cmd_draw(self, ctx, chars: str, font: t.Optional[str] = None):
+        if font is None:
+            font = 'kuaile'
+
+        for char in chars:
+            assert is_hanzi(char)
+
+        image_buffer = draw_manager.draw(font, chars)
+        filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in chars) + '.png'
+        await ctx.channel.send(file=discord.File(fp=image_buffer, filename=filename))
 
 
-@client.command(name='leaderboard', help='Show the DMT leaderboard.')
-@commands.has_role('同志')
-@commands.cooldown(1, 5 * 60, commands.BucketType.guild)
-async def cmd_leaderboard(ctx, member: commands.MemberConverter = None):
-    lines = [
-        "The DMT Leaderboard",
-        "```",
-    ]
+    @commands.command(name='font')
+    @commands.has_role('同志')
+    @commands.cooldown(1, 5 * 60, type)
+    async def cmd_font(self, ctx, font_name: str):
 
-    username = member_to_username(ctx.author)
-    for entry in api.as_comrade(ctx.author.id).leaderboard():
-        line = f'{entry.credit} ... {entry.display_name}'
-        lines.append(discord.utils.remove_markdown(line))
+        if font_name == 'list':
+            font_names = draw_manager.get_font_names()
+            await ctx.send(f"The available fonts are: " + ' '.join(font_names))
+            return
 
-    lines.append("```")
+        if not font_name.isidentifier():
+            await ctx.send(f"Please name the font with no spaces, ASCII-only, beginning with a letter")
+            return
 
-    await ctx.send('\n'.join(lines))
+        if len(ctx.message.attachments) != 1:
+            await ctx.send(f"You didn't attach a font to your message")
+            return
+
+        attachment = ctx.message.attachments[0]
+        if not attachment.url.endswith('.ttf'):
+            await ctx.send(f"Your font doesn't look like a TTF font.")
+            return
+
+        resp = requests.get(attachment.url)
+        draw_manager.upload_font(ctx.author.id, font_name, BytesIO(resp.content))
+        await ctx.send(f"Uploaded font: {font_name}.")
 
 
-@client.command(name='mine', help='Mine a word.')
-@commands.has_role('同志')
-async def cmd_mine(ctx, word: str):
+    @commands.command(name='yuan')
+    @commands.has_role('同志')
+    async def cmd_yuan(self, ctx):
+        username = member_to_username(ctx.author)
+        yuan = api.as_comrade(username).get_yuan()
+        await ctx.send(f"{username} has {yuan} RNB.")
 
-    username = member_to_username(ctx.author)
-    api.as_comrade(ctx.author.id).mine(word)
 
-    await ctx.send(f'{username} has mined: {word}')
+    @commands.command(name='leaderboard', help='Show the DMT leaderboard.')
+    @commands.has_role('同志')
+    @commands.cooldown(1, 5 * 60, commands.BucketType.guild)
+    async def cmd_leaderboard(self, ctx, member: commands.MemberConverter = None):
+        lines = [
+            "The DMT Leaderboard",
+            "```",
+        ]
+
+        username = member_to_username(ctx.author)
+        for entry in api.as_comrade(ctx.author.id).leaderboard():
+            line = f'{entry.credit} ... {entry.display_name}'
+            lines.append(discord.utils.remove_markdown(line))
+
+        lines.append("```")
+
+        await ctx.send('\n'.join(lines))
+
+
+    @commands.command(name='mine', help='Mine a word.')
+    @commands.has_role('同志')
+    async def cmd_mine(self, ctx, word: str):
+
+        username = member_to_username(ctx.author)
+        api.as_comrade(ctx.author.id).mine(word)
+
+        await ctx.send(f'{username} has mined: {word}')
 
 
 ################################################################################
@@ -307,9 +308,6 @@ class PartyCog(commands.Cog):
         username = member_to_username(member)
         queue_member_update(member.id)
         await ctx.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
-
-
-client.add_cog(PartyCog(client))
 
 
 ################################################################################
@@ -403,9 +401,11 @@ class OwnerCog(commands.Cog):
         queue_member_update(member.id)
         await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 
+
+################################################################################
 client.add_cog(OwnerCog(client))
-
-
+client.add_cog(PartyCog(client))
+client.add_cog(PartyCog(client))
 ################################################################################
 
 
