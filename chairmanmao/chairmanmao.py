@@ -271,44 +271,45 @@ async def cmd_mine(ctx, word: str):
 ################################################################################
 
 
-@client.command(name='stepdown', help="Remove 共产党员 role.")
-@commands.has_role('共产党员')
-async def  cmd_stepdown(ctx):
-    api.as_party(ctx.author.id).stepdown()
-    queue_member_update(ctx.author.id)
-    await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
+class PartyCog(commands.Cog):
+    @commands.command(name='stepdown', help="Remove 共产党员 role.")
+    @commands.has_role('共产党员')
+    async def  cmd_stepdown(self, ctx):
+        api.as_party(ctx.author.id).stepdown()
+        queue_member_update(ctx.author.id)
+        await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
+
+    @commands.command(name='recognize', help="Remove 共产党员 role.")
+    @commands.has_role('共产党员')
+    async def cmd_recognize(self, ctx, member: commands.MemberConverter):
+        message = ctx.message
+        comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
+        username = member_to_username(member)
+        assert comrade_role not in member.roles, 'Member is already a 同志.'
+
+        api.as_party(ctx.author.id).recognize(member.id, username)
+
+        queue_member_update(member.id)
+        await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
+
+    @commands.command(name='jail')
+    @commands.has_role('共产党员')
+    async def cmd_jail(self, ctx, member: commands.MemberConverter):
+        api.as_party(ctx.author.id).jail(member.id)
+        username = member_to_username(member)
+        queue_member_update(member.id)
+        await ctx.send(f'{ctx.author.display_name} has jailed Comrade {username}.')
+
+    @commands.command(name='unjail')
+    @commands.has_role('共产党员')
+    async def cmd_unjail(self, ctx, member: commands.MemberConverter):
+        api.as_party(ctx.author.id).unjail(member.id)
+        username = member_to_username(member)
+        queue_member_update(member.id)
+        await ctx.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
 
 
-@client.command(name='recognize', help="Remove 共产党员 role.")
-@commands.has_role('共产党员')
-async def cmd_recognize(ctx, member: commands.MemberConverter):
-    message = ctx.message
-    comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
-    username = member_to_username(member)
-    assert comrade_role not in member.roles, 'Member is already a 同志.'
-
-    api.as_party(ctx.author.id).recognize(member.id, username)
-
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
-
-
-@client.command(name='jail')
-@commands.has_role('共产党员')
-async def cmd_jail(ctx, member: commands.MemberConverter):
-    api.as_party(ctx.author.id).jail(member.id)
-    username = member_to_username(member)
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has jailed Comrade {username}.')
-
-
-@client.command(name='unjail')
-@commands.has_role('共产党员')
-async def cmd_unjail(ctx, member: commands.MemberConverter):
-    api.as_party(ctx.author.id).unjail(member.id)
-    username = member_to_username(member)
-    queue_member_update(member.id)
-    await ctx.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
+client.add_cog(PartyCog(client))
 
 
 ################################################################################
@@ -401,7 +402,6 @@ class OwnerCog(commands.Cog):
         api.as_chairman().set_hsk(member.id, hsk_level)
         queue_member_update(member.id)
         await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
-
 
 client.add_cog(OwnerCog(client))
 
