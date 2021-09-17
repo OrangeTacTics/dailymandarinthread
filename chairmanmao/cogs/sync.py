@@ -93,7 +93,7 @@ class SyncCog(commands.Cog):
         return True
 
     def dmt_role_to_discord_role(self, dmt_role: Role) -> discord.Role:
-        constants = self.constants()
+        constants = self.chairmanmao.constants()
 
         role_map = {
             Role.Comrade: constants.comrade_role,
@@ -109,7 +109,7 @@ class SyncCog(commands.Cog):
         }
 
     def roles_for(self, profile: Profile) -> t.Set[discord.Role]:
-        constants = self.constants()
+        constants = self.chairmanmao.constants()
 
         if profile.is_jailed():
             return {constants.jailed_role}
@@ -118,7 +118,7 @@ class SyncCog(commands.Cog):
             return discord_roles
 
     def nonroles_for(self, profile: Profile) -> t.Set[Role]:
-        constants = self.constants()
+        constants = self.chairmanmao.constants()
 
         all_roles = {
             constants.comrade_role,
@@ -145,7 +145,7 @@ class SyncCog(commands.Cog):
         if member.bot:
             return False
 
-        constants = self.constants()
+        constants = self.chairmanmao.constants()
         if member.id == constants.guild.owner.id:
             return False
 
@@ -159,7 +159,7 @@ class SyncCog(commands.Cog):
         return True
 
     def profile_to_member(self,  profile: Profile) -> t.Optional[discord.Member]:
-        constants = self.constants()
+        constants = self.chairmanmao.constants()
         for member in constants.guild.members:
             if member.id == profile.user_id:
                 return member
