@@ -101,6 +101,14 @@ class ChairmanApi:
             else:
                 raise Exception("Already a party member")
 
+    def demote(self, user_id: UserId) -> None:
+        with open_profile(self.db, user_id) as profile:
+            if Role.Party in profile.roles:
+                profile.roles.remove(Role.Party)
+                profile.roles.sort()
+            else:
+                raise Exception("Not a party member")
+
     def get_hsk(self, user_id: UserId) -> t.Optional[int]:
         level_by_role = {
             Role.Hsk1: 1,
