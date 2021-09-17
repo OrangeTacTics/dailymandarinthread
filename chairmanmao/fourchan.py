@@ -84,31 +84,3 @@ class FourChanManager:
             return None
 
 
-################################################################################
-# 4chan Threads
-################################################################################
-
-def thread_channel():
-    guild = client.guilds[0]
-    assert guild.name == 'Daily Mandarin Thread'
-
-    for channel in guild.channels:
-        if channel.name.startswith('🧵'):
-            return channel
-
-    raise Exception()
-
-
-@tasks.loop(seconds=60)
-async def loop_dmtthread():
-    thread = await fourchan_manager.get_dmt_thread()
-    if thread is not None:
-        if not fourchan_manager.is_url_seen(thread.url):
-            logger.info(f'Found DMT thread: {thread.url}')
-            fourchan_manager.see_url(thread.url)
-            channel = thread_channel()
-            lines = [
-                thread.title,
-                thread.url,
-            ]
-            await channel.send('\n'.join(lines))

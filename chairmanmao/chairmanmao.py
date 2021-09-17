@@ -32,6 +32,8 @@ from chairmanmao.cogs.comrade import ComradeCog
 from chairmanmao.cogs.party import PartyCog
 from chairmanmao.cogs.voicechat import VoiceChatCog
 from chairmanmao.cogs.invites import InvitesCog
+from chairmanmao.cogs.hanzi import HanziCog
+from chairmanmao.cogs.fourchan import FourChanCog
 
 
 ################################################################################
@@ -271,6 +273,8 @@ class ChairmanMao:
         client.add_cog(PartyCog(client, self))
         client.add_cog(DrawCog(client, self))
         client.add_cog(VoiceChatCog(client, self))
+        client.add_cog(HanziCog(client, self))
+        client.add_cog(FourChanCog(client, self))
         #client.add_cog(InvitesCog(client, self))
 
         DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')

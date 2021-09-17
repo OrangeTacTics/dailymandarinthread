@@ -34,21 +34,6 @@ class ComradeCog(commands.Cog):
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{username}'s nickname has been changed to {name}")
 
-    @commands.command(name='hanzi', help='Show the count and list of all hanzi a user has taken.')
-    @commands.has_role('同志')
-    async def cmd_hanzi(self, ctx, member: commands.MemberConverter = None):
-        if member is None:
-            member = ctx.author
-
-        username = self.chairmanmao.member_to_username(ctx.author)
-        target_username = self.chairmanmao.member_to_username(member)
-
-        hanzi = self.chairmanmao.api.as_comrade(ctx.author.id).get_hanzis(member.id)
-        hanzi_str = ' '.join(hanzi)
-        num_hanzi = len(hanzi)
-        await ctx.send(f'{target_username} has {num_hanzi} hanzi: {hanzi_str}')
-
-
     @commands.command(name='yuan')
     @commands.has_role('同志')
     async def cmd_yuan(self, ctx):
