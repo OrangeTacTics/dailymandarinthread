@@ -13,7 +13,7 @@ class PartyCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('ComradeCog')
+        self.chairmanmao.logger.info('PartyCog')
 
     @commands.command(name='stepdown', help="Remove 共产党员 role.")
     @commands.has_role('共产党员')

@@ -14,7 +14,7 @@ class HanziCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('ComradeCog')
+        self.chairmanmao.logger.info('HanziCog')
 
     @commands.command(name='hanzi', help='Show the count and list of all hanzi a user has taken.')
     @commands.has_role('同志')
@@ -36,7 +36,5 @@ class HanziCog(commands.Cog):
 
         if isinstance(message.channel, discord.channel.TextChannel):
             if constants.comrade_role in message.author.roles:
-                self.chairmanmao.api.as_comrade(message.author.id).alert_activity()
-
                 hanzis = hanzis_in(message.content)
                 self.chairmanmao.api.as_comrade(message.author.id).see_hanzis(hanzis)

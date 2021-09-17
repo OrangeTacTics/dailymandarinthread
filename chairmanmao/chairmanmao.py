@@ -24,6 +24,7 @@ from chairmanmao.types import Profile, UserId, Json, Role
 from chairmanmao.discord import DiscordConstants
 
 from chairmanmao.cogs.sync import SyncCog
+from chairmanmao.cogs.activity import ActivityCog
 from chairmanmao.cogs.socialcredit import SocialCreditCog
 from chairmanmao.cogs.learners import LearnersCog
 from chairmanmao.cogs.draw import DrawCog
@@ -226,6 +227,7 @@ class ChairmanMao:
         client = commands.Bot(command_prefix='$', intents=intents)
 
         client.add_cog(SyncCog(client, self))
+        client.add_cog(ActivityCog(client, self))
         client.add_cog(SocialCreditCog(client, self))
         client.add_cog(ComradeCog(client, self))
         client.add_cog(LearnersCog(client, self))
