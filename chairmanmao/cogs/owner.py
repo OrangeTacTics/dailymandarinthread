@@ -21,13 +21,6 @@ class OwnerCog(commands.Cog):
     async def cmd_debug(self, ctx):
         breakpoint()
 
-    @commands.command(name='sync')
-    @commands.has_role('共产党员')
-    @commands.is_owner()
-    async def  cmd_sync(self, ctx, member: commands.MemberConverter):
-        self.chairmanmao.queue_member_update(member.id)
-        await ctx.send('Sync complete')
-
     @commands.command(name='promote')
     @commands.has_role('共产党员')
     @commands.is_owner()
