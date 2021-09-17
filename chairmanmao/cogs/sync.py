@@ -107,6 +107,7 @@ class SyncCog(commands.Cog):
             Role.Hsk5: constants.hsk5_role,
             Role.Hsk6: constants.hsk6_role,
         }
+        return role_map[dmt_role]
 
     def roles_for(self, profile: Profile) -> t.Set[discord.Role]:
         constants = self.chairmanmao.constants()
