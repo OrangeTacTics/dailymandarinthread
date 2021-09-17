@@ -71,7 +71,5 @@ class WelcomeCog(commands.Cog):
         await channel.send(welcome_message)
 
     @commands.command(name='welcomeme')
-    @commands.has_role("共产党员")
-    @commands.is_owner()
     async def cmd_welcomeme(self, ctx):
         await self.welcome(ctx.author)
