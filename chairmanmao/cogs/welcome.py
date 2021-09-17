@@ -25,7 +25,7 @@ class WelcomeCog(commands.Cog):
         if profile is None:
             username = self.chairmanmao.member_to_username(member)
             self.chairmanmao.logger.info(f"New user joined: {username}. Member ID: {member.id}.")
-            self.welcome(member)
+            await self.welcome(member)
         else:
             username = self.chairmanmao.member_to_username(member)
             self.chairmanmao.logger.info(f"Former user joined: {username}. Member ID: {member.id}.")
