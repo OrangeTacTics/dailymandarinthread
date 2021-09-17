@@ -37,6 +37,33 @@ class WelcomeCog(commands.Cog):
         welcome_lines = [
             'Welcome to the Daily Mandarin Thread',
             'https://dailymandarinthread.info',
+            '',
+            'Our general chat channel is called 🐉网络评论员. Say hello and wait for a Party Member to recognize you.',
+            '',
+            "The numbers in our members' usernames are their social credit score. Be a good citizen,"
+            "and you will see your social credit increase.",
+            '',
+            'Once you are recognized, you may use the `$learner` command to give yourself the @中文学习者 (Chinese learner) role.'
+            'This will give you access to our learning resources and to take tests.',
+            '',
+            'For more information about the various channels: https://dailymandarinthread.info/discord/channels/',
+            'For more information about the various roles: https://dailymandarinthread.info/discord/roles/',
+            '',
+            'Some good commands to know about:',
+            '',
+            '```',
+            '    $draw 猫',
+            '        Draws a character',
+            '',
+            '    $learner',
+            '        Grants yourself the @中文学习者 role.',
+            '',
+            '    $test',
+            '        @中文学习者 only. Get the command to take your next test.',
+            '',
+            '    $leaderboard',
+            '        Shows the social credit leaderboard',
+            '```',
         ]
         welcome_message = '\n'.join(welcome_lines)
 
