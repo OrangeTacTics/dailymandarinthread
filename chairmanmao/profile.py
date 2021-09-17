@@ -19,7 +19,7 @@ def create_profile(db: Database, user_id: UserId, discord_username: str) -> Prof
         last_seen=now,
         display_name=display_name,
         credit=1000,
-        roles=[],
+        roles=[Role.Comrade],
         yuan=0,
         hanzi=[],
         mined_words=[],
