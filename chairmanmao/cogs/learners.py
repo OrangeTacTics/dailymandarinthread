@@ -10,6 +10,69 @@ import discord
 from discord.ext import commands
 
 
+class LearnersCog(commands.Cog):
+    def __init__(self, client, chairmanmao) -> None:
+        self.client = client
+        self.chairmanmao = chairmanmao
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.chairmanmao.logger.info('LearnersCog')
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        MEMBER_ID_KOTOBA = int(os.getenv('MEMBER_ID_KOTOBA', ''))
+        if message.author.bot and message.author.id == MEMBER_ID_KOTOBA:
+            await handle_kotoba(self.chairmanmao.api, message)
+
+    @commands.command(name='learner', help='Add or remove 中文学习者 role.')
+    @commands.has_role('同志')
+    async def cmd_learner(self, ctx, flag: bool = True):
+        learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
+
+        self.chairmanmao.api.as_comrade(ctx.author.id).set_learner(flag)
+        self.chairmanmao.queue_member_update(ctx.author.id)
+        if flag:
+            await ctx.send(f'{ctx.author.display_name} has been added to {learner_role.name}')
+        else:
+            await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
+
+    @commands.command(name='hsk', help='See your HSK rank.')
+    @commands.has_role('同志')
+    async def cmd_hsk(self, ctx, member: commands.MemberConverter = None):
+        if member is not None:
+            target_member = member
+        else:
+            target_member = ctx.author
+
+        target_username = self.chairmanmao.member_to_username(target_member)
+        hsk_level = self.chairmanmao.api.as_chairman().get_hsk(target_member.id)
+
+        if hsk_level is None:
+            await ctx.send(f'{target_username} is unranked.')
+        else:
+            await ctx.send(f'{target_username} has reached HSK {hsk_level}.')
+
+    @commands.command(name='test')
+    @commands.has_role("中文学习者")
+    async def cmd_test(self, ctx):
+        hsk_level = self.chairmanmao.api.as_chairman().get_hsk(ctx.author.id)
+
+        if hsk_level is None:
+            aiming_for = 1
+        else:
+            aiming_for = hsk_level + 1
+
+        if aiming_for > 2:
+            # msg = 'You are at the max HSK level.'
+            msg = 'Currently, only HSK 1 and 2 tests are available.'
+        else:
+            num_questions = SCORE_LIMIT_BY_DECK.get(f'dmt_hsk{aiming_for}')
+            msg = f'For the next test, use this command in the 🏫考试 channel:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
+
+        await ctx.send(msg)
+
+
 @dataclass
 class QuizResults:
     user_id: UserId
@@ -142,66 +205,3 @@ async def handle_kotoba(api, message):
         profile = api.as_chairman().get_profile(quiz_results.user_id)
         await message.channel.send(f'{profile.discord_username} has passed the {quiz_results.deck_name} quiz.')
         chairmanmao.queue_member_update(profile.id)
-
-
-class LearnersCog(commands.Cog):
-    def __init__(self, client, chairmanmao) -> None:
-        self.client = client
-        self.chairmanmao = chairmanmao
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.chairmanmao.logger.info('LearnersCog')
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        MEMBER_ID_KOTOBA = int(os.getenv('MEMBER_ID_KOTOBA', ''))
-        if message.author.bot and message.author.id == MEMBER_ID_KOTOBA:
-            await handle_kotoba(self.chairmanmao.api, message)
-
-    @commands.command(name='learner', help='Add or remove 中文学习者 role.')
-    @commands.has_role('同志')
-    async def cmd_learner(self, ctx, flag: bool = True):
-        learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
-
-        self.chairmanmao.api.as_comrade(ctx.author.id).set_learner(flag)
-        self.chairmanmao.queue_member_update(ctx.author.id)
-        if flag:
-            await ctx.send(f'{ctx.author.display_name} has been added to {learner_role.name}')
-        else:
-            await ctx.send(f'{ctx.author.display_name} has been removed from {learner_role.name}')
-
-    @commands.command(name='hsk', help='See your HSK rank.')
-    @commands.has_role('同志')
-    async def cmd_hsk(self, ctx, member: commands.MemberConverter = None):
-        if member is not None:
-            target_member = member
-        else:
-            target_member = ctx.author
-
-        target_username = self.chairmanmao.member_to_username(target_member)
-        hsk_level = self.chairmanmao.api.as_chairman().get_hsk(target_member.id)
-
-        if hsk_level is None:
-            await ctx.send(f'{target_username} is unranked.')
-        else:
-            await ctx.send(f'{target_username} has reached HSK {hsk_level}.')
-
-    @commands.command(name='test')
-    @commands.has_role("中文学习者")
-    async def cmd_test(self, ctx):
-        hsk_level = self.chairmanmao.api.as_chairman().get_hsk(ctx.author.id)
-
-        if hsk_level is None:
-            aiming_for = 1
-        else:
-            aiming_for = hsk_level + 1
-
-        if aiming_for > 2:
-            # msg = 'You are at the max HSK level.'
-            msg = 'Currently, only HSK 1 and 2 tests are available.'
-        else:
-            num_questions = SCORE_LIMIT_BY_DECK.get(f'dmt_hsk{aiming_for}')
-            msg = f'For the next test, use this command in the 🏫考试 channel:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
-
-        await ctx.send(msg)

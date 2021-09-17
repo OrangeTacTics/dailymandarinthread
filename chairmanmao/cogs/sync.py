@@ -24,12 +24,12 @@ class SyncCog(commands.Cog):
 
     @tasks.loop(seconds=1)
     async def loop_incremental_member_update(self):
-        await self.chairmanmao.incremental_member_update()
+        await self.incremental_member_update()
 
     @tasks.loop(hours=24)
     async def loop_full_member_update(self):
         self.chairmanmao.logger.info('Starting full member update')
-        await self.chairmanmao.full_member_update()
+        await self.full_member_update()
         self.chairmanmao.logger.info('Full member update complete')
 
     @commands.command(name='sync')
@@ -44,7 +44,7 @@ class SyncCog(commands.Cog):
     @commands.is_owner()
     async def  cmd_syncall(self, ctx):
         self.chairmanmao.queue_member_update(member.id)
-        await self.chairmanmao.full_member_update()
+        await self.full_member_update()
         await ctx.send('Sync complete')
 
     async def incremental_member_update(self) -> None:

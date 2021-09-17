@@ -35,6 +35,7 @@ from chairmanmao.cogs.invites import InvitesCog
 from chairmanmao.cogs.hanzi import HanziCog
 from chairmanmao.cogs.fourchan import FourChanCog
 from chairmanmao.cogs.bump import BumpCog
+from chairmanmao.cogs.welcome import WelcomeCog
 
 
 ################################################################################
@@ -119,6 +120,7 @@ class ChairmanMao:
         client.add_cog(HanziCog(client, self))
         client.add_cog(FourChanCog(client, self))
         client.add_cog(BumpCog(client, self))
+        client.add_cog(WelcomeCog(client, self))
         #client.add_cog(InvitesCog(client, self))
 
         DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')

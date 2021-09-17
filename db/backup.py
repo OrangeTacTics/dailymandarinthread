@@ -28,7 +28,7 @@ if __name__ == "__main__":
     date_dir.mkdir()
 
     records = []
-    to_str_fields = ['_id', 'last_message', 'created']
+    to_str_fields = ['_id', 'last_seen', 'created']
     for record in db['Profiles'].find({}):
         for field in to_str_fields:
             record[field] = str(record[field])
