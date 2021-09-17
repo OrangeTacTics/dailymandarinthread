@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 
 
 class SocialCreditCog(commands.Cog):
@@ -21,6 +22,24 @@ class SocialCreditCog(commands.Cog):
 
         credit = self.chairmanmao.api.as_comrade(ctx.author.id).social_credit(member.id)
         await ctx.send(f'{target_username} has a credit score of {credit}.')
+
+    @commands.command(name='leaderboard', help='Show the DMT leaderboard.')
+    @commands.has_role('同志')
+    @commands.cooldown(1, 5 * 60, commands.BucketType.guild)
+    async def cmd_leaderboard(self, ctx, member: commands.MemberConverter = None):
+        lines = [
+            "The DMT Leaderboard",
+            "```",
+        ]
+
+        username = self.chairmanmao.member_to_username(ctx.author)
+        for entry in self.chairmanmao.api.as_comrade(ctx.author.id).leaderboard():
+            line = f'{entry.credit} ... {entry.display_name}'
+            lines.append(discord.utils.remove_markdown(line))
+
+        lines.append("```")
+
+        await ctx.send('\n'.join(lines))
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):

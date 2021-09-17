@@ -42,7 +42,7 @@ class SyncCog(commands.Cog):
     @commands.command(name='syncall')
     @commands.has_role('共产党员')
     @commands.is_owner()
-    async def  cmd_sync(self, ctx):
+    async def  cmd_syncall(self, ctx):
         self.chairmanmao.queue_member_update(member.id)
         await self.chairmanmao.full_member_update()
         await ctx.send('Sync complete')

@@ -41,25 +41,6 @@ class ComradeCog(commands.Cog):
         username = self.chairmanmao.member_to_username(ctx.author)
         await ctx.send(f"{username} has {yuan} RNB.")
 
-    @commands.command(name='leaderboard', help='Show the DMT leaderboard.')
-    @commands.has_role('同志')
-    @commands.cooldown(1, 5 * 60, commands.BucketType.guild)
-    async def cmd_leaderboard(self, ctx, member: commands.MemberConverter = None):
-        lines = [
-            "The DMT Leaderboard",
-            "```",
-        ]
-
-        username = self.chairmanmao.member_to_username(ctx.author)
-        for entry in self.chairmanmao.api.as_comrade(ctx.author.id).leaderboard():
-            line = f'{entry.credit} ... {entry.display_name}'
-            lines.append(discord.utils.remove_markdown(line))
-
-        lines.append("```")
-
-        await ctx.send('\n'.join(lines))
-
-
     @commands.command(name='mine', help='Mine a word.')
     @commands.has_role('同志')
     async def cmd_mine(self, ctx, word: str):
