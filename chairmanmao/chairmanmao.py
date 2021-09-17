@@ -2,7 +2,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 import requests
 import typing as t
-from datetime import datetime, timezone
 from pathlib import Path
 import logging
 import re
@@ -50,15 +49,6 @@ stream = logging.StreamHandler()
 streamformat = logging.Formatter("%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 stream.setFormatter(streamformat)
 logger.addHandler(stream)
-
-
-#@commands.before_invoke
-#async def log(ctx):
-#    now = datetime.now(timezone.utc).replace(microsecond=0)
-#    now_str = str(now)[:-6]
-#    author = member_to_username(ctx.author)
-#    command_name = ctx.command.name
-#    logger.info(f'{author}: {command_name}()')
 
 
 class ChairmanMao:

@@ -3,12 +3,13 @@ import os
 import asyncio
 
 from chairmanmao.types import Profile, UserId, Json, Role
+from chairmanmao.cogs import ChairmanMaoCog
 
 import discord
 from discord.ext import commands, tasks
 
 
-class SyncCog(commands.Cog):
+class SyncCog(ChairmanMaoCog):
     def __init__(self, client, chairmanmao) -> None:
         self.client = client
         self.chairmanmao = chairmanmao

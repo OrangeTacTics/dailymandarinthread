@@ -4,9 +4,10 @@ import discord
 from discord.ext import commands
 
 from chairmanmao.types import Profile
+from chairmanmao.cogs import ChairmanMaoCog
 
 
-class OwnerCog(commands.Cog):
+class OwnerCog(ChairmanMaoCog):
     def __init__(self, client, chairmanmao) -> None:
         self.client = client
         self.chairmanmao = chairmanmao
