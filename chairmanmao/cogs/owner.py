@@ -24,10 +24,17 @@ class OwnerCog(commands.Cog):
     @commands.command(name='promote')
     @commands.has_role('共产党员')
     @commands.is_owner()
-    async def  cmd_promote(self, ctx, member: commands.MemberConverter, flag: t.Optional[bool] = None):
+    async def  cmd_promote(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.api.as_chairman().promote(member.id)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
+
+    @commands.command(name='deomote')
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def  cmd_demote(self, ctx, member: commands.MemberConverter):
+        self.chairmanmao.api.as_chairman().demote(member.id)
+        self.chairmanmao.queue_member_update(member.id)
 
     @commands.command(name='honor', help="Add social credit to a user.")
     @commands.has_role('共产党员')
