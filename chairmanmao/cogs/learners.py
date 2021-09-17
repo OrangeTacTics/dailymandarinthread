@@ -202,6 +202,6 @@ class LearnersCog(commands.Cog):
             msg = 'Currently, only HSK 1 and 2 tests are available.'
         else:
             num_questions = SCORE_LIMIT_BY_DECK.get(f'dmt_hsk{aiming_for}')
-            msg = f'For the next test, use:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
+            msg = f'For the next test, use this command in the 🏫考试 channel:\n`k!quiz dmt_hsk{aiming_for} nodelay mmq=1 atl=10 {num_questions}`'
 
         await ctx.send(msg)
