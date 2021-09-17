@@ -139,46 +139,30 @@ class ChairmanMao:
         logger.info(f'Updating roles: {member.nick}: add {added_roles}, remove {removed_roles}')
         return True
 
+    def dmt_role_to_discord_role(self, dmt_role: Role) -> discord.Role:
+        constants = self.constants()
+
+        role_map = {
+            Role.Comrade: constants.comrade_role,
+            Role.Party: constants.ccp_role,
+            Role.Learner: constants.learner_role,
+            Role.Jailed: constants.jailed_role,
+            Role.Hsk1: constants.hsk1_role,
+            Role.Hsk2: constants.hsk2_role,
+            Role.Hsk3: constants.hsk3_role,
+            Role.Hsk4: constants.hsk4_role,
+            Role.Hsk5: constants.hsk5_role,
+            Role.Hsk6: constants.hsk6_role,
+        }
+
     def roles_for(self, profile: Profile) -> t.Set[discord.Role]:
         constants = self.constants()
 
-        comrade_role = constants.comrade_role
-        ccp_role     = constants.ccp_role
-        jailed_role  = constants.jailed_role
-        learner_role = constants.learner_role
-        hsk1         = constants.hsk1_role
-        hsk2         = constants.hsk2_role
-        hsk3         = constants.hsk3_role
-        hsk4         = constants.hsk4_role
-        hsk5         = constants.hsk5_role
-        hsk6         = constants.hsk6_role
-
         if profile.is_jailed():
-            return {jailed_role}
+            return {constants.jailed_role}
         else:
-            roles = {comrade_role}
-
-            if profile.is_party():
-                roles.add(ccp_role)
-
-            if profile.is_learner():
-                roles.add(learner_role)
-
-            dmt_hsk_role = profile.hsk_role()
-
-            if dmt_hsk_role is not None:
-                hsk_discord_role = {
-                    Role.Hsk1: hsk1,
-                    Role.Hsk2: hsk2,
-                    Role.Hsk3: hsk3,
-                    Role.Hsk4: hsk4,
-                    Role.Hsk5: hsk5,
-                    Role.Hsk6: hsk6,
-                }[dmt_hsk_role]
-
-                roles.add(hsk_discord_role)
-
-            return roles
+            discord_roles = {self.dmt_role_to_discord_role(dmt_role) for dmt_role in profile.roles}
+            return discord_roles
 
     def nonroles_for(self, profile: Profile) -> t.Set[Role]:
         constants = self.constants()
@@ -216,32 +200,11 @@ class ChairmanMao:
         if member.bot:
             return False
 
-        username = self.member_to_username(member)
         constants = self.constants()
         if member.id == constants.guild.owner.id:
             return False
 
-        if profile.is_jailed():
-            new_nick = self.add_label_to_nick(profile.display_name, "【劳改】")
-        else:
-            label = f' [{profile.credit}]'
-
-            hsk_level = profile.hsk_level()
-            if hsk_level is not None:
-                hsk_label = {
-                    1: '➀',
-                    2: '➁',
-                    3: '➂',
-                    4: '➃',
-                    5: '➄',
-                    6: '➅',
-                }
-                label += ' HSK' + hsk_label[hsk_level]
-
-            if profile.is_learner():
-                label += '✍'
-
-            new_nick = self.add_label_to_nick(profile.display_name, label)
+        new_nick = profile.nick_for()
 
         if new_nick == member.nick:
             return False
@@ -249,10 +212,6 @@ class ChairmanMao:
         logger.info(f'Rename {member.nick} -> {new_nick}')
         await member.edit(nick=new_nick)
         return True
-
-    def add_label_to_nick(self, display_name: str, label: str) -> str:
-        cutoff = 32 - len(label)
-        return display_name[:cutoff] + label
 
     def profile_to_member(self,  profile: Profile) -> t.Optional[discord.Member]:
         constants = self.constants()

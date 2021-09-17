@@ -64,6 +64,36 @@ class Profile:
         else:
             return None
 
+    def nick_for(self) -> str:
+        if self.is_jailed():
+            return self._add_label_to_nick(self.display_name, "【劳改】")
+
+        else:
+            label = f' [{self.credit}]'
+
+            hsk_level = self.hsk_level()
+            if hsk_level is not None:
+                hsk_label = {
+                    1: '➀',
+                    2: '➁',
+                    3: '➂',
+                    4: '➃',
+                    5: '➄',
+                    6: '➅',
+                }
+                label += ' HSK' + hsk_label[hsk_level]
+
+            if self.is_learner():
+                label += '✍'
+
+            return self._add_label_to_nick(self.display_name, label)
+
+    def _add_label_to_nick(self, display_name: str, label: str) -> str:
+        cutoff = 32 - len(label)
+        return display_name[:cutoff] + label
+
+
+
 
 class Role(Enum):
     Comrade = "Comrade"
