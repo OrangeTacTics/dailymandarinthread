@@ -28,9 +28,8 @@ class SyncCog(commands.Cog):
 
     @tasks.loop(hours=24)
     async def loop_full_member_update(self):
-        guild = client.guilds[0]
         self.chairmanmao.logger.info('Starting full member update')
-        await self.chairmanmao.full_member_update(guild)
+        await self.chairmanmao.full_member_update()
         self.chairmanmao.logger.info('Full member update complete')
 
     @commands.command(name='sync')
@@ -38,6 +37,14 @@ class SyncCog(commands.Cog):
     @commands.is_owner()
     async def  cmd_sync(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.queue_member_update(member.id)
+        await ctx.send('Sync complete')
+
+    @commands.command(name='syncall')
+    @commands.has_role('共产党员')
+    @commands.is_owner()
+    async def  cmd_sync(self, ctx):
+        self.chairmanmao.queue_member_update(member.id)
+        await self.chairmanmao.full_member_update()
         await ctx.send('Sync complete')
 
     async def incremental_member_update(self) -> None:
