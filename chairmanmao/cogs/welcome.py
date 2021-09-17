@@ -22,13 +22,28 @@ class WelcomeCog(commands.Cog):
         except:
             profile = None
 
+        constants = self.chairmanmao.constants()
+        username = self.chairmanmao.member_to_username(member)
+
         if profile is None:
-            username = self.chairmanmao.member_to_username(member)
             self.chairmanmao.logger.info(f"New user joined: {username}. Member ID: {member.id}.")
             await self.welcome(member)
+            await constants.commentators_channel.send(f'{username} has joined DMT.')
         else:
-            username = self.chairmanmao.member_to_username(member)
             self.chairmanmao.logger.info(f"Former user joined: {username}. Member ID: {member.id}.")
+            await constants.commentators_channel.send(f'{username} has returned to DMT.')
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        try:
+            profile = self.chairmanmao.api.as_chairman().get_profile(member.id)
+        except:
+            profile = None
+
+        username = self.chairmanmao.member_to_username(member)
+        self.chairmanmao.logger.info(f"User left: {username}. Member ID: {member.id}.")
+        constants = self.chairmanmao.constants()
+        await constants.commentators_channel.send(f'{username} has left DMT.')
 
     async def welcome(self, member) -> None:
         welcome_lines = [
