@@ -17,8 +17,16 @@ class DiscordConstants:
     hsk4_role: discord.Role
     hsk5_role: discord.Role
     hsk6_role: discord.Role
+    bumpers_role: discord.Role
 
     thread_channel: discord.TextChannel
+    tiananmen_channel: discord.TextChannel
+    commentators_channel: discord.TextChannel
+    apologies_channel: discord.TextChannel
+    news_channel: discord.TextChannel
+    test_channel: discord.TextChannel
+    learners_channel: discord.TextChannel
+    rules_channel: discord.TextChannel
 
     @staticmethod
     def load(guild) -> DiscordConstants:
@@ -35,8 +43,16 @@ class DiscordConstants:
             hsk4_role=DiscordConstants._load_role(guild, "HSK4"),
             hsk5_role=DiscordConstants._load_role(guild, "HSK5"),
             hsk6_role=DiscordConstants._load_role(guild, "HSK6"),
+            bumpers_role=DiscordConstants._load_role(guild, "Bumpers"),
 
+            news_channel=DiscordConstants._load_channel(guild, "📰"),
+            rules_channel=DiscordConstants._load_channel(guild, "🈲"),
             thread_channel=DiscordConstants._load_channel(guild, "🧵"),
+            commentators_channel=DiscordConstants._load_channel(guild, "🐉"),
+            learners_channel=DiscordConstants._load_channel(guild, "✍"),
+            test_channel=DiscordConstants._load_channel(guild, "🏫"),
+            apologies_channel=DiscordConstants._load_channel(guild, "⛔"),
+            tiananmen_channel=DiscordConstants._load_channel(guild, "🏯"),
         )
 
     @staticmethod
@@ -47,7 +63,11 @@ class DiscordConstants:
 
     @staticmethod
     def _load_channel(guild: discord.Guild, prefix: str) -> discord.Channel:
+        found_channel = None
         for channel in guild.channels:
             if channel.name.startswith(prefix):
-                return channel
-        return None
+                found_channel = channel
+                break
+
+        assert found_channel is not None, f'Channel {prefix} does not exist.'
+        return found_channel

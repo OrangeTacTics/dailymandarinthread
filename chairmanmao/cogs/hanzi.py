@@ -40,4 +40,3 @@ class HanziCog(commands.Cog):
 
                 hanzis = hanzis_in(message.content)
                 self.chairmanmao.api.as_comrade(message.author.id).see_hanzis(hanzis)
-

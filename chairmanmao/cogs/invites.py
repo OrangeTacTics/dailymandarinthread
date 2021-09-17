@@ -46,5 +46,13 @@ class InvitesCog(commands.Cog):
 #    guild = client.guilds[0]
 #    invite = await get_current_invite()
 #    logger.info(f'{member.name} joined with invite code {invite.code} from {member_to_username(invite.inviter)}')
-
-
+#
+#
+#@client.event
+#async def on_invite_create(member):
+#    await init_invites()
+#
+#
+#@client.event
+#async def on_invite_delete(member):
+#    await init_invites()
