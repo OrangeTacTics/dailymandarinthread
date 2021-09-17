@@ -115,6 +115,8 @@ class SyncCog(commands.Cog):
             return {constants.jailed_role}
         else:
             discord_roles = {self.dmt_role_to_discord_role(dmt_role) for dmt_role in profile.roles}
+            if constants.comrade_role not in discord_roles:
+                discord_roles.add(constants.comrade_role)
             return discord_roles
 
     def nonroles_for(self, profile: Profile) -> t.Set[Role]:
