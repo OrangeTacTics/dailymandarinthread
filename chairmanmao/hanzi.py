@@ -32,6 +32,10 @@ def see_hanzi(db: Database, user_id: UserId, hanzi: t.List[str]) -> None:
     set_profile(db, user_id, profile)
 
 
+def hanzis_in(text: str) -> t.List[str]:
+    return [char for char in text if is_hanzi(char)]
+
+
 def is_hanzi(char):
     '''
         https://blog.ceshine.net/post/cjk-unicode/#respective-unicode-blocks
