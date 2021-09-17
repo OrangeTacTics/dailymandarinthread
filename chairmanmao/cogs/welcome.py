@@ -31,9 +31,6 @@ class WelcomeCog(commands.Cog):
             self.chairmanmao.logger.info(f"Former user joined: {username}. Member ID: {member.id}.")
 
     async def welcome(self, member) -> None:
-        username = self.chairmanmao.member_to_username(member)
-        self.chairmanmao.logger.info(f"New user joined: {username}. Member ID: {member.id}.")
-
         welcome_lines = [
             'Welcome to the Daily Mandarin Thread',
             'https://dailymandarinthread.info',
