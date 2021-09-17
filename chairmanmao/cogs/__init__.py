@@ -8,7 +8,7 @@ from discord.ext import commands, tasks
 
 class ChairmanMaoCog(commands.Cog):
     def __init__(self, client, chairmanmao) -> None:
-        super().__init__(client)
+        self.client = client
         self.chairmanmao = chairmanmao
         self.logger = chairmanmao.logger
 

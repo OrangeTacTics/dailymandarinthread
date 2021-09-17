@@ -8,10 +8,6 @@ from chairmanmao.cogs import ChairmanMaoCog
 
 
 class OwnerCog(ChairmanMaoCog):
-    def __init__(self, client, chairmanmao) -> None:
-        self.client = client
-        self.chairmanmao = chairmanmao
-
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info('OwnersCog')

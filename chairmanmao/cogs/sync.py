@@ -10,10 +10,6 @@ from discord.ext import commands, tasks
 
 
 class SyncCog(ChairmanMaoCog):
-    def __init__(self, client, chairmanmao) -> None:
-        self.client = client
-        self.chairmanmao = chairmanmao
-
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info('SyncCog')

@@ -5,13 +5,15 @@ from datetime import datetime, timezone
 import discord
 from discord.ext import commands, tasks
 
+from chairmanmao.cogs import ChairmanMaoCog
+
+
 TWO_HOURS_IN_SECONDS = 2 * 60 * 60
 
 
-class BumpCog(commands.Cog):
+class BumpCog(ChairmanMaoCog):
     def __init__(self, client, chairmanmao) -> None:
-        self.client = client
-        self.chairmanmao = chairmanmao
+        super().__init__(client, chairmanmao)
         self.last_bump = None
 
     @commands.Cog.listener()

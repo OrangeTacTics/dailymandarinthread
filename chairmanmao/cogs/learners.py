@@ -8,13 +8,10 @@ import httpx
 
 import discord
 from discord.ext import commands
+from chairmanmao.cogs import ChairmanMaoCog
 
 
-class LearnersCog(commands.Cog):
-    def __init__(self, client, chairmanmao) -> None:
-        self.client = client
-        self.chairmanmao = chairmanmao
-
+class LearnersCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info('LearnersCog')

@@ -5,13 +5,10 @@ from discord.ext import commands
 
 from chairmanmao.hanzi import hanzis_in
 from chairmanmao.types import Profile
+from chairmanmao.cogs import ChairmanMaoCog
 
 
-class HanziCog(commands.Cog):
-    def __init__(self, client, chairmanmao) -> None:
-        self.client = client
-        self.chairmanmao = chairmanmao
-
+class HanziCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info('HanziCog')

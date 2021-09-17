@@ -1,12 +1,9 @@
 from discord.ext import commands
 import discord
+from chairmanmao.cogs import ChairmanMaoCog
 
 
-class SocialCreditCog(commands.Cog):
-    def __init__(self, client, chairmanmao) -> None:
-        self.client = client
-        self.chairmanmao = chairmanmao
-
+class SocialCreditCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info('SocialCreditCog')
