@@ -23,6 +23,7 @@ class WelcomeCog(commands.Cog):
             profile = None
 
         if profile is None:
+            username = self.chairmanmao.member_to_username(member)
             self.chairmanmao.logger.info(f"New user joined: {username}. Member ID: {member.id}.")
             self.welcome(member)
         else:
