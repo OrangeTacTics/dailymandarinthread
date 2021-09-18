@@ -50,7 +50,6 @@ class FourChanManager:
 
     def is_url_seen(self, url: str) -> bool:
         if self.urls_seen is None:
-            print('loading urls from database... 1')
             infile = self.file_manager.download('fourchan/seen_urls.json')
             self.urls_seen = set(json.load(infile))
 
@@ -58,7 +57,6 @@ class FourChanManager:
 
     def see_url(self, url: str) -> None:
         if self.urls_seen is None:
-            print('loading urls from database... 2')
             infile = self.file_manager.download('fourchan/seen_urls.json')
             self.urls_seen = set(json.load(infile))
 
