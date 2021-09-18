@@ -22,9 +22,6 @@ class DrawCog(ChairmanMaoCog):
         if font is None:
             font = 'kuaile'
 
-        for char in chars:
-            assert is_hanzi(char)
-
         image_buffer = self.chairmanmao.draw_manager.draw(font, chars)
         filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in chars) + '.png'
         await ctx.channel.send(file=discord.File(fp=image_buffer, filename=filename))
