@@ -16,13 +16,18 @@ class WelcomeCog(ChairmanMaoCog):
     async def on_member_join(self, member):
         try:
             profile = self.chairmanmao.api.as_chairman().get_profile(member.id)
+            is_new_member = False
         except:
-            profile = None
+            username = self.chairmanmao.member_to_username(member)
+            self.chairmanmao.api.as_chairman().create_profile(member.id, username)
+            is_new_member = True
 
         constants = self.chairmanmao.constants()
         username = self.chairmanmao.member_to_username(member)
 
-        if profile is None:
+        self.chairmanmao.queue_member_update(member.id)
+
+        if is_new_member:
             self.chairmanmao.logger.info(f"New user joined: {username}. Member ID: {member.id}.")
             await self.welcome(member)
             await constants.commentators_channel.send(f'{username} has joined DMT.')

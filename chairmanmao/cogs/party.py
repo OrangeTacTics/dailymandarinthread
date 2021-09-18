@@ -19,19 +19,6 @@ class PartyCog(ChairmanMaoCog):
         self.chairmanmao.queue_member_update(ctx.author.id)
         await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
 
-    @commands.command(name='recognize', help="Remove 共产党员 role.")
-    @commands.has_role('共产党员')
-    async def cmd_recognize(self, ctx, member: commands.MemberConverter):
-        message = ctx.message
-        comrade_role = discord.utils.get(message.channel.guild.roles, name='同志')
-        username = self.chairmanmao.member_to_username(member)
-        assert comrade_role not in member.roles, 'Member is already a 同志.'
-
-        self.chairmanmao.api.as_party(ctx.author.id).recognize(member.id, username)
-
-        self.chairmanmao.queue_member_update(member.id)
-        await ctx.send(f'{ctx.author.display_name} has recognized Comrade {username}.')
-
     @commands.command(name='jail')
     @commands.has_role('共产党员')
     async def cmd_jail(self, ctx, member: commands.MemberConverter):

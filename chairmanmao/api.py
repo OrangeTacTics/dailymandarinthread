@@ -62,6 +62,9 @@ class Api:
 class ChairmanApi:
     db: pymongo.MongoClient
 
+    def create_profile(self, user_id: UserId, discord_username: str) -> None:
+        create_profile(self.db, user_id, discord_username)
+
     def get_profile(self, user_id: UserId) -> Profile:
         profile = get_profile(self.db, user_id)
         return profile
@@ -151,9 +154,6 @@ class ChairmanApi:
 class PartyApi:
     db: pymongo.MongoClient
     user_id: UserId
-
-    def recognize(self, user_id: UserId, discord_username: str):
-        create_profile(self.db, user_id, discord_username)
 
     def jail(self, user_id: UserId) -> None:
         with open_profile(self.db, user_id) as profile:
