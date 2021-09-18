@@ -48,7 +48,7 @@ class FourChanManager:
     def _title_for_thread(self, thread: Json) -> str:
         return thread["sub"]
 
-    def _is_url_seen(self, url: str) -> bool:
+    def is_url_seen(self, url: str) -> bool:
         if self.urls_seen is None:
             print('loading urls from database... 1')
             infile = self.file_manager.download('fourchan/seen_urls.json')
@@ -74,7 +74,6 @@ class FourChanManager:
         if thread:
             title = self._title_for_thread(thread)
             url = self._url_for_thread(thread)
-            self.see_url(url)
             return DmtThread(
                 title=title,
                 url=url,
@@ -82,5 +81,3 @@ class FourChanManager:
             )
         else:
             return None
-
-
