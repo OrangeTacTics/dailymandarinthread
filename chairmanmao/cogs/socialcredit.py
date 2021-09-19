@@ -77,7 +77,11 @@ class SocialCreditCog(ChairmanMaoCog):
             constants = self.chairmanmao.constants()
             cringe_emojis = [
                 constants.dekinai_emoji,
+                constants.dekinai2_emoji,
                 constants.diesofcringe_emoji,
+                constants.refold_emoji,
+                constants.celx_emoji,
+                constants.rchineselanguage_emoji,
             ]
 
             return emoji.id in [e.id for e in cringe_emojis]

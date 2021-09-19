@@ -31,7 +31,12 @@ class DiscordConstants:
 
     mao_emoji: discord.Emoji
     dekinai_emoji: discord.Emoji
+    dekinai2_emoji: discord.Emoji
     diesofcringe_emoji: discord.Emoji
+    rightist_emoji: discord.Emoji
+    refold_emoji: discord.Emoji
+    celx_emoji: discord.Emoji
+    rchineselanguage_emoji: discord.Emoji
 
     @staticmethod
     def load(guild) -> DiscordConstants:
@@ -61,8 +66,13 @@ class DiscordConstants:
             tiananmen_channel=DiscordConstants._load_channel(guild, "🏯"),
 
             mao_emoji=DiscordConstants._load_emoji(guild, "mao"),
-            dekinai_emoji=DiscordConstants._load_emoji(guild, "buneng2"),
+            dekinai_emoji=DiscordConstants._load_emoji(guild, "buneng"),
+            dekinai2_emoji=DiscordConstants._load_emoji(guild, "buneng2"),
             diesofcringe_emoji=DiscordConstants._load_emoji(guild, "diesofcringe"),
+            rightist_emoji=DiscordConstants._load_emoji(guild, "rightist"),
+            refold_emoji=DiscordConstants._load_emoji(guild, "refold"),
+            celx_emoji=DiscordConstants._load_emoji(guild, "celx"),
+            rchineselanguage_emoji=DiscordConstants._load_emoji(guild, "rchineselanguage"),
         )
 
     @staticmethod
