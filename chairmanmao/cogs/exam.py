@@ -28,16 +28,16 @@ class ExamCog(ChairmanMaoCog):
             active_exam = self.active_exam
             if message.channel.id == active_exam.channel.id and message.author.id == active_exam.member.id:
                 if not message.content.startswith('$') and active_exam.ready_for_next_answer():
-                    await active_exam.answer_question(message)
+                    await self.answer_question(active_exam, message)
 
     @tasks.loop(seconds=1)
     async def loop(self):
         if self.active_exam is not None:
             if self.active_exam.finished:
                 self.active_exam = None
-            elif self.active_exam.is_time_up():
-                await self.active_exam.finish_exam()
 
+            elif self.active_exam.is_time_up():
+                self.active_exam.timeout()
 
     @commands.group()
     async def exam(self, ctx):
@@ -66,24 +66,102 @@ class ExamCog(ChairmanMaoCog):
 
         if self.active_exam is not None:
             await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
+            return
+
+        member = ctx.author
+        channel = constants.exam_channel
+        active_exam = ActiveExam.make(
+            member=member,
+            channel=channel,
+            exam=make_exam(),
+        )
+
+        self.active_exam = active_exam
+
+        exam = active_exam.exam
+
+        description = f'{exam.name}: {exam.num_questions()} questions with a {exam.timelimit} second time limit per question.'
+
+        embed = discord.Embed(
+            title='Exam: ' + exam.name,
+            description=description,
+            color=0xff0000,
+        )
+        embed.set_author(
+            name=active_exam.member.display_name,
+            icon_url=active_exam.member.avatar_url,
+        )
+        await active_exam.channel.send(embed=embed)
+
+        while not active_exam.finished:
+            await self.send_next_question(active_exam)
+            while not active_exam.ready_for_next_question():
+                await asyncio.sleep(0)
+
+        await self.show_results(active_exam)
+
+    async def send_next_question(self, active_exam: ActiveExam) -> None:
+        question = active_exam.next_question()
+
+        font = 'kuaile'
+        image_buffer = self.chairmanmao.draw_manager.draw(font, question.question)
+        filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in question.question) + '.png'
+        file = discord.File(fp=image_buffer, filename=filename)
+        await active_exam.channel.send(file=file)
+
+    async def answer_question(self, active_exam: ActiveExam, answer: discord.Message) -> None:
+        correct = active_exam.answer(answer.content.strip())
+        emoji = '✅' if correct else '❌'
+        await answer.add_reaction(emoji)
+
+#        if not correct:
+#            await active_exam.channel.send('Correct answer: ' + current_question.valid_answers[0])
+
+    async def show_results(self, active_exam: ActiveExam) -> None:
+        lines = []
+        times_up = active_exam.is_time_up()
+
+        if not times_up:
+            questions_answered = active_exam.exam.questions[:len(active_exam.answers_given)]
         else:
-            member = ctx.author
-            channel = constants.exam_channel
-            self.active_exam = ActiveExam.make(
-                draw_manager=self.chairmanmao.draw_manager,
-                member=member,
-                channel=channel,
-                exam=make_exam(),
-            )
+            questions_answered = active_exam.exam.questions[:len(active_exam.answers_given) + 1]
 
-            await self.active_exam.start()
-            # await asyncio.sleep(3)
+        longest_answer = max(len(question.question) for question in questions_answered)
 
-    @exam.command(name='quit')
-    async def cmd_exam_quit(self, ctx):
-        constants = self.chairmanmao.constants()
-        await ctx.message.add_reaction(constants.dekinai_emoji)
-        await self.active_exam.finish_exam()
+        for question, answer, correct in active_exam.grade():
+            emoji = '✅' if correct else '❌'
+            correct_answer = question.valid_answers[0]
+            question_str = (question.question).ljust(longest_answer + 2, '　')
+            answer_str = answer if correct else f'{answer} → {correct_answer}'
+            lines.append(f'{emoji}　{question_str} {answer_str}')
+
+        if times_up:
+            emoji = '❌'
+            question = active_exam.exam.questions[len(active_exam.answers_given)]
+            correct_answer = question.valid_answers[0]
+            question_str = (question.question).ljust(longest_answer + 2, '　')
+            answer_str = f'*time expired* → {correct_answer}'
+            lines.append(f'{emoji}　{question_str} {answer_str}')
+
+        if active_exam.passed():
+            title = 'Exam Passed: ' + active_exam.exam.name
+            color = 0x00ff00
+        else:
+            title = 'Exam Failed: ' + active_exam.exam.name
+            color = 0xff0000
+
+        embed = discord.Embed(
+            title=title,
+            description='\n'.join(lines),
+            color=color,
+        )
+        embed.set_author(
+            name=active_exam.member.display_name,
+            icon_url=active_exam.member.avatar_url,
+        )
+
+        await active_exam.channel.send(embed=embed)
+
 
 
 def make_exam() -> 'Exam':
@@ -99,19 +177,18 @@ def make_exam() -> 'Exam':
             questions.append(ExamQuestion(word['question'], word['answers'].split(',')))
 
     random.shuffle(questions)
-    questions = questions[:10]
+    questions = questions[:7]
 
     return Exam(
         name='HSK 1',
-        max_wrong=0,
         questions=questions,
+        max_wrong=0,
+        timelimit=7,
     )
 
 
 @dataclass
 class ActiveExam:
-    draw_manager: DrawManager
-
     member: discord.Member
     channel: discord.TextChannel
     exam: Exam
@@ -125,12 +202,10 @@ class ActiveExam:
 
     answers_given: t.List[str]
 
-
     @staticmethod
-    def make(draw_manager: DrawManager, member: discord.Member, channel: discord.TextChannel, exam: Exam) -> ActiveExam:
+    def make(member: discord.Member, channel: discord.TextChannel, exam: Exam) -> ActiveExam:
         now = datetime.now(timezone.utc).replace(microsecond=0)
         return ActiveExam(
-                draw_manager=draw_manager,
                 member=member,
                 channel=channel,
                 exam=exam,
@@ -143,13 +218,8 @@ class ActiveExam:
                 answers_given=[],
             )
 
-    async def start(self) -> None:
-        await self.channel.send(f'Starting exam for {self.member.mention}.')
-        await asyncio.sleep(1)
-        await self.send_next_question()
-
     def ready_for_next_question(self) -> bool:
-        return len(self.answers_given) == self.current_question_index + 1
+        return len(self.answers_given) == self.current_question_index + 1 or self.finished
 
     def ready_for_next_answer(self) -> bool:
         return len(self.answers_given) == self.current_question_index
@@ -160,92 +230,39 @@ class ActiveExam:
         except:
             return None
 
-    def next_question(self) -> t.Optional[ExamQuestion]:
-        if self.finished:
-            return None
-        else:
-            self.current_question_index += 1
-            question = self.exam.questions[self.current_question_index]
-            return question
+    def next_question(self) -> ExamQuestion:
+        assert not self.finished
+        now = datetime.now(timezone.utc)
+
+        self.current_question_start = now
+        self.current_question_index += 1
+
+        question = self.exam.questions[self.current_question_index]
+        return question
 
     def is_time_up(self) -> bool:
         now = datetime.now(timezone.utc).replace(microsecond=0)
         duration = now - self.current_question_start
-        return duration.total_seconds() > 5
+        return duration.total_seconds() > self.exam.timelimit
 
-    async def finish_exam(self) -> None:
-        self.finished = True
-
-        if self.is_time_up():
+    def timeout(self) -> None:
+        if not self.finished:
+            self.finished = True
             self.times_up = True
 
-        lines = []
-
-        if self.times_up:
-            lines.append(f'{self.member.mention}: Time is up')
-        else:
-            lines.append(f'{self.member.mention}: The exam is complete')
-
-        if not self.times_up:
-            questions_answered = self.exam.questions[:len(self.answers_given)]
-        else:
-            questions_answered = self.exam.questions[:len(self.answers_given) + 1]
-
-        longest_answer = max(len(question.question) for question in questions_answered)
-
-        for question, answer, correct in self.grade():
-            emoji = '✅' if correct else '❌'
-            correct_answer = question.valid_answers[0]
-            question_str = (question.question).ljust(longest_answer + 2, '　')
-            answer_str = answer if correct else f'{answer} → {correct_answer}'
-            lines.append(f'{emoji} {question_str} {answer_str}')
-
-        if self.times_up:
-            emoji = '❌'
-            question = self.exam.questions[len(self.answers_given)]
-            correct_answer = question.valid_answers[0]
-            question_str = (question.question).ljust(longest_answer + 2, '　')
-            answer_str = f'*time expired* → {correct_answer}'
-            lines.append(f'{emoji} {question_str} {answer_str}')
-
-
-        await self.channel.send('\n'.join(lines))
-
-    async def answer_question(self, answer: discord.Message) -> None:
-        self.answers_given.append(answer.content.strip())
-
+    def answer(self, answer: str) -> bool:
+        self.answers_given.append(answer)
         current_question = self.current_question()
         assert current_question, 'No question was asked'
 
-        content = answer.content.strip()
-        correct = content in current_question.valid_answers
+        correct = answer in current_question.valid_answers
+        if self.number_wrong() > self.exam.max_wrong:
+            self.finished = True
 
-        emoji = '✅' if correct else '❌'
-        await answer.add_reaction(emoji)
+        elif len(self.answers_given) == len(self.exam.questions):
+            self.finished = True
 
-#        if not correct:
-#            await self.channel.send('Correct answer: ' + current_question.valid_answers[0])
-
-        # hack to fight timing issues
-        self.times_up = False
-
-        if len(self.answers_given) < len(self.exam.questions) and not self.times_up and self.number_wrong() <= self.exam.max_wrong:
-            await self.send_next_question()
-        else:
-            await self.finish_exam()
-
-    async def send_next_question(self) -> None:
-        question = self.next_question()
-        assert question is not None
-
-        font = 'kuaile'
-        image_buffer = self.draw_manager.draw(font, question.question)
-        filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in question.question) + '.png'
-        file = discord.File(fp=image_buffer, filename=filename)
-        await self.channel.send(file=file)
-
-        now = datetime.now(timezone.utc)
-        self.current_question_start = now
+        return correct
 
     def number_wrong(self) -> int:
         num_questions_answered = len(self.answers_given)
@@ -259,7 +276,7 @@ class ActiveExam:
 
         return number_wrong
 
-    def grade(self) -> t.List[t.Tuple[ExamQuestion, Answer, bool]]:
+    def grade(self) -> t.List[t.Tuple[ExamQuestion, str, bool]]:
         num_questions_answered = len(self.answers_given)
         questions = self.exam.questions[:num_questions_answered]
 
@@ -271,17 +288,23 @@ class ActiveExam:
 
         return results
 
+    def passed(self) -> bool:
+        assert self.finished, 'Exam is not finished'
+        return not self.times_up and self.number_wrong() <= self.exam.max_wrong
+
 
 @dataclass
 class Exam:
     name: str
     questions: t.List[ExamQuestion]
     max_wrong: int
+    timelimit: int
+
+    def num_questions(self):
+        return len(self.questions)
 
 
 @dataclass
 class ExamQuestion:
     question: str
     valid_answers: t.List[str]
-
-Answer = str
