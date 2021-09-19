@@ -61,7 +61,7 @@ class DiscordConstants:
             commentators_channel=DiscordConstants._load_channel(guild, "🐉"),
             learners_channel=DiscordConstants._load_channel(guild, "✍"),
             test_channel=DiscordConstants._load_channel(guild, "🏫"),
-            exam_channel=DiscordConstants._load_channel(guild, "🏯"),
+            exam_channel=DiscordConstants._load_channel(guild, "🏫"),
             apologies_channel=DiscordConstants._load_channel(guild, "⛔"),
             tiananmen_channel=DiscordConstants._load_channel(guild, "🏯"),
 
