@@ -38,6 +38,8 @@ class ExamCog(ChairmanMaoCog):
 
             elif self.active_exam.is_time_up():
                 self.active_exam.timeout()
+                await self.active_exam.channel.send('Question timed out')
+                await asyncio.sleep(0.5)
 
     @commands.group()
     async def exam(self, ctx):
@@ -100,6 +102,24 @@ class ExamCog(ChairmanMaoCog):
 
         await self.show_results(active_exam)
 
+    @exam.command(name='quit')
+    async def cmd_exam_quit(self, ctx):
+        constants = self.chairmanmao.constants()
+        if ctx.channel.id != constants.exam_channel.id:
+            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
+            return
+
+        if self.active_exam is None:
+#            await ctx.send(f'There is no exam in progress.')
+            return
+
+        if self.active_exam.member.id != ctx.author.id:
+#            await ctx.send(f"The exam in progress isn't yours")
+            return
+
+        self.active_exam.give_up()
+        await ctx.message.add_reaction(constants.dekinai_emoji)
+
     async def send_next_question(self, active_exam: ActiveExam) -> None:
         question = active_exam.next_question()
 
@@ -119,32 +139,23 @@ class ExamCog(ChairmanMaoCog):
 
     async def show_results(self, active_exam: ActiveExam) -> None:
         lines = []
-        times_up = active_exam.is_time_up()
 
-        if not times_up:
-            questions_answered = active_exam.exam.questions[:len(active_exam.answers_given)]
-        else:
-            questions_answered = active_exam.exam.questions[:len(active_exam.answers_given) + 1]
-
+        questions_answered = active_exam.exam.questions[:len(active_exam.answers_given)]
         longest_answer = max(len(question.question) for question in questions_answered)
 
-        for question, answer, correct in active_exam.grade():
+        for question, answer in active_exam.grade():
+            correct = isinstance(answer, Correct)
             emoji = '✅' if correct else '❌'
             correct_answer = question.valid_answers[0]
             question_str = (question.question).ljust(longest_answer + 2, '　')
             answer_str = answer if correct else f'{answer} → {correct_answer}'
             lines.append(f'{emoji}　{question_str} {answer_str}')
 
-        if times_up:
-            emoji = '❌'
-            question = active_exam.exam.questions[len(active_exam.answers_given)]
-            correct_answer = question.valid_answers[0]
-            question_str = (question.question).ljust(longest_answer + 2, '　')
-            answer_str = f'*time expired* → {correct_answer}'
-            lines.append(f'{emoji}　{question_str} {answer_str}')
-
         if active_exam.passed():
             title = 'Exam Passed: ' + active_exam.exam.name
+            if active_exam.exam.max_wrong > 0:
+                score = active_exam.score() * 100
+                title += f' {score:2.1f}%'
             color = 0x00ff00
         else:
             title = 'Exam Failed: ' + active_exam.exam.name
@@ -177,12 +188,12 @@ def make_exam() -> 'Exam':
             questions.append(ExamQuestion(word['question'], word['answers'].split(',')))
 
     random.shuffle(questions)
-    questions = questions[:7]
+    questions = questions[:10]
 
     return Exam(
         name='HSK 1',
         questions=questions,
-        max_wrong=0,
+        max_wrong=2,
         timelimit=7,
     )
 
@@ -195,12 +206,11 @@ class ActiveExam:
 
     exam_start: datetime
     finished: bool
-    times_up: bool
 
     current_question_index: int
     current_question_start: datetime
 
-    answers_given: t.List[str]
+    answers_given: t.List[Answer]
 
     @staticmethod
     def make(member: discord.Member, channel: discord.TextChannel, exam: Exam) -> ActiveExam:
@@ -212,7 +222,6 @@ class ActiveExam:
 
                 exam_start=now,
                 finished=False,
-                times_up=False,
                 current_question_index=-1, # -1 because we need to call next_question() as least once.
                 current_question_start=now,
                 answers_given=[],
@@ -246,23 +255,38 @@ class ActiveExam:
         return duration.total_seconds() > self.exam.timelimit
 
     def timeout(self) -> None:
-        if not self.finished:
+        self.answers_given.append(Timeout())
+
+        if self.number_wrong() > self.exam.max_wrong:
             self.finished = True
-            self.times_up = True
+        elif len(self.answers_given) == len(self.exam.questions):
+            self.finished = True
+
+    def give_up(self) -> None:
+        self.answers_given.append(Quit())
+        self.finished = True
 
     def answer(self, answer: str) -> bool:
-        self.answers_given.append(answer)
         current_question = self.current_question()
         assert current_question, 'No question was asked'
 
         correct = answer in current_question.valid_answers
+
+        if correct:
+            self.answers_given.append(Correct(answer))
+        else:
+            self.answers_given.append(Incorrect(answer))
+
         if self.number_wrong() > self.exam.max_wrong:
             self.finished = True
-
         elif len(self.answers_given) == len(self.exam.questions):
             self.finished = True
 
         return correct
+
+    def score(self) -> float:
+        num_questions_answered = len(self.answers_given)
+        return 1.0 - self.number_wrong() / num_questions_answered
 
     def number_wrong(self) -> int:
         num_questions_answered = len(self.answers_given)
@@ -271,26 +295,28 @@ class ActiveExam:
         number_wrong = 0
 
         for question, answer in zip(questions, self.answers_given):
-            if answer not in question.valid_answers:
+            if not isinstance(answer, Correct):
                 number_wrong += 1
 
         return number_wrong
 
-    def grade(self) -> t.List[t.Tuple[ExamQuestion, str, bool]]:
+    def grade(self) -> t.List[t.Tuple[ExamQuestion, Answer]]:
         num_questions_answered = len(self.answers_given)
         questions = self.exam.questions[:num_questions_answered]
 
         results = []
 
         for question, answer in zip(questions, self.answers_given):
-            correct = answer in question.valid_answers
-            results.append((question, answer, correct))
+            results.append((question, answer))
 
         return results
 
+    def gave_up(self) -> bool:
+        return not any(isinstance(a, Quit) for a in self.answers_given)
+
     def passed(self) -> bool:
         assert self.finished, 'Exam is not finished'
-        return not self.times_up and self.number_wrong() <= self.exam.max_wrong
+        return not self.gave_up() and self.number_wrong() <= self.exam.max_wrong
 
 
 @dataclass
@@ -308,3 +334,32 @@ class Exam:
 class ExamQuestion:
     question: str
     valid_answers: t.List[str]
+
+
+@dataclass
+class Timeout:
+    def __str__(self) -> str:
+        return '*timed out*'
+
+
+@dataclass
+class Quit:
+    def __str__(self) -> str:
+        return '*gave up*'
+
+
+@dataclass
+class Correct:
+    value: str
+    def __str__(self) -> str:
+        return self.value
+
+
+@dataclass
+class Incorrect:
+    value: str
+    def __str__(self) -> str:
+        return self.value
+
+
+Answer = t.Union[Correct, Incorrect, Timeout, Quit]
