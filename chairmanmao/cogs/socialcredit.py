@@ -48,11 +48,13 @@ class SocialCreditCog(ChairmanMaoCog):
 
             if self.is_based_emoji(emoji):
                 credit = self.chairmanmao.api.as_chairman().honor(user_to_credit.id, 1)
+                self.chairmanmao.queue_member_update(user_to_credit.id)
+                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
             elif self.is_cringe_emoji(emoji):
                 credit = self.chairmanmao.api.as_chairman().dishonor(user_to_credit.id, 1)
+                self.chairmanmao.queue_member_update(user_to_credit.id)
+                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
-            self.chairmanmao.queue_member_update(user_to_credit.id)
-            self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
 
     @commands.Cog.listener()
@@ -63,14 +65,19 @@ class SocialCreditCog(ChairmanMaoCog):
 
             if self.is_based_emoji(emoji):
                 credit = self.chairmanmao.api.as_chairman().dishonor(user_to_credit.id, 1)
+                self.chairmanmao.queue_member_update(user_to_credit.id)
+                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
             elif self.is_cringe_emoji(emoji):
                 credit = self.chairmanmao.api.as_chairman().honor(user_to_credit.id, 1)
+                self.chairmanmao.queue_member_update(user_to_credit.id)
+                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
-            self.chairmanmao.queue_member_update(user_to_credit.id)
-            self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
     def is_based_emoji(self, emoji: t.Union[str, discord.Emoji]) -> bool:
-        return not self.is_cringe_emoji(emoji)
+        if isinstance(emoji, discord.Emoji):
+            return not self.is_cringe_emoji(emoji)
+        else:
+            return False
 
     def is_cringe_emoji(self, emoji: t.Union[str, discord.Emoji]) -> bool:
         if isinstance(emoji, discord.Emoji):
@@ -87,4 +94,5 @@ class SocialCreditCog(ChairmanMaoCog):
             return emoji.id in [e.id for e in cringe_emojis]
 
         else:
-            return emoji in ['❌']
+#            return emoji in ['❌']
+            return False
