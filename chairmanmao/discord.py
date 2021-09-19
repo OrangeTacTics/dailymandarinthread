@@ -25,8 +25,13 @@ class DiscordConstants:
     apologies_channel: discord.TextChannel
     news_channel: discord.TextChannel
     test_channel: discord.TextChannel
+    exam_channel: discord.TextChannel
     learners_channel: discord.TextChannel
     rules_channel: discord.TextChannel
+
+    mao_emoji: discord.Emoji
+    dekinai_emoji: discord.Emoji
+    diesofcringe_emoji: discord.Emoji
 
     @staticmethod
     def load(guild) -> DiscordConstants:
@@ -51,8 +56,13 @@ class DiscordConstants:
             commentators_channel=DiscordConstants._load_channel(guild, "🐉"),
             learners_channel=DiscordConstants._load_channel(guild, "✍"),
             test_channel=DiscordConstants._load_channel(guild, "🏫"),
+            exam_channel=DiscordConstants._load_channel(guild, "🏯"),
             apologies_channel=DiscordConstants._load_channel(guild, "⛔"),
             tiananmen_channel=DiscordConstants._load_channel(guild, "🏯"),
+
+            mao_emoji=DiscordConstants._load_emoji(guild, "mao"),
+            dekinai_emoji=DiscordConstants._load_emoji(guild, "buneng2"),
+            diesofcringe_emoji=DiscordConstants._load_emoji(guild, "diesofcringe"),
         )
 
     @staticmethod
@@ -71,3 +81,9 @@ class DiscordConstants:
 
         assert found_channel is not None, f'Channel {prefix} does not exist.'
         return found_channel
+
+    @staticmethod
+    def _load_emoji(guild: discord.Guild, name: str) -> discord.Emoji:
+        emoji = discord.utils.get(guild.emojis, name=name)
+        assert emoji is not None, f'Emoji {name} does not exist.'
+        return emoji
