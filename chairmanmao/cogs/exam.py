@@ -47,7 +47,7 @@ class ExamCog(ChairmanMaoCog):
     async def cmd_exam_start(self, ctx):
         constants = self.chairmanmao.constants()
         if self.active_exam is not None:
-            await ctx.send(f'{member.mention} is currently taking an exam')
+            await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
 
         else:
             member = ctx.author
