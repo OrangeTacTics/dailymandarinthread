@@ -82,17 +82,42 @@ class ExamCog(ChairmanMaoCog):
 
         exam = active_exam.exam
 
-        description = f'{exam.name}: {exam.num_questions()} questions with a {exam.timelimit} second time limit per question.'
+        description = f'{exam.name}'
 
         embed = discord.Embed(
-            title='Exam: ' + exam.name,
-            description=description,
-            color=0xff0000,
+#            title='Exam',
+#            description=description,
+            color=0xffa500,
         )
+
         embed.set_author(
             name=active_exam.member.display_name,
             icon_url=active_exam.member.avatar_url,
         )
+        embed.add_field(
+            name='Exam',
+            value=exam.name,
+            inline=True,
+        )
+
+        embed.add_field(
+            name='Questions',
+            value=f'{exam.num_questions()}',
+            inline=True,
+        )
+
+        embed.add_field(
+            name='Time Limit',
+            value=f'{exam.timelimit} seconds',
+            inline=False,
+        )
+        if exam.max_wrong > 0:
+            embed.add_field(
+                name='Mistakes Allowed',
+                value=f'{exam.max_wrong}',
+                inline=True,
+            )
+
         await active_exam.channel.send(embed=embed)
 
         while not active_exam.finished:
@@ -153,9 +178,6 @@ class ExamCog(ChairmanMaoCog):
 
         if active_exam.passed():
             title = 'Exam Passed: ' + active_exam.exam.name
-            if active_exam.exam.max_wrong > 0:
-                score = active_exam.score() * 100
-                title += f' {score:2.1f}%'
             color = 0x00ff00
         else:
             title = 'Exam Failed: ' + active_exam.exam.name
@@ -170,6 +192,9 @@ class ExamCog(ChairmanMaoCog):
             name=active_exam.member.display_name,
             icon_url=active_exam.member.avatar_url,
         )
+        if active_exam.passed() and active_exam.exam.max_wrong > 0:
+            score = active_exam.score() * 100
+            embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
 
         await active_exam.channel.send(embed=embed)
 
@@ -312,7 +337,7 @@ class ActiveExam:
         return results
 
     def gave_up(self) -> bool:
-        return not any(isinstance(a, Quit) for a in self.answers_given)
+        return any(isinstance(a, Quit) for a in self.answers_given)
 
     def passed(self) -> bool:
         assert self.finished, 'Exam is not finished'
