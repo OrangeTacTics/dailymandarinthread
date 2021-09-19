@@ -30,16 +30,15 @@ class SyncCog(ChairmanMaoCog):
         self.chairmanmao.logger.info('Full member update complete')
 
     @commands.command(name='sync')
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def  cmd_sync(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send('Sync complete')
 
     @commands.command(name='syncall')
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def  cmd_syncall(self, ctx):
+        await ctx.send('Sync starting')
         await self.full_member_update()
         await ctx.send('Sync complete')
 
