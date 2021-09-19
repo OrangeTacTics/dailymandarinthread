@@ -13,13 +13,11 @@ class OwnerCog(ChairmanMaoCog):
         self.chairmanmao.logger.info('OwnersCog')
 
     @commands.command(name='debug')
-    @commands.has_role("共产党员")
     @commands.is_owner()
     async def cmd_debug(self, ctx):
         breakpoint()
 
     @commands.command(name='promote')
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def  cmd_promote(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.api.as_chairman().promote(member.id)
@@ -27,14 +25,12 @@ class OwnerCog(ChairmanMaoCog):
         await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
 
     @commands.command(name='deomote')
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def  cmd_demote(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.api.as_chairman().demote(member.id)
         self.chairmanmao.queue_member_update(member.id)
 
     @commands.command(name='honor', help="Add social credit to a user.")
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def cmd_honor(self, ctx, member: commands.MemberConverter, credit: int):
         assert credit > 0
@@ -48,7 +44,6 @@ class OwnerCog(ChairmanMaoCog):
         await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
 
     @commands.command(name='dishonor', help="Remove social credit from a user.")
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def cmd_dishonor(self, ctx, member: commands.MemberConverter, credit: int):
         assert credit > 0
@@ -62,7 +57,6 @@ class OwnerCog(ChairmanMaoCog):
         await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
 
     @commands.command(name='setname', help="Sets the name of another user.")
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def cmd_setname(self, ctx, member: commands.MemberConverter, name: str):
         target_username = self.chairmanmao.member_to_username(member)
@@ -80,7 +74,6 @@ class OwnerCog(ChairmanMaoCog):
         await ctx.send(f"{target_username}'s nickname has been changed to {name}")
 
     @commands.command(name='setlearner')
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def cmd_setlearner(self, ctx, member: commands.MemberConverter, flag: bool = True):
         target_username = self.chairmanmao.member_to_username(member)
@@ -89,7 +82,6 @@ class OwnerCog(ChairmanMaoCog):
         await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
 
     @commands.command(name='sethsk')
-    @commands.has_role('共产党员')
     @commands.is_owner()
     async def cmd_sethsk(self, ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
         target_username = self.chairmanmao.member_to_username(member)
