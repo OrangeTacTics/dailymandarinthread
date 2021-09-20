@@ -59,14 +59,18 @@ class ExamCog(ChairmanMaoCog):
 
     @exam.command(name='list')
     async def cmd_exam_list(self, ctx):
-        await ctx.send('Available exams: ' + ' '.join(EXAMS.keys()))
+#        await ctx.send('Available exams: ' + ' '.join(EXAMS.keys()))
+        await ctx.send('Available exams: hsk1 hsk2')
 
     @exam.command(name='start')
     async def cmd_exam_start(self, ctx, exam_name: t.Optional[str] = None):
         if exam_name is None:
             exam_name = 'hsk1'
 
-        exam = EXAMS[exam_name]
+        exam = {
+            'hsk1': make_hsk1_exam(),
+            'hsk2': make_hsk2_exam(),
+        }[exam_name]
 
         constants = self.chairmanmao.constants()
         if ctx.channel.id != constants.exam_channel.id:
