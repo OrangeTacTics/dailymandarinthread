@@ -33,13 +33,12 @@ class ExamCog(ChairmanMaoCog):
     @tasks.loop(seconds=1)
     async def loop(self):
         if self.active_exam is not None:
-            if self.active_exam.finished:
+            if self.active_exam.finished():
                 self.active_exam = None
 
             elif self.active_exam.is_time_up():
                 self.active_exam.timeout()
-                await self.active_exam.channel.send('Question timed out')
-                await asyncio.sleep(0.5)
+                await self.active_exam.channel.send("⏲️ Time's up!")
 
     @commands.group()
     async def exam(self, ctx):
@@ -120,7 +119,7 @@ class ExamCog(ChairmanMaoCog):
 
         await active_exam.channel.send(embed=embed)
 
-        while not active_exam.finished:
+        while not active_exam.finished():
             await self.send_next_question(active_exam)
             while not active_exam.ready_for_next_question():
                 await asyncio.sleep(0)
@@ -174,7 +173,7 @@ class ExamCog(ChairmanMaoCog):
             correct_answer = question.valid_answers[0]
             question_str = (question.question).ljust(longest_answer + 2, '　')
             answer_str = answer if correct else f'{answer} → {correct_answer}'
-            lines.append(f'{emoji}　{question_str} {answer_str}')
+            lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
 
         if active_exam.passed():
             title = 'Exam Passed: ' + active_exam.exam.name
@@ -230,7 +229,6 @@ class ActiveExam:
     exam: Exam
 
     exam_start: datetime
-    finished: bool
 
     current_question_index: int
     current_question_start: datetime
@@ -246,14 +244,13 @@ class ActiveExam:
                 exam=exam,
 
                 exam_start=now,
-                finished=False,
                 current_question_index=-1, # -1 because we need to call next_question() as least once.
                 current_question_start=now,
                 answers_given=[],
             )
 
     def ready_for_next_question(self) -> bool:
-        return len(self.answers_given) == self.current_question_index + 1 or self.finished
+        return len(self.answers_given) == self.current_question_index + 1
 
     def ready_for_next_answer(self) -> bool:
         return len(self.answers_given) == self.current_question_index
@@ -265,7 +262,7 @@ class ActiveExam:
             return None
 
     def next_question(self) -> ExamQuestion:
-        assert not self.finished
+        assert not self.finished()
         now = datetime.now(timezone.utc)
 
         self.current_question_start = now
@@ -282,14 +279,8 @@ class ActiveExam:
     def timeout(self) -> None:
         self.answers_given.append(Timeout())
 
-        if self.number_wrong() > self.exam.max_wrong:
-            self.finished = True
-        elif len(self.answers_given) == len(self.exam.questions):
-            self.finished = True
-
     def give_up(self) -> None:
         self.answers_given.append(Quit())
-        self.finished = True
 
     def answer(self, answer: str) -> bool:
         current_question = self.current_question()
@@ -301,11 +292,6 @@ class ActiveExam:
             self.answers_given.append(Correct(answer))
         else:
             self.answers_given.append(Incorrect(answer))
-
-        if self.number_wrong() > self.exam.max_wrong:
-            self.finished = True
-        elif len(self.answers_given) == len(self.exam.questions):
-            self.finished = True
 
         return correct
 
@@ -340,8 +326,18 @@ class ActiveExam:
         return any(isinstance(a, Quit) for a in self.answers_given)
 
     def passed(self) -> bool:
-        assert self.finished, 'Exam is not finished'
+        assert self.finished(), 'Exam is not finished'
         return not self.gave_up() and self.number_wrong() <= self.exam.max_wrong
+
+    def finished(self) -> bool:
+        return (
+            len(self.answers_given) == len(self.exam.questions) or  # complete
+            self.number_wrong() > self.exam.max_wrong or            # missed too many questions
+            self.gave_up()                                          # gave up
+        )
+
+    def last_question_was_timeout(self) -> bool:
+        return len(self.answers_given) > 0 and isinstance(self.answers_given[-1], Timeout)
 
 
 @dataclass
