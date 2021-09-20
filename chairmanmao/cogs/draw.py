@@ -1,6 +1,7 @@
 from __future__ import annotations
 import typing as t
 from io import BytesIO
+import asyncio
 
 import discord
 from discord.ext import commands
@@ -22,20 +23,26 @@ class DrawCog(ChairmanMaoCog):
         if font is None:
             font = 'kuaile'
 
-        image_buffer = self.chairmanmao.draw_manager.draw(font, chars)
-        filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in chars) + '.png'
-        await ctx.channel.send(file=discord.File(fp=image_buffer, filename=filename))
+        await self.chairmanmao.draw_manager.draw_to_channel(ctx.channel, font, chars)
 
+    @commands.group(name='font')
+    async def font(self, ctx):
+        pass
 
-    @commands.command(name='font')
+    @font.command(name='list')
     @commands.has_role('同志')
     @commands.cooldown(1, 5 * 60, type)
-    async def cmd_font(self, ctx, font_name: str):
-        if font_name == 'list':
-            font_names = self.chairmanmao.draw_manager.get_font_names()
-            await ctx.send(f"The available fonts are: " + ' '.join(font_names))
-            return
+    async def cmd_font_list(self, ctx):
+        font_names = self.chairmanmao.draw_manager.get_font_names()
+        for font_name in font_names:
+            await self.demo_font(font_name, ctx.channel)
+            await asyncio.sleep(0.5)
+        return
 
+    @font.command(name='upload')
+    @commands.has_role('同志')
+    @commands.cooldown(1, 5 * 60, type)
+    async def cmd_font_upload(self, ctx, font_name: str):
         if not font_name.isidentifier():
             await ctx.send(f"Please name the font with no spaces, ASCII-only, beginning with a letter")
             return
@@ -51,5 +58,11 @@ class DrawCog(ChairmanMaoCog):
 
         resp = requests.get(attachment.url)
         self.chairmanmao.draw_manager.upload_font(ctx.author.id, font_name, BytesIO(resp.content))
-        await ctx.send(f"Uploaded font: {font_name}.")
+        await ctx.send(f"Uploaded font:")
+        await self.demo_font(font_name, ctx.channel)
 
+    async def demo_font(self, font_name: str, channel: discord.Messageable) -> None:
+        text = '我爱中国'
+        image_buffer = self.chairmanmao.draw_manager.draw(font_name, text)
+        filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in text) + '.png'
+        await channel.send(f'{font_name}:', file=discord.File(fp=image_buffer, filename=filename))

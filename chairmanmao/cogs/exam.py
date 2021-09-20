@@ -183,7 +183,14 @@ class ExamCog(ChairmanMaoCog):
         question = active_exam.next_question()
 
         font = 'kuaile'
-        image_buffer = self.chairmanmao.draw_manager.draw(font, question.question)
+        size = 64
+        color = (255, 0, 0)
+        image_buffer = self.chairmanmao.draw_manager.draw(
+            font,
+            question.question,
+            size=size,
+            color=color,
+        )
         filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in question.question) + '.png'
         file = discord.File(fp=image_buffer, filename=filename)
         await active_exam.channel.send(file=file)
