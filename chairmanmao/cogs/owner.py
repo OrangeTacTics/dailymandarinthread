@@ -22,7 +22,7 @@ class OwnerCog(ChairmanMaoCog):
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
 
-    @commands.command(name='deomote')
+    @commands.command(name='demote')
     @commands.is_owner()
     async def cmd_demote(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.api.as_chairman().demote(member.id)
