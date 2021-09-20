@@ -1,11 +1,6 @@
 from __future__ import annotations
-from dataclasses import dataclass
-import requests
 import typing as t
-from pathlib import Path
 import logging
-import re
-import json
 
 import discord
 from discord.ext import commands
@@ -17,7 +12,7 @@ from chairmanmao.filemanager import DoSpacesConfig, FileManager
 from chairmanmao.api import Api
 from chairmanmao.draw import DrawManager
 from chairmanmao.fourchan import FourChanManager
-from chairmanmao.types import Profile, UserId, Json, Role
+from chairmanmao.types import UserId
 
 from chairmanmao.discord import DiscordConstants
 
@@ -86,7 +81,7 @@ class ChairmanMao:
     def member_to_username(member) -> str:
         return member.name + '#' + member.discriminator
 
-    def queue_member_update(self,user_id: UserId) -> None:
+    def queue_member_update(self, user_id: UserId) -> None:
         self.member_update_queue.add(user_id)
 
     def flush_member_update_queue(self) -> t.List[UserId]:
