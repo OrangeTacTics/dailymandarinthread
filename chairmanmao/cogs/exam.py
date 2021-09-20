@@ -59,7 +59,6 @@ class ExamCog(ChairmanMaoCog):
 
     @exam.command(name='list')
     async def cmd_exam_list(self, ctx):
-#        await ctx.send('Available exams: ' + ' '.join(EXAMS.keys()))
         await ctx.send('Available exams: hsk1 hsk2')
 
     @exam.command(name='start')
@@ -252,7 +251,7 @@ def make_hsk1_exam() -> 'Exam':
 
     import csv
     import random
-    with open('data/hsk2.csv') as infile:
+    with open('data/hsk1.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
@@ -462,8 +461,3 @@ class Incorrect:
 
 
 Answer = t.Union[Correct, Incorrect, Timeout, Quit]
-
-EXAMS = {
-    'hsk1': make_hsk1_exam(),
-    'hsk2': make_hsk2_exam(),
-}
