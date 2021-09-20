@@ -1,7 +1,3 @@
-import typing as t
-import os
-
-import discord
 from discord.ext import commands, tasks
 from chairmanmao.cogs import ChairmanMaoCog
 
@@ -25,4 +21,3 @@ class FourChanCog(ChairmanMaoCog):
                     thread.url,
                 ]
                 await constants.thread_channel.send('\n'.join(lines))
-

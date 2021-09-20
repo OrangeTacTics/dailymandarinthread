@@ -16,7 +16,6 @@ class SocialCreditCog(ChairmanMaoCog):
         if member is None:
             member = ctx.author
 
-        username = self.chairmanmao.member_to_username(ctx.author)
         target_username = self.chairmanmao.member_to_username(member)
 
         credit = self.chairmanmao.api.as_comrade(ctx.author.id).social_credit(member.id)
@@ -31,7 +30,6 @@ class SocialCreditCog(ChairmanMaoCog):
             "```",
         ]
 
-        username = self.chairmanmao.member_to_username(ctx.author)
         for entry in self.chairmanmao.api.as_comrade(ctx.author.id).leaderboard():
             line = f'{entry.credit} ... {entry.display_name}'
             lines.append(discord.utils.remove_markdown(line))
@@ -55,8 +53,6 @@ class SocialCreditCog(ChairmanMaoCog):
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
-
-
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
         user_to_credit = reaction.message.author
@@ -71,7 +67,6 @@ class SocialCreditCog(ChairmanMaoCog):
                 credit = self.chairmanmao.api.as_chairman().honor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
-
 
     def is_based_emoji(self, emoji: t.Union[str, discord.Emoji]) -> bool:
         if isinstance(emoji, discord.Emoji):

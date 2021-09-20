@@ -1,9 +1,5 @@
-import typing as t
-
-import discord
 from discord.ext import commands
 
-from chairmanmao.types import Profile
 from chairmanmao.cogs import ChairmanMaoCog
 
 
@@ -14,7 +10,7 @@ class PartyCog(ChairmanMaoCog):
 
     @commands.command(name='stepdown', help="Remove 共产党员 role.")
     @commands.has_role('共产党员')
-    async def  cmd_stepdown(self, ctx):
+    async def cmd_stepdown(self, ctx):
         self.chairmanmao.api.as_party(ctx.author.id).stepdown()
         self.chairmanmao.queue_member_update(ctx.author.id)
         await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')

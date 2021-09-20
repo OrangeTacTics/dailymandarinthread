@@ -1,9 +1,5 @@
-import typing as t
+from discord.ext import commands
 
-import discord
-from discord.ext import commands, tasks
-
-from chairmanmao.types import Profile
 from chairmanmao.cogs import ChairmanMaoCog
 
 

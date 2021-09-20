@@ -1,9 +1,5 @@
-import typing as t
+from discord.ext import commands
 
-import discord
-from discord.ext import commands, tasks
-
-from chairmanmao.types import Profile
 from chairmanmao.cogs import ChairmanMaoCog
 
 
@@ -15,9 +11,9 @@ class WelcomeCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         try:
-            profile = self.chairmanmao.api.as_chairman().get_profile(member.id)
+            self.chairmanmao.api.as_chairman().get_profile(member.id)
             is_new_member = False
-        except:
+        except:  # noqa
             username = self.chairmanmao.member_to_username(member)
             self.chairmanmao.api.as_chairman().create_profile(member.id, username)
             is_new_member = True
@@ -37,11 +33,6 @@ class WelcomeCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        try:
-            profile = self.chairmanmao.api.as_chairman().get_profile(member.id)
-        except:
-            profile = None
-
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.logger.info(f"User left: {username}. Member ID: {member.id}.")
         constants = self.chairmanmao.constants()

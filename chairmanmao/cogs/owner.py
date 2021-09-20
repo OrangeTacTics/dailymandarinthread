@@ -1,9 +1,7 @@
 import typing as t
 
-import discord
 from discord.ext import commands
 
-from chairmanmao.types import Profile
 from chairmanmao.cogs import ChairmanMaoCog
 
 
@@ -19,14 +17,14 @@ class OwnerCog(ChairmanMaoCog):
 
     @commands.command(name='promote')
     @commands.is_owner()
-    async def  cmd_promote(self, ctx, member: commands.MemberConverter):
+    async def cmd_promote(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.api.as_chairman().promote(member.id)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
 
     @commands.command(name='deomote')
     @commands.is_owner()
-    async def  cmd_demote(self, ctx, member: commands.MemberConverter):
+    async def cmd_demote(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.api.as_chairman().demote(member.id)
         self.chairmanmao.queue_member_update(member.id)
 
@@ -35,7 +33,6 @@ class OwnerCog(ChairmanMaoCog):
     async def cmd_honor(self, ctx, member: commands.MemberConverter, credit: int):
         assert credit > 0
 
-        username = self.chairmanmao.member_to_username(ctx.author)
         target_username = self.chairmanmao.member_to_username(member)
         new_credit = self.chairmanmao.api.as_chairman().honor(member.id, credit)
         old_credit = new_credit - credit
@@ -48,7 +45,6 @@ class OwnerCog(ChairmanMaoCog):
     async def cmd_dishonor(self, ctx, member: commands.MemberConverter, credit: int):
         assert credit > 0
 
-        username = self.chairmanmao.member_to_username(ctx.author)
         target_username = self.chairmanmao.member_to_username(member)
         new_credit = self.chairmanmao.api.as_chairman().dishonor(member.id, credit)
         old_credit = new_credit + credit
@@ -63,7 +59,7 @@ class OwnerCog(ChairmanMaoCog):
 
         try:
             self.chairmanmao.api.as_chairman().set_name(member.id, name)
-        except:
+        except:  # noqa
 #        await ctx.send("Names are 32 character max.")
 #        return
             raise

@@ -93,8 +93,6 @@ class Profile:
         return display_name[:cutoff] + label
 
 
-
-
 class Role(Enum):
     Comrade = "Comrade"
     Party = "Party"

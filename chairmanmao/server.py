@@ -2,7 +2,6 @@ import typing as t
 import jwt
 import json
 import httpx
-import graphene
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse
 from starlette.graphql import GraphQLApp
@@ -55,9 +54,9 @@ app.add_route("/graphql", GraphQLApp(schema=schema))
 @app.get("/profile")
 async def route_test(request: Request, response: JSONResponse, code: t.Optional[str] = None):
     if request.state.token is None:
-        return RedirectResponse( "/login")
+        return RedirectResponse("/login")
     else:
-        username = request.state.token['username']
+        # username = request.state.token['username']
 
         cookie = request.cookies["token"]
         query = '''
@@ -91,8 +90,8 @@ async def route_test(request: Request, response: JSONResponse, code: t.Optional[
 
 @app.get("/logout")
 async def route_logout(response: JSONResponse):
-        response.delete_cookie(key="token")
-        return 'Bye'
+    response.delete_cookie(key="token")
+    return 'Bye'
 
 
 async def code_to_access_token(code: str) -> str:
@@ -142,7 +141,8 @@ async def route_login(request: Request, code: t.Optional[str] = None):
         profile = await get_discord_profile(access_token)
 
         username = profile['username'] + "#" + profile['discriminator']
-        cookie_json = jwt.encode({
+        cookie_json = jwt.encode(
+            {
                 "username": username,
             },
             JWT_KEY,
@@ -150,6 +150,6 @@ async def route_login(request: Request, code: t.Optional[str] = None):
         )
         assert isinstance(cookie_json, bytes)
 
-        response =  RedirectResponse("/profile")
+        response = RedirectResponse("/profile")
         response.set_cookie(key="token", value=cookie_json.decode())
         return response

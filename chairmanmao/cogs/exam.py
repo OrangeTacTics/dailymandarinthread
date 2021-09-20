@@ -2,16 +2,12 @@ from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
 import asyncio
-from enum import Enum
 
 import discord
 from discord.ext import commands, tasks
 
-from chairmanmao.types import Profile
 from chairmanmao.cogs import ChairmanMaoCog
 from datetime import datetime, timezone
-
-from chairmanmao.draw import DrawManager
 
 
 class ExamCog(ChairmanMaoCog):
@@ -23,7 +19,6 @@ class ExamCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        constants = self.chairmanmao.constants()
         if self.active_exam:
             active_exam = self.active_exam
             if message.channel.id == active_exam.channel.id and message.author.id == active_exam.member.id:
@@ -44,7 +39,7 @@ class ExamCog(ChairmanMaoCog):
         constants = self.chairmanmao.constants()
         if ctx.invoked_subcommand is None:
 
-            next_exam = make_exam()
+            next_exam = make_hsk1_exam()
 
             lines = [
                 f'The next exam you are scheduled to take is {next_exam.name}.',
@@ -148,7 +143,7 @@ class ExamCog(ChairmanMaoCog):
     async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
         exam = active_exam.exam
 
-        description = f'{exam.name}'
+#        description = f'{exam.name}'
 
         embed = discord.Embed(
 #            title='Exam',
@@ -187,7 +182,7 @@ class ExamCog(ChairmanMaoCog):
         await active_exam.channel.send(embed=embed)
 
     async def send_answer(self, active_exam: ActiveExam, message: discord.Message) -> None:
-        correct = active_exam.answer(message.content.strip())
+        correct = active_exam.answer(message.content.strip())  # noqa
 #        if correct:
 #            await message.add_reaction('✅')
 #        else:
@@ -309,15 +304,15 @@ class ActiveExam:
     def make(member: discord.Member, channel: discord.TextChannel, exam: Exam) -> ActiveExam:
         now = datetime.now(timezone.utc).replace(microsecond=0)
         return ActiveExam(
-                member=member,
-                channel=channel,
-                exam=exam,
+            member=member,
+            channel=channel,
+            exam=exam,
 
-                exam_start=now,
-                current_question_index=-1, # -1 because we need to call next_question() as least once.
-                current_question_start=now,
-                answers_given=[],
-            )
+            exam_start=now,
+            current_question_index=-1, # -1 because we need to call next_question() as least once.
+            current_question_start=now,
+            answers_given=[],
+        )
 
     def ready_for_next_question(self) -> bool:
         return len(self.answers_given) == self.current_question_index + 1
@@ -449,6 +444,7 @@ class Quit:
 @dataclass
 class Correct:
     value: str
+
     def __str__(self) -> str:
         return self.value
 
@@ -456,6 +452,7 @@ class Correct:
 @dataclass
 class Incorrect:
     value: str
+
     def __str__(self) -> str:
         return self.value
 

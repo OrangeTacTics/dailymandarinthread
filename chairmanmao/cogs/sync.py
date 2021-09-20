@@ -1,8 +1,7 @@
 import typing as t
-import os
 import asyncio
 
-from chairmanmao.types import Profile, UserId, Json, Role
+from chairmanmao.types import Profile, Role
 from chairmanmao.cogs import ChairmanMaoCog
 
 import discord
@@ -31,13 +30,13 @@ class SyncCog(ChairmanMaoCog):
 
     @commands.command(name='sync')
     @commands.is_owner()
-    async def  cmd_sync(self, ctx, member: commands.MemberConverter):
+    async def cmd_sync(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send('Sync complete')
 
     @commands.command(name='syncall')
     @commands.is_owner()
-    async def  cmd_syncall(self, ctx):
+    async def cmd_syncall(self, ctx):
         await ctx.send('Sync starting')
         await self.full_member_update()
         await ctx.send('Sync complete')
@@ -156,7 +155,7 @@ class SyncCog(ChairmanMaoCog):
         await member.edit(nick=new_nick)
         return True
 
-    def profile_to_member(self,  profile: Profile) -> t.Optional[discord.Member]:
+    def profile_to_member(self, profile: Profile) -> t.Optional[discord.Member]:
         constants = self.chairmanmao.constants()
         for member in constants.guild.members:
             if member.id == profile.user_id:

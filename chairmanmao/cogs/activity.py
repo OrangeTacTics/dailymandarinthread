@@ -1,9 +1,8 @@
-import typing as t
-
 import discord
 from discord.ext import commands
 
 from chairmanmao.cogs import ChairmanMaoCog
+
 
 class ActivityCog(ChairmanMaoCog):
     @commands.Cog.listener()

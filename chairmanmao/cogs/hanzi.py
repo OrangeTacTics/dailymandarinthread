@@ -1,10 +1,7 @@
-import typing as t
-
 import discord
 from discord.ext import commands
 
 from chairmanmao.hanzi import hanzis_in
-from chairmanmao.types import Profile
 from chairmanmao.cogs import ChairmanMaoCog
 
 
@@ -19,7 +16,6 @@ class HanziCog(ChairmanMaoCog):
         if member is None:
             member = ctx.author
 
-        username = self.chairmanmao.member_to_username(ctx.author)
         target_username = self.chairmanmao.member_to_username(member)
 
         hanzi = self.chairmanmao.api.as_comrade(ctx.author.id).get_hanzis(member.id)

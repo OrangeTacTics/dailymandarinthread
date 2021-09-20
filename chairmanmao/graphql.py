@@ -3,9 +3,8 @@ import typing as t
 import os
 from dotenv import load_dotenv
 import graphene as g
-from graphene import ObjectType, Field, String, Schema, Int
 
-from chairmanmao.profile import create_profile, get_profile, set_profile, profile_from_json, get_all_profiles, get_user_id
+from chairmanmao.profile import create_profile, get_profile, set_profile, get_all_profiles, get_user_id
 from chairmanmao.hanzi import get_seen_hanzi, see_hanzi
 import chairmanmao.types as types
 

@@ -1,9 +1,5 @@
-import typing as t
-
-import discord
 from discord.ext import commands
 
-from chairmanmao.types import Profile
 from chairmanmao.cogs import ChairmanMaoCog
 
 
@@ -20,7 +16,7 @@ class ComradeCog(ChairmanMaoCog):
 
         try:
             self.chairmanmao.api.as_comrade(member.id).set_name(name)
-        except:
+        except:  # noqa
 #        await ctx.send("Names are 32 character max.")
 #        return
             raise

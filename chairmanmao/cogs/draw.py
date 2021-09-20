@@ -8,7 +8,6 @@ from discord.ext import commands
 
 import requests
 
-from chairmanmao.hanzi import is_hanzi
 from chairmanmao.cogs import ChairmanMaoCog
 
 

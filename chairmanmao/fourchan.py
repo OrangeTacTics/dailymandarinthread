@@ -2,11 +2,8 @@ from __future__ import annotations
 import typing as t
 from io import BytesIO
 from dataclasses import dataclass
-import asyncio
 import json
 import httpx
-
-from discord.ext import commands, tasks
 
 from chairmanmao.filemanager import FileManager
 
@@ -64,7 +61,6 @@ class FourChanManager:
 
         buf = BytesIO(json.dumps(sorted(self.urls_seen)).encode('utf-8'))
         self.file_manager.upload('fourchan/seen_urls.json', buf)
-
 
     async def get_dmt_thread(self) -> t.Optional[DmtThread]:
         catalog = await self._get_int_catalog()

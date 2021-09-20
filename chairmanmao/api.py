@@ -6,7 +6,6 @@ import os
 from datetime import datetime, timezone
 
 from dotenv import load_dotenv
-import jwt
 import pymongo
 
 from chairmanmao.types import Profile, Role
@@ -51,6 +50,7 @@ class Api:
             db=self.db,
             user_id=user_id,
         )
+
     def as_comrade(self, user_id: UserId) -> ComradeApi:
         return ComradeApi(
             db=self.db,
@@ -280,7 +280,7 @@ def add_role(profile: Profile, role: Role) -> bool:
         Returns whether the profile was changed.
     '''
     roles_set = set(profile.roles)
-    if not role in roles_set:
+    if role not in roles_set:
         roles_set.add(role)
         profile.roles = sorted(roles_set)
         changed = True
@@ -288,7 +288,6 @@ def add_role(profile: Profile, role: Role) -> bool:
         changed = False
 
     return changed
-
 
 
 def remove_role(profile: Profile, role: Role) -> bool:
@@ -314,7 +313,7 @@ def main():
 
     api = Api.connect(MONGODB_URL, MONGODB_DB)
 
-    user_id =  api.get_user_id('OrangeTacTics#0949')
+    user_id = api.get_user_id('OrangeTacTics#0949')
     snickers_id = api.get_user_id('Snickers#0486')
 
     chairman_api = api.as_chairman()
@@ -359,7 +358,6 @@ def main():
     lines.append("```")
     print('\n'.join(lines))
     print()
-
 
     print('Snickers credit:', comrade_api.social_credit(snickers_id))
     print('dishonor 10...')

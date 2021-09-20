@@ -3,6 +3,7 @@ import typing as t
 import os
 from dataclasses import dataclass
 from chairmanmao.types import UserId, Json
+import re
 
 import httpx
 
@@ -201,4 +202,4 @@ async def handle_kotoba(api, message):
 
         profile = api.as_chairman().get_profile(quiz_results.user_id)
         await message.channel.send(f'{profile.discord_username} has passed the {quiz_results.deck_name} quiz.')
-        chairmanmao.queue_member_update(profile.id)
+        chairmanmao.queue_member_update(profile.id)  # noqa

@@ -39,7 +39,7 @@ def get_profile(db: Database, user_id: UserId) -> Profile:
 
 
 def set_profile(db: Database, user_id: UserId, profile: Profile) -> None:
-    query = { 'user_id': user_id }
+    query = {'user_id': user_id}
     db['Profiles'].replace_one(query, profile_to_json(profile))
 
 

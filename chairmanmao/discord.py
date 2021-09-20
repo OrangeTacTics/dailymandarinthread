@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import discord
 
+
 @dataclass
 class DiscordConstants:
     guild: discord.Guild
