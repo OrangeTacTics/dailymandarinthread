@@ -206,11 +206,11 @@ def make_exam() -> 'Exam':
     import csv
     import random
     with open('data/hsk1.csv') as infile:
-        fieldnames = ['question', 'answers', 'unused1', 'unused2']
+        fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(ExamQuestion(word['question'], word['answers'].split(',')))
+            questions.append(ExamQuestion(word['question'], word['answers'].split(','), word['meaning']))
 
     random.shuffle(questions)
     questions = questions[:10]
@@ -295,7 +295,7 @@ class ActiveExam:
         current_question = self.current_question()
         assert current_question, 'No question was asked'
 
-        correct = answer in current_question.valid_answers
+        correct = answer.lower() in current_question.valid_answers
 
         if correct:
             self.answers_given.append(Correct(answer))
@@ -359,6 +359,7 @@ class Exam:
 class ExamQuestion:
     question: str
     valid_answers: t.List[str]
+    meaning: str
 
 
 @dataclass
