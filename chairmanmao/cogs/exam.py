@@ -57,8 +57,17 @@ class ExamCog(ChairmanMaoCog):
 
             await ctx.send('\n'.join(lines))
 
+    @exam.command(name='list')
+    async def cmd_exam_list(self, ctx):
+        await ctx.send('Available exams: ' + ' '.join(EXAMS.keys()))
+
     @exam.command(name='start')
-    async def cmd_exam_start(self, ctx):
+    async def cmd_exam_start(self, ctx, exam_name: t.Optional[str] = None):
+        if exam_name is None:
+            exam_name = 'hsk1'
+
+        exam = EXAMS[exam_name]
+
         constants = self.chairmanmao.constants()
         if ctx.channel.id != constants.exam_channel.id:
             await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
@@ -71,7 +80,7 @@ class ExamCog(ChairmanMaoCog):
         active_exam = ActiveExam.make(
             member=ctx.author,
             channel=ctx.channel,
-            exam=make_exam(),
+            exam=exam,
         )
         self.active_exam = active_exam
 
@@ -234,13 +243,12 @@ class ExamCog(ChairmanMaoCog):
         await active_exam.channel.send(embed=embed)
 
 
-
-def make_exam() -> 'Exam':
+def make_hsk1_exam() -> 'Exam':
     questions = []
 
     import csv
     import random
-    with open('data/hsk1.csv') as infile:
+    with open('data/hsk2.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
@@ -252,6 +260,29 @@ def make_exam() -> 'Exam':
 
     return Exam(
         name='HSK 1',
+        questions=questions,
+        max_wrong=2,
+        timelimit=9,
+    )
+
+
+def make_hsk2_exam() -> 'Exam':
+    questions = []
+
+    import csv
+    import random
+    with open('data/hsk2.csv') as infile:
+        fieldnames = ['question', 'answers', 'meaning', 'unused']
+        reader = csv.DictReader(infile, fieldnames=fieldnames)
+
+        for word in reader:
+            questions.append(ExamQuestion(word['question'], word['answers'].split(','), word['meaning']))
+
+    random.shuffle(questions)
+    questions = questions[:15]
+
+    return Exam(
+        name='HSK 2',
         questions=questions,
         max_wrong=2,
         timelimit=7,
@@ -427,3 +458,8 @@ class Incorrect:
 
 
 Answer = t.Union[Correct, Incorrect, Timeout, Quit]
+
+EXAMS = {
+    'hsk1': make_hsk1_exam(),
+    'hsk2': make_hsk2_exam(),
+}
