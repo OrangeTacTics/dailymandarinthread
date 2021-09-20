@@ -12,3 +12,4 @@ pytest
 requests
 PyJWT
 boto3
+flake8
