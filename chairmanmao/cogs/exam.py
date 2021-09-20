@@ -68,24 +68,44 @@ class ExamCog(ChairmanMaoCog):
             await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
             return
 
-        member = ctx.author
-        channel = constants.exam_channel
         active_exam = ActiveExam.make(
-            member=member,
-            channel=channel,
+            member=ctx.author,
+            channel=ctx.channel,
             exam=make_exam(),
         )
-
         self.active_exam = active_exam
 
-        await self.send_exam_start_embed(self.active_exam)
+        await self.run_exam(active_exam)
+
+    @exam.command(name='quit')
+    async def cmd_exam_quit(self, ctx):
+        constants = self.chairmanmao.constants()
+        if ctx.channel.id != constants.exam_channel.id:
+            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
+            return
+
+        if self.active_exam is None:
+#            await ctx.send(f'There is no exam in progress.')
+            return
+
+        if self.active_exam.member.id != ctx.author.id:
+#            await ctx.send(f"The exam in progress isn't yours")
+            return
+
+        self.active_exam.give_up()
+#        await ctx.message.add_reaction(constants.dekinai_emoji)
+
+    async def run_exam(self, active_exam: ActiveExam) -> None:
+        constants = self.chairmanmao.constants()
+        channel = constants.exam_channel
+
+        await self.send_exam_start_embed(active_exam)
 
         while not active_exam.finished():
             await self.send_next_question(active_exam)
             answer = await active_exam.receive_answer()
 
             question = active_exam.current_question()
-
 
             if isinstance(answer, Correct):
                 emoji = '✅'
@@ -112,24 +132,6 @@ class ExamCog(ChairmanMaoCog):
                 await asyncio.sleep(1.5)
 
         await self.show_results(active_exam)
-
-    @exam.command(name='quit')
-    async def cmd_exam_quit(self, ctx):
-        constants = self.chairmanmao.constants()
-        if ctx.channel.id != constants.exam_channel.id:
-            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
-            return
-
-        if self.active_exam is None:
-#            await ctx.send(f'There is no exam in progress.')
-            return
-
-        if self.active_exam.member.id != ctx.author.id:
-#            await ctx.send(f"The exam in progress isn't yours")
-            return
-
-        self.active_exam.give_up()
-#        await ctx.message.add_reaction(constants.dekinai_emoji)
 
     async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
         exam = active_exam.exam
@@ -295,11 +297,8 @@ class ActiveExam:
     def ready_for_next_answer(self) -> bool:
         return len(self.answers_given) == self.current_question_index
 
-    def current_question(self) -> t.Optional[ExamQuestion]:
-        try:
-            return self.exam.questions[self.current_question_index]
-        except:
-            return None
+    def current_question(self) -> ExamQuestion:
+        return self.exam.questions[self.current_question_index]
 
     def next_question(self) -> ExamQuestion:
         assert not self.finished()
