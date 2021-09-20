@@ -28,7 +28,7 @@ class ExamCog(ChairmanMaoCog):
             active_exam = self.active_exam
             if message.channel.id == active_exam.channel.id and message.author.id == active_exam.member.id:
                 if not message.content.startswith('$') and active_exam.ready_for_next_answer():
-                    await self.answer_question(active_exam, message)
+                    await self.send_answer(active_exam, message)
 
     @tasks.loop(seconds=1)
     async def loop(self):
@@ -38,7 +38,6 @@ class ExamCog(ChairmanMaoCog):
 
             elif self.active_exam.is_time_up():
                 self.active_exam.timeout()
-                await self.active_exam.channel.send("⏲️ Time's up!")
 
     @commands.group()
     async def exam(self, ctx):
@@ -79,6 +78,60 @@ class ExamCog(ChairmanMaoCog):
 
         self.active_exam = active_exam
 
+        await self.send_exam_start_embed(self.active_exam)
+
+        while not active_exam.finished():
+            await self.send_next_question(active_exam)
+            answer = await active_exam.receive_answer()
+
+            question = active_exam.current_question()
+
+
+            if isinstance(answer, Correct):
+                emoji = '✅'
+                color = 0x00ff00
+            elif isinstance(answer, Incorrect):
+                emoji = '❌'
+                color = 0xff0000
+            elif isinstance(answer, Timeout):
+                emoji = '⏲️'
+                color = 0xd0deec
+            else: # isinstance(answer, Quit):
+                emoji = constants.dekinai_emoji
+                color = 0xffdbac
+
+            description = f'{emoji}　{question.question}　　{question.valid_answers[0]}　　*{question.meaning}*'
+
+            embed = discord.Embed(
+                description=description,
+                color=color,
+            )
+            await channel.send(embed=embed)
+
+            if isinstance(answer, Timeout) and not active_exam.finished():
+                await asyncio.sleep(1.5)
+
+        await self.show_results(active_exam)
+
+    @exam.command(name='quit')
+    async def cmd_exam_quit(self, ctx):
+        constants = self.chairmanmao.constants()
+        if ctx.channel.id != constants.exam_channel.id:
+            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
+            return
+
+        if self.active_exam is None:
+#            await ctx.send(f'There is no exam in progress.')
+            return
+
+        if self.active_exam.member.id != ctx.author.id:
+#            await ctx.send(f"The exam in progress isn't yours")
+            return
+
+        self.active_exam.give_up()
+#        await ctx.message.add_reaction(constants.dekinai_emoji)
+
+    async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
         exam = active_exam.exam
 
         description = f'{exam.name}'
@@ -119,30 +172,12 @@ class ExamCog(ChairmanMaoCog):
 
         await active_exam.channel.send(embed=embed)
 
-        while not active_exam.finished():
-            await self.send_next_question(active_exam)
-            while not active_exam.ready_for_next_question():
-                await asyncio.sleep(0)
-
-        await self.show_results(active_exam)
-
-    @exam.command(name='quit')
-    async def cmd_exam_quit(self, ctx):
-        constants = self.chairmanmao.constants()
-        if ctx.channel.id != constants.exam_channel.id:
-            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
-            return
-
-        if self.active_exam is None:
-#            await ctx.send(f'There is no exam in progress.')
-            return
-
-        if self.active_exam.member.id != ctx.author.id:
-#            await ctx.send(f"The exam in progress isn't yours")
-            return
-
-        self.active_exam.give_up()
-        await ctx.message.add_reaction(constants.dekinai_emoji)
+    async def send_answer(self, active_exam: ActiveExam, message: discord.Message) -> None:
+        correct = active_exam.answer(message.content.strip())
+#        if correct:
+#            await message.add_reaction('✅')
+#        else:
+#            await message.add_reaction('❌')
 
     async def send_next_question(self, active_exam: ActiveExam) -> None:
         question = active_exam.next_question()
@@ -152,14 +187,6 @@ class ExamCog(ChairmanMaoCog):
         filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in question.question) + '.png'
         file = discord.File(fp=image_buffer, filename=filename)
         await active_exam.channel.send(file=file)
-
-    async def answer_question(self, active_exam: ActiveExam, answer: discord.Message) -> None:
-        correct = active_exam.answer(answer.content.strip())
-        emoji = '✅' if correct else '❌'
-        await answer.add_reaction(emoji)
-
-#        if not correct:
-#            await active_exam.channel.send('Correct answer: ' + current_question.valid_answers[0])
 
     async def show_results(self, active_exam: ActiveExam) -> None:
         lines = []
@@ -252,6 +279,12 @@ class ActiveExam:
     def ready_for_next_question(self) -> bool:
         return len(self.answers_given) == self.current_question_index + 1
 
+    async def receive_answer(self) -> Answer:
+        while not self.ready_for_next_question():
+            await asyncio.sleep(0)
+
+        return self.answers_given[-1]
+
     def ready_for_next_answer(self) -> bool:
         return len(self.answers_given) == self.current_question_index
 
@@ -271,7 +304,13 @@ class ActiveExam:
         question = self.exam.questions[self.current_question_index]
         return question
 
+    def waiting_for_answer(self) -> bool:
+        return len(self.answers_given) == self.current_question_index
+
     def is_time_up(self) -> bool:
+        if not self.waiting_for_answer():
+            return False
+
         now = datetime.now(timezone.utc).replace(microsecond=0)
         duration = now - self.current_question_start
         return duration.total_seconds() > self.exam.timelimit
@@ -335,9 +374,6 @@ class ActiveExam:
             self.number_wrong() > self.exam.max_wrong or            # missed too many questions
             self.gave_up()                                          # gave up
         )
-
-    def last_question_was_timeout(self) -> bool:
-        return len(self.answers_given) > 0 and isinstance(self.answers_given[-1], Timeout)
 
 
 @dataclass
