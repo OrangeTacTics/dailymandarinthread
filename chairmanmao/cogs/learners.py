@@ -19,7 +19,7 @@ class LearnersCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        MEMBER_ID_KOTOBA = int(os.getenv('MEMBER_ID_KOTOBA', ''))
+        MEMBER_ID_KOTOBA = int(os.getenv('MEMBER_ID_KOTOBA', '0'))
         if message.author.bot and message.author.id == MEMBER_ID_KOTOBA:
             await handle_kotoba(self.chairmanmao.api, message)
 
