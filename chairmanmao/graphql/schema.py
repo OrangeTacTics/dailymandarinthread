@@ -1,8 +1,6 @@
 import graphene as g
 
 from chairmanmao.profile import get_all_profiles, get_profile
-from chairmanmao.hanzi import get_seen_hanzi
-
 from .utils import db_from_info, profile_from_info, assert_admin, profile_to_graphql
 from .types import (
     Profile,
@@ -10,7 +8,6 @@ from .types import (
     IncrementSocialCredit,
     AddRole,
     RemoveRole,
-    SeeHanzi,
     LeaderboardEntry,
 )
 
@@ -20,7 +17,6 @@ class Query(g.ObjectType):
     leaderboard = g.List(LeaderboardEntry)
     profile = g.Field(Profile, user_id=g.String())
     all_usernames = g.List(g.String)
-    all_hanzi = g.List(g.String)
     find_profile = g.Field(Profile, query=g.String())
 
     def resolve_me(root, info):
@@ -61,11 +57,6 @@ class Query(g.ObjectType):
             usernames.add(profile.discord_username)
         return sorted(usernames)
 
-    def resolve_all_hanzi(root, info):
-        assert_admin(info)
-        db = db_from_info(info)
-        return get_seen_hanzi(db)
-
     def resolve_find_profile(root, info, query):
         assert_admin(info)
         print('query: ', query)
@@ -85,7 +76,6 @@ class Query(g.ObjectType):
 class Mutation(g.ObjectType):
     create_profile = CreateProfile.Field()
     increment_social_credit = IncrementSocialCredit.Field()
-    see_hanzi = SeeHanzi.Field()
     add_role = AddRole.Field()
     remove_role = RemoveRole.Field()
 

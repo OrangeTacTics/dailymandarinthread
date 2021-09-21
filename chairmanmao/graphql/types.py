@@ -2,7 +2,6 @@ from __future__ import annotations
 import graphene as g
 
 from chairmanmao.profile import create_profile, get_profile, set_profile
-from chairmanmao.hanzi import see_hanzi
 import chairmanmao.types as types
 
 from .utils import db_from_info, assert_admin, profile_to_graphql
@@ -20,7 +19,6 @@ class Profile(g.ObjectType):
     username = g.String()
     display_name = g.String()
     credit = g.Int()
-    hanzi = g.List(g.String)
     mined_words = g.List(g.String)
     roles = g.List(Role)
     created = g.String()
@@ -111,22 +109,6 @@ class RemoveRole(g.Mutation):
         profile.roles = new_roles
         set_profile(db, username, profile)
 
-        return {
-            'success': True,
-        }
-
-
-class SeeHanzi(g.Mutation):
-    class Arguments:
-        username = g.String()
-        hanzi = g.List(g.String)
-
-    success = g.Boolean()
-
-    def mutate(self, info, username, hanzi):
-        assert_admin(info)
-        db = db_from_info(info)
-        see_hanzi(db, username, hanzi)
         return {
             'success': True,
         }

@@ -11,7 +11,6 @@ import pymongo
 from chairmanmao.types import Profile, Role
 from chairmanmao.profile import get_profile, create_profile, get_all_profiles, open_profile, get_user_id
 
-from chairmanmao.hanzi import get_seen_hanzi
 #from chairmanmao.draw import draw, get_font_names
 #from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
 
@@ -221,11 +220,6 @@ class ComradeApi:
         assert profile is not None, f"No profile exists for {self.user_id}"
         return profile.mined_words
 
-    def get_hanzis(self, user_id: UserId) -> t.List[str]:
-        profile = get_profile(self.db, user_id)
-        assert profile is not None, f"No profile exists for {user_id}"
-        return profile.hanzi
-
     def yuan(self) -> int:
         profile = get_profile(self.db, self.user_id)
         assert profile is not None, f"No profile exists for {self.user_id}"
@@ -260,15 +254,6 @@ class ComradeApi:
         last_seen = last_seen.replace(tzinfo=timezone.utc)
         last_seen = last_seen.replace(microsecond=0)
         return last_seen
-
-    def see_hanzis(self, hanzis: t.List[str]) -> t.List[str]:
-        seen_hanzis = get_seen_hanzi(self.db)
-        new_hanzis = set(hanzis).difference(seen_hanzis)
-
-        with open_profile(self.db, self.user_id) as profile:
-            existing_hanzi = set(profile.hanzi)
-            profile.hanzi = sorted(existing_hanzi.union(new_hanzis))
-            return profile.hanzi
 
     def alert_activity(self) -> None:
         with open_profile(self.db, self.user_id) as profile:
@@ -319,10 +304,6 @@ def main():
     chairman_api = api.as_chairman()
     comrade_api = api.as_comrade(snickers_id)
 
-    print('hanzis before', comrade_api.get_hanzis(snickers_id))
-    comrade_api.see_hanzis(['喘', '猫'])
-    print('hanzis after', comrade_api.get_hanzis(snickers_id))
-
     print(comrade_api.last_seen(snickers_id))
     comrade_api.alert_activity()
     print(comrade_api.last_seen(snickers_id))
@@ -336,9 +317,6 @@ def main():
 
     print()
     print('Yuan:', comrade_api.yuan())
-
-    for hanzi in comrade_api.get_hanzis(user_id)[:3]:
-        print('-', hanzi)
 
     print('Display name:', comrade_api.get_name())
     comrade_api.set_name('Snick')

@@ -132,7 +132,6 @@ async def route_profile(request: Request, response: JSONResponse, code: t.Option
                     yuan
                     roles
                     minedWords
-                    hanzi
                 }
             }
         '''

@@ -24,7 +24,6 @@ from chairmanmao.cogs.owner import OwnerCog
 from chairmanmao.cogs.comrade import ComradeCog
 from chairmanmao.cogs.party import PartyCog
 from chairmanmao.cogs.voicechat import VoiceChatCog
-from chairmanmao.cogs.hanzi import HanziCog
 from chairmanmao.cogs.fourchan import FourChanCog
 from chairmanmao.cogs.bump import BumpCog
 from chairmanmao.cogs.welcome import WelcomeCog
@@ -98,7 +97,6 @@ class ChairmanMao:
         client.add_cog(PartyCog(client, self))
         client.add_cog(DrawCog(client, self))
         client.add_cog(VoiceChatCog(client, self))
-        client.add_cog(HanziCog(client, self))
         client.add_cog(FourChanCog(client, self))
         client.add_cog(BumpCog(client, self))
         client.add_cog(WelcomeCog(client, self))

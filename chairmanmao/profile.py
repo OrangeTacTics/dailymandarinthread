@@ -64,7 +64,7 @@ def profile_to_json(profile: Profile) -> Json:
         'display_name': profile.display_name,
         'credit': profile.credit,
         'yuan': profile.yuan,
-        'hanzi': profile.hanzi,
+        'hanzi': [],
         'mined_words': profile.mined_words,
         'schema_version': SCHEMA_VERSION,
     }
