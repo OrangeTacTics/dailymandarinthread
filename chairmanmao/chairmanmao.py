@@ -6,7 +6,6 @@ import discord
 from discord.ext import commands
 
 import os
-import pymongo
 
 from chairmanmao.filemanager import DoSpacesConfig, FileManager
 from chairmanmao.api import Api
@@ -25,13 +24,13 @@ from chairmanmao.cogs.owner import OwnerCog
 from chairmanmao.cogs.comrade import ComradeCog
 from chairmanmao.cogs.party import PartyCog
 from chairmanmao.cogs.voicechat import VoiceChatCog
-from chairmanmao.cogs.invites import InvitesCog
 from chairmanmao.cogs.hanzi import HanziCog
 from chairmanmao.cogs.fourchan import FourChanCog
 from chairmanmao.cogs.bump import BumpCog
 from chairmanmao.cogs.welcome import WelcomeCog
 from chairmanmao.cogs.exam import ExamCog
 from chairmanmao.cogs.moderation import ModerationCog
+#from chairmanmao.cogs.invites import InvitesCog
 
 
 ################################################################################
@@ -55,11 +54,6 @@ class ChairmanMao:
         MONGODB_URL = os.getenv('MONGODB_URL', '')
         MONGODB_DB = os.getenv('MONGODB_DB', '')
 
-        ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '')
-        BOT_USERNAME = os.getenv('BOT_USERNAME', '')
-
-        mongo_client = pymongo.MongoClient(MONGODB_URL)
-        db = mongo_client[MONGODB_DB]
         self.api = Api.connect(MONGODB_URL, MONGODB_DB)
 
         self.member_update_queue: t.Set[discord.Member] = set()
@@ -109,8 +103,8 @@ class ChairmanMao:
         client.add_cog(BumpCog(client, self))
         client.add_cog(WelcomeCog(client, self))
         client.add_cog(ExamCog(client, self))
-        #client.add_cog(InvitesCog(client, self))
         client.add_cog(ModerationCog(client, self))
+        #client.add_cog(InvitesCog(client, self))
 
         DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
         client.run(DISCORD_TOKEN)
