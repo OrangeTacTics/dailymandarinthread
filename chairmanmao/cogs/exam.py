@@ -117,17 +117,21 @@ class ExamCog(ChairmanMaoCog):
             if isinstance(answer, Correct):
                 emoji = '✅'
                 color = 0x00ff00
+                correct_answer = f'{question.valid_answers[0]}'
             elif isinstance(answer, Incorrect):
                 emoji = '❌'
                 color = 0xff0000
+                correct_answer = f'{answer} → {question.valid_answers[0]}'
             elif isinstance(answer, Timeout):
                 emoji = '⏲️'
                 color = 0xd0deec
+                correct_answer = f'{question.valid_answers[0]}'
             else: # isinstance(answer, Quit):
                 emoji = constants.dekinai_emoji
                 color = 0xffdbac
+                correct_answer = f'{question.valid_answers[0]}'
 
-            description = f'{emoji}　{question.question}　　{question.valid_answers[0]}　　*{question.meaning}*'
+            description = f'{emoji}　{question.question}　　{correct_answer}　　*{question.meaning}*'
 
             embed = discord.Embed(
                 description=description,
