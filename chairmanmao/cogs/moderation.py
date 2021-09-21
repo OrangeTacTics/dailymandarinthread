@@ -1,8 +1,5 @@
-import typing as t
 from datetime import datetime, timezone, timedelta
 
-
-import discord
 from discord.ext import commands
 
 from chairmanmao.cogs import ChairmanMaoCog
