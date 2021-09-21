@@ -51,12 +51,13 @@ async def add_graphql_context(request: Request, call_next):
 app.add_route("/graphql", GraphQLApp(schema=schema))
 
 
-async def query_graphql(query: str, auth_token: str, params: t.Dict = {}) -> t.Any:
+async def query_graphql(query: str, auth_token: t.Optional[str] = None, params: t.Dict = {}) -> t.Any:
     async with httpx.AsyncClient() as client:
         headers = {
-            'Authorization': f'BEARER {auth_token}',
             'Content-Type': 'application/json',
         }
+        if auth_token is not None:
+            headers['Authorization'] = f'BEARER {auth_token}'
 
         payload = {
             'query': query,
@@ -139,6 +140,22 @@ async def route_profile(request: Request, response: JSONResponse, code: t.Option
         data = await query_graphql(query, auth_token)
         json_str = json.dumps(data, indent=4, ensure_ascii=False)
         return PlainTextResponse(content=json_str)
+
+
+@app.get("/leaderboard")
+async def route_leaderboard():
+    query = '''
+        query leaderboard {
+          leaderboard {
+            name
+            credit
+          }
+        }
+    '''
+
+    data = await query_graphql(query)
+    json_str = json.dumps(data, indent=4, ensure_ascii=False)
+    return PlainTextResponse(content=json_str)
 
 
 @app.get("/logout")
