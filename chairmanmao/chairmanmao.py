@@ -31,6 +31,7 @@ from chairmanmao.cogs.fourchan import FourChanCog
 from chairmanmao.cogs.bump import BumpCog
 from chairmanmao.cogs.welcome import WelcomeCog
 from chairmanmao.cogs.exam import ExamCog
+from chairmanmao.cogs.moderation import ModerationCog
 
 
 ################################################################################
@@ -109,6 +110,7 @@ class ChairmanMao:
         client.add_cog(WelcomeCog(client, self))
         client.add_cog(ExamCog(client, self))
         #client.add_cog(InvitesCog(client, self))
+        client.add_cog(ModerationCog(client, self))
 
         DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
         client.run(DISCORD_TOKEN)
