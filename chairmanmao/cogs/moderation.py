@@ -1,4 +1,6 @@
 import typing as t
+from datetime import datetime, timezone, timedelta
+
 
 import discord
 from discord.ext import commands
@@ -10,6 +12,7 @@ class ModerationCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info('ModerationCog')
+        self.last_ping = datetime.now(timezone.utc) - timedelta(hours=24)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -23,4 +26,10 @@ class ModerationCog(ChairmanMaoCog):
 
         warning = f'A message was deleted: {message.author.name} ({message.author.id}): {repr(message.content)}'
         self.chairmanmao.logger.warning(warning)
-        await constants.guild.owner.send(warning)
+
+        now = datetime.now(timezone.utc)
+        minutes_since_last_ping = (now - self.last_ping).total_seconds() // 60
+
+        if minutes_since_last_ping > 30:
+            self.last_ping = now
+            await constants.guild.owner.send(warning)
