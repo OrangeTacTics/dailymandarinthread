@@ -3,9 +3,8 @@ import graphene as g
 from chairmanmao.profile import get_all_profiles, get_profile
 from chairmanmao.hanzi import get_seen_hanzi
 
-from .utils import db_from_info, username_from_info, profile_from_info, assert_admin, profile_to_graphql
+from .utils import db_from_info, profile_from_info, assert_admin, profile_to_graphql
 from .types import (
-    Role,
     Profile,
     CreateProfile,
     IncrementSocialCredit,
