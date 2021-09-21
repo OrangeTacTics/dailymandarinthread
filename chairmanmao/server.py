@@ -51,17 +51,80 @@ async def add_graphql_context(request: Request, call_next):
 app.add_route("/graphql", GraphQLApp(schema=schema))
 
 
+async def query_graphql(query: str, auth_token: str, params: t.Dict = {}) -> t.Any:
+    async with httpx.AsyncClient() as client:
+        headers = {
+            'Authorization': f'BEARER {auth_token}',
+            'Content-Type': 'application/json',
+        }
+
+        payload = {
+            'query': query,
+            'variables': params,
+        }
+        resp = await client.post(SERVER_HOSTNAME + '/graphql', json=payload, headers=headers)
+        print(json.dumps(
+            json.loads(resp.text),
+            indent=4))
+        print()
+        resp.raise_for_status()
+
+    return resp.json()['data']
+
+
+@app.get("/profile/{user_id}")
+async def route_profile_memberid(request: Request, response: JSONResponse, user_id: str):
+    auth_token = request.cookies["token"]
+    query = '''
+        query find($userId: String) {
+            profile(userId: $userId) {
+                userId
+                displayName
+            }
+        }
+    '''
+    params = {
+        'userId': user_id,
+    }
+    data = await query_graphql(query, auth_token, params)
+
+    return PlainTextResponse(content=json.dumps(data, indent=4, ensure_ascii=False))
+
+
+@app.get("/profile/search/{query_string}")
+async def route_profile_search(request: Request, response: JSONResponse, query_string: str):
+    auth_token = request.cookies["token"]
+    query = '''
+        query find($query: String) {
+            findProfile(query: $query) {
+                userId
+                displayName
+            }
+        }
+    '''
+    params = {
+        'query': query_string,
+    }
+    data = await query_graphql(query, auth_token, params)
+    profile = data['findProfile']
+    if profile is not None:
+        user_id = profile['userId']
+        print('Found user_id', user_id)
+        return RedirectResponse(f"/profile/{user_id}")
+    else:
+        return PlainTextResponse(content='User not found')
+
+
 @app.get("/profile")
-async def route_test(request: Request, response: JSONResponse, code: t.Optional[str] = None):
+async def route_profile(request: Request, response: JSONResponse, code: t.Optional[str] = None):
     if request.state.token is None:
         return RedirectResponse("/login")
     else:
-        # username = request.state.token['username']
-
-        cookie = request.cookies["token"]
+        auth_token = request.cookies["token"]
         query = '''
             {
                 me {
+                    userId
                     username
                     displayName
                     credit
@@ -73,18 +136,8 @@ async def route_test(request: Request, response: JSONResponse, code: t.Optional[
             }
         '''
 
-        async with httpx.AsyncClient() as client:
-            headers = {
-                'Authorization': f'BEARER {cookie}',
-                'Content-Type': 'application/json',
-            }
-            payload = {
-                'query': query,
-            }
-            resp = await client.post(SERVER_HOSTNAME + '/graphql', json=payload, headers=headers)
-            resp.raise_for_status()
-
-        json_str = json.dumps(resp.json()['data'], indent=4, ensure_ascii=False)
+        data = await query_graphql(query, auth_token)
+        json_str = json.dumps(data, indent=4, ensure_ascii=False)
         return PlainTextResponse(content=json_str)
 
 
