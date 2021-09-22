@@ -32,28 +32,6 @@ class SyncInfo:
 class Api:
     store: DocumentStore
 
-    def as_chairman(self) -> ChairmanApi:
-        return ChairmanApi(
-            store=self.store,
-        )
-
-    def as_party(self, user_id: UserId) -> PartyApi:
-        return PartyApi(
-            store=self.store,
-            user_id=user_id,
-        )
-
-    def as_comrade(self, user_id: UserId) -> ComradeApi:
-        return ComradeApi(
-            store=self.store,
-            user_id=user_id,
-        )
-
-
-@dataclass
-class ChairmanApi:
-    store: DocumentStore
-
     def is_registered(self, user_id: UserId) -> bool:
         profile = self.store.load_profile(user_id)
         return profile is not None
@@ -91,11 +69,6 @@ class ChairmanApi:
         with self.store.profile(user_id) as profile:
             profile.credit -= credit
             return profile.credit
-
-    def set_name(self, user_id: UserId, name: str) -> None:
-        assert len(name) < 32, 'Name must be 32 characters or less.'
-        with self.store.profile(user_id) as profile:
-            profile.display_name = name
 
     def list_users(self) -> t.List[UserId]:
         user_ids = []
@@ -156,11 +129,12 @@ class ChairmanApi:
                 role_to_add = role_by_level[hsk_level]
                 add_role(profile, role_to_add)
 
-
-@dataclass
-class PartyApi:
-    store: DocumentStore
-    user_id: UserId
+    def last_seen(self, user_id: UserId) -> datetime:
+        profile = self.store.load_profile(user_id)
+        last_seen = profile.last_seen
+        last_seen = last_seen.replace(tzinfo=timezone.utc)
+        last_seen = last_seen.replace(microsecond=0)
+        return last_seen
 
     def jail(self, user_id: UserId) -> None:
         with self.store.profile(user_id) as profile:
@@ -177,19 +151,6 @@ class PartyApi:
             else:
                 raise Exception("Not jailed")
 
-    def stepdown(self) -> None:
-        with self.store.profile(self.user_id) as profile:
-            if Role.Party in profile.roles:
-                profile.roles = sorted(role for role in profile.roles if role != Role.Party)
-            else:
-                raise Exception("Not a party member")
-
-
-@dataclass
-class ComradeApi:
-    store: DocumentStore
-    user_id: UserId
-
     def get_discord_username(self, user_id: UserId) -> str:
         profile = self.store.load_profile(user_id)
         return profile.discord_username
@@ -200,11 +161,10 @@ class ComradeApi:
 
     def social_credit(self, user_id: UserId) -> int:
         profile = self.store.load_profile(user_id)
-        assert profile is not None
         return profile.credit
 
-    def set_learner(self, flag: bool) -> None:
-        with self.store.profile(self.user_id) as profile:
+    def set_learner(self, user_id: UserId, flag: bool) -> None:
+        with self.store.profile(user_id) as profile:
             if flag:
                 profile.roles.append(Role.Learner)
             else:
@@ -218,19 +178,17 @@ class ComradeApi:
     def upload_font(self, font_name: str, font_data: bytes) -> None:
         ...
 
-    def mine(self, word: str) -> None:
-        with self.store.profile(self.user_id) as profile:
+    def mine(self, user_id: UserId, word: str) -> None:
+        with self.store.profile(user_id) as profile:
             profile.mined_words.append(word)
             profile.mined_words = sorted(set(profile.mined_words))
 
-    def get_mined(self) -> t.List[str]:
-        profile = self.store.load_profile(self.user_id)
-        assert profile is not None, f"No profile exists for {self.user_id}"
+    def get_mined(self, user_id) -> t.List[str]:
+        profile = self.store.load_profile(user_id)
         return profile.mined_words
 
-    def yuan(self) -> int:
-        profile = self.store.load_profile(self.user_id)
-        assert profile is not None, f"No profile exists for {self.user_id}"
+    def yuan(self, user_id) -> int:
+        profile = self.store.load_profile(user_id)
         return profile.yuan
 
     def leaderboard(self) -> t.List[LeaderboardEntry]:
@@ -245,26 +203,17 @@ class ComradeApi:
             ))
         return entries
 
-    def set_name(self, name: str) -> None:
+    def set_name(self, user_id, name: str) -> None:
         assert len(name) < 32, 'Name must be 32 characters or less.'
-        with self.store.profile(self.user_id) as profile:
+        with self.store.profile(user_id) as profile:
             profile.display_name = name
 
-    def get_name(self) -> str:
-        profile = self.store.load_profile(self.user_id)
-        assert profile is not None, f"No profile exists for {self.user_id}"
+    def get_name(self, user_id: UserId) -> str:
+        profile = self.store.load_profile(user_id)
         return profile.display_name
 
-    def last_seen(self, user_id: UserId) -> datetime:
-        profile = self.store.load_profile(user_id)
-        assert profile is not None, f"No profile exists for {self.user_id}"
-        last_seen = profile.last_seen
-        last_seen = last_seen.replace(tzinfo=timezone.utc)
-        last_seen = last_seen.replace(microsecond=0)
-        return last_seen
-
-    def alert_activity(self) -> None:
-        with self.store.profile(self.user_id) as profile:
+    def alert_activity(self, user_id: UserId) -> None:
+        with self.store.profile(user_id) as profile:
             profile.last_seen = datetime.now(timezone.utc).replace(microsecond=0)
 
 

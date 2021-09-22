@@ -28,7 +28,7 @@ class LearnersCog(ChairmanMaoCog):
     async def cmd_learner(self, ctx, flag: bool = True):
         learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
 
-        self.chairmanmao.api.as_comrade(ctx.author.id).set_learner(flag)
+        self.chairmanmao.api.set_learner(ctx.author.id, flag)
         self.chairmanmao.queue_member_update(ctx.author.id)
         if flag:
             await ctx.send(f'{ctx.author.display_name} has been added to {learner_role.name}')
@@ -44,7 +44,7 @@ class LearnersCog(ChairmanMaoCog):
             target_member = ctx.author
 
         target_username = self.chairmanmao.member_to_username(target_member)
-        hsk_level = self.chairmanmao.api.as_chairman().get_hsk(target_member.id)
+        hsk_level = self.chairmanmao.api.get_hsk(target_member.id)
 
         if hsk_level is None:
             await ctx.send(f'{target_username} is unranked.')
@@ -54,7 +54,7 @@ class LearnersCog(ChairmanMaoCog):
     @commands.command(name='test')
     @commands.has_role("中文学习者")
     async def cmd_test(self, ctx):
-        hsk_level = self.chairmanmao.api.as_chairman().get_hsk(ctx.author.id)
+        hsk_level = self.chairmanmao.api.get_hsk(ctx.author.id)
 
         if hsk_level is None:
             aiming_for = 1
@@ -145,10 +145,10 @@ async def handle_kotoba(api, message: discord.Message) -> t.Optional[QuizResults
         if score == question_count:
             hsk_level = int(deck_name[-1])
 
-            old_hsk_level = api.as_chairman().get_hsk(user_id)
+            old_hsk_level = api.get_hsk(user_id)
 
             if old_hsk_level is None or old_hsk_level < hsk_level:
-                api.as_chairman().set_hsk(user_id, hsk_level)
+                api.set_hsk(user_id, hsk_level)
 
                 return QuizResults(
                     user_id=user_id,

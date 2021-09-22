@@ -18,7 +18,7 @@ class SocialCreditCog(ChairmanMaoCog):
 
         target_username = self.chairmanmao.member_to_username(member)
 
-        credit = self.chairmanmao.api.as_comrade(ctx.author.id).social_credit(member.id)
+        credit = self.chairmanmao.api.social_credit(member.id)
         await ctx.send(f'{target_username} has a credit score of {credit}.')
 
     @commands.command(name='leaderboard', help='Show the DMT leaderboard.')
@@ -30,7 +30,7 @@ class SocialCreditCog(ChairmanMaoCog):
             "```",
         ]
 
-        for entry in self.chairmanmao.api.as_comrade(ctx.author.id).leaderboard():
+        for entry in self.chairmanmao.api.leaderboard():
             line = f'{entry.credit} ... {entry.display_name}'
             lines.append(discord.utils.remove_markdown(line))
 
@@ -45,11 +45,11 @@ class SocialCreditCog(ChairmanMaoCog):
             emoji = reaction.emoji
 
             if self.is_based_emoji(emoji):
-                credit = self.chairmanmao.api.as_chairman().honor(user_to_credit.id, 1)
+                credit = self.chairmanmao.api.honor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
             elif self.is_cringe_emoji(emoji):
-                credit = self.chairmanmao.api.as_chairman().dishonor(user_to_credit.id, 1)
+                credit = self.chairmanmao.api.dishonor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
 
@@ -60,11 +60,11 @@ class SocialCreditCog(ChairmanMaoCog):
             emoji = reaction.emoji
 
             if self.is_based_emoji(emoji):
-                credit = self.chairmanmao.api.as_chairman().dishonor(user_to_credit.id, 1)
+                credit = self.chairmanmao.api.dishonor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
             elif self.is_cringe_emoji(emoji):
-                credit = self.chairmanmao.api.as_chairman().honor(user_to_credit.id, 1)
+                credit = self.chairmanmao.api.honor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
 

@@ -19,7 +19,7 @@ class WelcomeCog(ChairmanMaoCog):
             self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
             await constants.commentators_channel.send(f'{username} has returned to DMT.')
         else:
-            self.chairmanmao.api.as_chairman().register(member.id, username)
+            self.chairmanmao.api.register(member.id, username)
             self.chairmanmao.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
             await self.welcome(member)
             await constants.commentators_channel.send(f'{username} has joined DMT.')

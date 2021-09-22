@@ -11,14 +11,14 @@ class PartyCog(ChairmanMaoCog):
     @commands.command(name='stepdown', help="Remove 共产党员 role.")
     @commands.has_role('共产党员')
     async def cmd_stepdown(self, ctx):
-        self.chairmanmao.api.as_party(ctx.author.id).stepdown()
+        self.chairmanmao.api.demote(ctx.author.id)
         self.chairmanmao.queue_member_update(ctx.author.id)
         await ctx.send(f'{ctx.author.display_name} has stepped down from the CCP.')
 
     @commands.command(name='jail')
     @commands.has_role('共产党员')
     async def cmd_jail(self, ctx, member: commands.MemberConverter):
-        self.chairmanmao.api.as_party(ctx.author.id).jail(member.id)
+        self.chairmanmao.api.jail(member.id)
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f'{ctx.author.display_name} has jailed Comrade {username}.')
@@ -26,7 +26,7 @@ class PartyCog(ChairmanMaoCog):
     @commands.command(name='unjail')
     @commands.has_role('共产党员')
     async def cmd_unjail(self, ctx, member: commands.MemberConverter):
-        self.chairmanmao.api.as_party(ctx.author.id).unjail(member.id)
+        self.chairmanmao.api.unjail(member.id)
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')

@@ -45,7 +45,7 @@ class SyncCog(ChairmanMaoCog):
 
     async def incremental_member_update(self) -> None:
         for user_id in self.chairmanmao.flush_member_update_queue():
-            sync_info = self.chairmanmao.api.as_chairman().get_sync_info(user_id)
+            sync_info = self.chairmanmao.api.get_sync_info(user_id)
             did_update = await self.update_member_nick(sync_info)
             if did_update:
                 await asyncio.sleep(0.5)
@@ -54,9 +54,9 @@ class SyncCog(ChairmanMaoCog):
                 await asyncio.sleep(0.5)
 
     async def full_member_update(self) -> None:
-        user_ids = self.chairmanmao.api.as_chairman().list_users()
+        user_ids = self.chairmanmao.api.list_users()
         for user_id in user_ids:
-            sync_info = self.chairmanmao.api.as_chairman().get_sync_info(user_id)
+            sync_info = self.chairmanmao.api.get_sync_info(user_id)
             did_update = await self.update_member_nick(sync_info)
             if did_update:
                 await asyncio.sleep(0.5)
