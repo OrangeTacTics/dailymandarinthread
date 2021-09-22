@@ -57,14 +57,9 @@ class ExamCog(ChairmanMaoCog):
         await ctx.send('Available exams: hsk1 hsk2')
 
     @exam.command(name='start')
-    async def cmd_exam_start(self, ctx, deck_name: t.Optional[str] = None):
-        if deck_name is None:
-            deck_name = 'hsk1'
-
-        deck = {
-            'hsk1': make_hsk1_deck(),
-            'hsk2': make_hsk2_deck(),
-        }[deck_name]
+    async def cmd_exam_start(self, ctx, exam_name: t.Optional[str] = None):
+        if exam_name is None:
+            exam_name = 'hsk1'
 
         constants = self.chairmanmao.constants()
         if ctx.channel.id != constants.exam_channel.id:
@@ -75,13 +70,26 @@ class ExamCog(ChairmanMaoCog):
             await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
             return
 
-        active_exam = Exam.make(
-            member=ctx.author,
-            channel=ctx.channel,
-            deck=deck,
-        )
+        active_exam = self.create_exam(ctx.author, ctx.channel, exam_name)
         self.active_exam = active_exam
+        await self.run_exam(active_exam)
 
+    @exam.command(name='practice')
+    async def cmd_exam_practice(self, ctx, exam_name: t.Optional[str] = None):
+        if exam_name is None:
+            exam_name = 'hsk1'
+
+        constants = self.chairmanmao.constants()
+        if ctx.channel.id != constants.exam_channel.id:
+            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
+            return
+
+        if self.active_exam is not None:
+            await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
+            return
+
+        active_exam = self.create_exam(ctx.author, ctx.channel, exam_name, practice=True)
+        self.active_exam = active_exam
         await self.run_exam(active_exam)
 
     @exam.command(name='quit')
@@ -102,47 +110,61 @@ class ExamCog(ChairmanMaoCog):
         self.active_exam.give_up()
 #        await ctx.message.add_reaction(constants.dekinai_emoji)
 
-    async def run_exam(self, active_exam: Exam) -> None:
-        constants = self.chairmanmao.constants()
-        channel = constants.exam_channel
+    def create_exam(self, member: discord.Member, channel: discord.TextChannel, exam_name: str, practice: bool = False) -> Exam:
+        deck = {
+            'hsk1': make_hsk1_deck(),
+            'hsk2': make_hsk2_deck(),
+        }[exam_name]
 
+        return Exam.make(
+            member=member,
+            channel=channel,
+            deck=deck,
+            practice=practice,
+        )
+
+    async def run_exam(self, active_exam: Exam) -> None:
         await self.send_exam_start_embed(active_exam)
 
         while not active_exam.finished():
             await self.send_next_question(active_exam)
             answer = await active_exam.receive_answer()
 
-            question = active_exam.current_question()
-
-            if isinstance(answer, Correct):
-                emoji = '✅'
-                color = 0x00ff00
-                correct_answer = f'{question.valid_answers[0]}'
-            elif isinstance(answer, Incorrect):
-                emoji = '❌'
-                color = 0xff0000
-                correct_answer = f'{answer} → {question.valid_answers[0]}'
-            elif isinstance(answer, Timeout):
-                emoji = '⏲️'
-                color = 0xd0deec
-                correct_answer = f'{question.valid_answers[0]}'
-            else: # isinstance(answer, Quit):
-                emoji = constants.dekinai_emoji
-                color = 0xffdbac
-                correct_answer = f'{question.valid_answers[0]}'
-
-            description = f'{emoji}　{question.question}　　{correct_answer}　　*{question.meaning}*'
-
-            embed = discord.Embed(
-                description=description,
-                color=color,
-            )
-            await channel.send(embed=embed)
-
-            if isinstance(answer, Timeout) and not active_exam.finished():
-                await asyncio.sleep(1.5)
+            await self.reply_to_answer(active_exam, answer)
 
         await self.show_results(active_exam)
+
+    async def reply_to_answer(self, active_exam: Exam, answer: Answer) -> None:
+        constants = self.chairmanmao.constants()
+        question = active_exam.current_question()
+
+        if isinstance(answer, Correct):
+            emoji = '✅'
+            color = 0x00ff00
+            correct_answer = f'{question.valid_answers[0]}'
+        elif isinstance(answer, Incorrect):
+            emoji = '❌'
+            color = 0xff0000
+            correct_answer = f'{answer} → {question.valid_answers[0]}'
+        elif isinstance(answer, Timeout):
+            emoji = '⏲️'
+            color = 0xd0deec
+            correct_answer = f'{question.valid_answers[0]}'
+        else: # isinstance(answer, Quit):
+            emoji = constants.dekinai_emoji
+            color = 0xffdbac
+            correct_answer = f'{question.valid_answers[0]}'
+
+        description = f'{emoji}　{question.question}　　{correct_answer}　　*{question.meaning}*'
+
+        embed = discord.Embed(
+            description=description,
+            color=color,
+        )
+        await active_exam.channel.send(embed=embed)
+
+        if isinstance(answer, Timeout) and not active_exam.finished():
+            await asyncio.sleep(1.5)
 
     async def send_exam_start_embed(self, active_exam: Exam) -> None:
         deck = active_exam.deck
@@ -176,7 +198,7 @@ class ExamCog(ChairmanMaoCog):
             value=f'{active_exam.timelimit} seconds',
             inline=False,
         )
-        if active_exam.max_wrong > 0:
+        if active_exam.max_wrong is not None:
             embed.add_field(
                 name='Mistakes Allowed',
                 value=f'{active_exam.max_wrong}',
@@ -211,34 +233,54 @@ class ExamCog(ChairmanMaoCog):
     async def show_results(self, active_exam: Exam) -> None:
         lines = []
 
-        questions_answered = active_exam.deck.questions[:len(active_exam.answers_given)]
-        longest_answer = max(len(question.question) for question in questions_answered)
+        # if is not practice
+        if not active_exam.fail_on_timeout:
+            questions_answered = active_exam.deck.questions[:len(active_exam.answers_given)]
+            longest_answer = max(len(question.question) for question in questions_answered)
 
-        for question, answer in active_exam.grade():
-            correct = isinstance(answer, Correct)
-            emoji = '✅' if correct else '❌'
-            correct_answer = question.valid_answers[0]
-            question_str = (question.question).ljust(longest_answer + 2, '　')
-            answer_str = answer if correct else f'{answer} → {correct_answer}'
-            lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
+            for question, answer in active_exam.grade():
+                correct = isinstance(answer, Correct)
+                emoji = '✅' if correct else '❌'
+                correct_answer = question.valid_answers[0]
+                question_str = (question.question).ljust(longest_answer + 2, '　')
+                answer_str = answer if correct else f'{answer} → {correct_answer}'
+                lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
 
-        if active_exam.passed():
-            title = 'Exam Passed: ' + active_exam.deck.name
-            color = 0x00ff00
+            if active_exam.passed():
+                title = 'Exam Passed: ' + active_exam.deck.name
+                color = 0x00ff00
+            else:
+                title = 'Exam Failed: ' + active_exam.deck.name
+                color = 0xff0000
+
+            embed = discord.Embed(
+                title=title,
+                description='\n'.join(lines),
+                color=color,
+            )
+            embed.set_author(
+                name=active_exam.member.display_name,
+                icon_url=active_exam.member.avatar_url,
+            )
+            if active_exam.passed() and active_exam.max_wrong is not None and active_exam.max_wrong > 0:
+                score = active_exam.score() * 100
+                embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
         else:
-            title = 'Exam Failed: ' + active_exam.deck.name
-            color = 0xff0000
+            questions_answered = active_exam.deck.questions[:len(active_exam.answers_given)]
+            longest_answer = max(len(question.question) for question in questions_answered)
 
-        embed = discord.Embed(
-            title=title,
-            description='\n'.join(lines),
-            color=color,
-        )
-        embed.set_author(
-            name=active_exam.member.display_name,
-            icon_url=active_exam.member.avatar_url,
-        )
-        if active_exam.passed() and active_exam.max_wrong > 0:
+            title = 'Exam Practice: ' + active_exam.deck.name
+            color = 0x00ff00
+
+            embed = discord.Embed(
+                title=title,
+                description='\n'.join(lines),
+                color=color,
+            )
+            embed.set_author(
+                name=active_exam.member.display_name,
+                icon_url=active_exam.member.avatar_url,
+            )
             score = active_exam.score() * 100
             embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
 
@@ -293,8 +335,9 @@ class Exam:
     channel: discord.TextChannel
     deck: Deck
 
-    max_wrong: int
+    max_wrong: t.Optional[int]
     timelimit: int
+    fail_on_timeout: bool
 
     exam_start: datetime
 
@@ -304,7 +347,7 @@ class Exam:
     answers_given: t.List[Answer]
 
     @staticmethod
-    def make(member: discord.Member, channel: discord.TextChannel, deck: Deck) -> Exam:
+    def make(member: discord.Member, channel: discord.TextChannel, deck: Deck, practice: bool) -> Exam:
         max_wrong = 2
         timelimit = {
             'HSK 1': 7,
@@ -315,8 +358,9 @@ class Exam:
             member=member,
             channel=channel,
             deck=deck,
-            max_wrong=max_wrong,
-            timelimit=timelimit,
+            max_wrong=max_wrong if not practice else None,
+            timelimit=timelimit if not practice else 15,
+            fail_on_timeout=practice,
 
             exam_start=now,
             current_question_index=-1, # -1 because we need to call next_question() as least once.
@@ -411,13 +455,31 @@ class Exam:
 
     def passed(self) -> bool:
         assert self.finished(), 'Deck is not finished'
-        return not self.gave_up() and self.number_wrong() <= self.max_wrong
+        return not self.gave_up() and self.max_wrong is not None and self.number_wrong() <= self.max_wrong
+
+    def number_timeouts(self) -> int:
+        number_timeout = 0
+        for answer in self.answers_given:
+            if isinstance(answer, Timeout):
+                number_timeout += 1
+
+        return number_timeout
+
+    def _finished_too_many_wrong(self) -> bool:
+        return self.max_wrong is not None and self.number_wrong() > self.max_wrong
+
+    def _finished_all_questions_answered(self) -> bool:
+        return len(self.answers_given) == len(self.deck.questions)
+
+    def _finished_timeout(self) -> bool:
+        return self.fail_on_timeout and self.number_timeouts() > 0
 
     def finished(self) -> bool:
         return (
-            len(self.answers_given) == len(self.deck.questions) or  # complete
-            self.number_wrong() > self.max_wrong or                 # missed too many questions
-            self.gave_up()                                          # gave up
+            self.gave_up() or
+            self._finished_too_many_wrong() or
+            self._finished_all_questions_answered() or
+            self._finished_timeout()
         )
 
 
