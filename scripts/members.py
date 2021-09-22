@@ -14,11 +14,11 @@ client = commands.Bot(command_prefix='$', intents=intents)
 
 @client.event
 async def on_ready():
-    main()
+    run()
     await client.close()
 
 
-def main():
+def run():
     for member in client.guilds[0].members:
         print(member.display_name)
         print()
@@ -28,7 +28,11 @@ def main():
         print()
 
 
-if __name__ == '__main__':
+def main():
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
     client.run(TOKEN)
+
+
+if __name__ == '__main__':
+    main()
