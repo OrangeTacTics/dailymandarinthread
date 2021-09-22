@@ -39,10 +39,10 @@ class ExamCog(ChairmanMaoCog):
         constants = self.chairmanmao.constants()
         if ctx.invoked_subcommand is None:
 
-            next_exam = make_hsk1_exam()
+            deck = make_hsk1_deck()
 
             lines = [
-                f'The next exam you are scheduled to take is {next_exam.name}.',
+                f'The next exam you are scheduled to take is {deck.name}.',
             ]
 
             if ctx.channel.id == constants.exam_channel.id:
@@ -57,14 +57,14 @@ class ExamCog(ChairmanMaoCog):
         await ctx.send('Available exams: hsk1 hsk2')
 
     @exam.command(name='start')
-    async def cmd_exam_start(self, ctx, exam_name: t.Optional[str] = None):
-        if exam_name is None:
-            exam_name = 'hsk1'
+    async def cmd_exam_start(self, ctx, deck_name: t.Optional[str] = None):
+        if deck_name is None:
+            deck_name = 'hsk1'
 
-        exam = {
-            'hsk1': make_hsk1_exam(),
-            'hsk2': make_hsk2_exam(),
-        }[exam_name]
+        deck = {
+            'hsk1': make_hsk1_deck(),
+            'hsk2': make_hsk2_deck(),
+        }[deck_name]
 
         constants = self.chairmanmao.constants()
         if ctx.channel.id != constants.exam_channel.id:
@@ -78,7 +78,7 @@ class ExamCog(ChairmanMaoCog):
         active_exam = ActiveExam.make(
             member=ctx.author,
             channel=ctx.channel,
-            exam=exam,
+            deck=deck,
         )
         self.active_exam = active_exam
 
@@ -145,9 +145,9 @@ class ExamCog(ChairmanMaoCog):
         await self.show_results(active_exam)
 
     async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
-        exam = active_exam.exam
+        deck = active_exam.deck
 
-#        description = f'{exam.name}'
+#        description = f'{deck.name}'
 
         embed = discord.Embed(
 #            title='Exam',
@@ -160,26 +160,26 @@ class ExamCog(ChairmanMaoCog):
             icon_url=active_exam.member.avatar_url,
         )
         embed.add_field(
-            name='Exam',
-            value=exam.name,
+            name='Deck',
+            value=deck.name,
             inline=True,
         )
 
         embed.add_field(
             name='Questions',
-            value=f'{exam.num_questions()}',
+            value=f'{deck.num_questions()}',
             inline=True,
         )
 
         embed.add_field(
             name='Time Limit',
-            value=f'{exam.timelimit} seconds',
+            value=f'{active_exam.timelimit} seconds',
             inline=False,
         )
-        if exam.max_wrong > 0:
+        if active_exam.max_wrong > 0:
             embed.add_field(
                 name='Mistakes Allowed',
-                value=f'{exam.max_wrong}',
+                value=f'{active_exam.max_wrong}',
                 inline=True,
             )
 
@@ -211,7 +211,7 @@ class ExamCog(ChairmanMaoCog):
     async def show_results(self, active_exam: ActiveExam) -> None:
         lines = []
 
-        questions_answered = active_exam.exam.questions[:len(active_exam.answers_given)]
+        questions_answered = active_exam.deck.questions[:len(active_exam.answers_given)]
         longest_answer = max(len(question.question) for question in questions_answered)
 
         for question, answer in active_exam.grade():
@@ -223,10 +223,10 @@ class ExamCog(ChairmanMaoCog):
             lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
 
         if active_exam.passed():
-            title = 'Exam Passed: ' + active_exam.exam.name
+            title = 'Exam Passed: ' + active_exam.deck.name
             color = 0x00ff00
         else:
-            title = 'Exam Failed: ' + active_exam.exam.name
+            title = 'Exam Failed: ' + active_exam.deck.name
             color = 0xff0000
 
         embed = discord.Embed(
@@ -238,14 +238,14 @@ class ExamCog(ChairmanMaoCog):
             name=active_exam.member.display_name,
             icon_url=active_exam.member.avatar_url,
         )
-        if active_exam.passed() and active_exam.exam.max_wrong > 0:
+        if active_exam.passed() and active_exam.max_wrong > 0:
             score = active_exam.score() * 100
             embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
 
         await active_exam.channel.send(embed=embed)
 
 
-def make_hsk1_exam() -> 'Exam':
+def make_hsk1_deck() -> 'Deck':
     questions = []
 
     import csv
@@ -255,20 +255,18 @@ def make_hsk1_exam() -> 'Exam':
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(ExamQuestion(word['question'], word['answers'].split(','), word['meaning']))
+            questions.append(DeckQuestion(word['question'], word['answers'].split(','), word['meaning']))
 
     random.shuffle(questions)
     questions = questions[:10]
 
-    return Exam(
+    return Deck(
         name='HSK 1',
         questions=questions,
-        max_wrong=2,
-        timelimit=9,
     )
 
 
-def make_hsk2_exam() -> 'Exam':
+def make_hsk2_deck() -> 'Deck':
     questions = []
 
     import csv
@@ -278,16 +276,14 @@ def make_hsk2_exam() -> 'Exam':
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(ExamQuestion(word['question'], word['answers'].split(','), word['meaning']))
+            questions.append(DeckQuestion(word['question'], word['answers'].split(','), word['meaning']))
 
     random.shuffle(questions)
     questions = questions[:15]
 
-    return Exam(
+    return Deck(
         name='HSK 2',
         questions=questions,
-        max_wrong=2,
-        timelimit=7,
     )
 
 
@@ -295,7 +291,10 @@ def make_hsk2_exam() -> 'Exam':
 class ActiveExam:
     member: discord.Member
     channel: discord.TextChannel
-    exam: Exam
+    deck: Deck
+
+    max_wrong: int
+    timelimit: int
 
     exam_start: datetime
 
@@ -305,12 +304,19 @@ class ActiveExam:
     answers_given: t.List[Answer]
 
     @staticmethod
-    def make(member: discord.Member, channel: discord.TextChannel, exam: Exam) -> ActiveExam:
+    def make(member: discord.Member, channel: discord.TextChannel, deck: Deck) -> ActiveExam:
+        max_wrong = 2
+        timelimit = {
+            'HSK 1': 7,
+            'HSK 2': 5,
+        }[deck.name]
         now = datetime.now(timezone.utc).replace(microsecond=0)
         return ActiveExam(
             member=member,
             channel=channel,
-            exam=exam,
+            deck=deck,
+            max_wrong=max_wrong,
+            timelimit=timelimit,
 
             exam_start=now,
             current_question_index=-1, # -1 because we need to call next_question() as least once.
@@ -330,17 +336,17 @@ class ActiveExam:
     def ready_for_next_answer(self) -> bool:
         return len(self.answers_given) == self.current_question_index
 
-    def current_question(self) -> ExamQuestion:
-        return self.exam.questions[self.current_question_index]
+    def current_question(self) -> DeckQuestion:
+        return self.deck.questions[self.current_question_index]
 
-    def next_question(self) -> ExamQuestion:
+    def next_question(self) -> DeckQuestion:
         assert not self.finished()
         now = datetime.now(timezone.utc)
 
         self.current_question_start = now
         self.current_question_index += 1
 
-        question = self.exam.questions[self.current_question_index]
+        question = self.deck.questions[self.current_question_index]
         return question
 
     def waiting_for_answer(self) -> bool:
@@ -352,7 +358,7 @@ class ActiveExam:
 
         now = datetime.now(timezone.utc).replace(microsecond=0)
         duration = now - self.current_question_start
-        return duration.total_seconds() > self.exam.timelimit
+        return duration.total_seconds() > self.timelimit
 
     def timeout(self) -> None:
         self.answers_given.append(Timeout())
@@ -379,7 +385,7 @@ class ActiveExam:
 
     def number_wrong(self) -> int:
         num_questions_answered = len(self.answers_given)
-        questions = self.exam.questions[:num_questions_answered]
+        questions = self.deck.questions[:num_questions_answered]
 
         number_wrong = 0
 
@@ -389,9 +395,9 @@ class ActiveExam:
 
         return number_wrong
 
-    def grade(self) -> t.List[t.Tuple[ExamQuestion, Answer]]:
+    def grade(self) -> t.List[t.Tuple[DeckQuestion, Answer]]:
         num_questions_answered = len(self.answers_given)
-        questions = self.exam.questions[:num_questions_answered]
+        questions = self.deck.questions[:num_questions_answered]
 
         results = []
 
@@ -404,30 +410,28 @@ class ActiveExam:
         return any(isinstance(a, Quit) for a in self.answers_given)
 
     def passed(self) -> bool:
-        assert self.finished(), 'Exam is not finished'
-        return not self.gave_up() and self.number_wrong() <= self.exam.max_wrong
+        assert self.finished(), 'Deck is not finished'
+        return not self.gave_up() and self.number_wrong() <= self.max_wrong
 
     def finished(self) -> bool:
         return (
-            len(self.answers_given) == len(self.exam.questions) or  # complete
-            self.number_wrong() > self.exam.max_wrong or            # missed too many questions
+            len(self.answers_given) == len(self.deck.questions) or  # complete
+            self.number_wrong() > self.max_wrong or                 # missed too many questions
             self.gave_up()                                          # gave up
         )
 
 
 @dataclass
-class Exam:
+class Deck:
     name: str
-    questions: t.List[ExamQuestion]
-    max_wrong: int
-    timelimit: int
+    questions: t.List[DeckQuestion]
 
     def num_questions(self):
         return len(self.questions)
 
 
 @dataclass
-class ExamQuestion:
+class DeckQuestion:
     question: str
     valid_answers: t.List[str]
     meaning: str
