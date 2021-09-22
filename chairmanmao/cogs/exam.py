@@ -114,6 +114,7 @@ class ExamCog(ChairmanMaoCog):
         deck = {
             'hsk1': make_hsk1_deck(),
             'hsk2': make_hsk2_deck(),
+            'hsk3': make_hsk3_deck(),
         }[exam_name]
 
         return Exam.make(
@@ -292,7 +293,7 @@ def make_hsk1_deck() -> 'Deck':
 
     import csv
     import random
-    with open('data/hsk1.csv') as infile:
+    with open('data/decks/hsk1.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
@@ -313,7 +314,7 @@ def make_hsk2_deck() -> 'Deck':
 
     import csv
     import random
-    with open('data/hsk2.csv') as infile:
+    with open('data/decks/hsk2.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
@@ -325,6 +326,27 @@ def make_hsk2_deck() -> 'Deck':
 
     return Deck(
         name='HSK 2',
+        questions=questions,
+    )
+
+
+def make_hsk3_deck() -> 'Deck':
+    questions = []
+
+    import csv
+    import random
+    with open('data/decks/hsk3.csv') as infile:
+        fieldnames = ['question', 'answers', 'meaning', 'unused']
+        reader = csv.DictReader(infile, fieldnames=fieldnames)
+
+        for word in reader:
+            questions.append(DeckQuestion(word['question'], word['answers'].split(','), word['meaning']))
+
+    random.shuffle(questions)
+    questions = questions[:20]
+
+    return Deck(
+        name='HSK 3',
         questions=questions,
     )
 
@@ -350,8 +372,9 @@ class Exam:
     def make(member: discord.Member, channel: discord.TextChannel, deck: Deck, practice: bool) -> Exam:
         max_wrong = 2
         timelimit = {
-            'HSK 1': 7,
-            'HSK 2': 5,
+            'HSK 1': 10,
+            'HSK 2': 7,
+            'HSK 3': 7,
         }[deck.name]
         now = datetime.now(timezone.utc).replace(microsecond=0)
         return Exam(
