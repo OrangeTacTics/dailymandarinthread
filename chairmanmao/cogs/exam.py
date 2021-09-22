@@ -15,7 +15,7 @@ class ExamCog(ChairmanMaoCog):
     async def on_ready(self):
         self.chairmanmao.logger.info('ExamCog')
         self.loop.start()
-        self.active_exam: t.Optional[ActiveExam] = None
+        self.active_exam: t.Optional[Exam] = None
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -75,7 +75,7 @@ class ExamCog(ChairmanMaoCog):
             await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
             return
 
-        active_exam = ActiveExam.make(
+        active_exam = Exam.make(
             member=ctx.author,
             channel=ctx.channel,
             deck=deck,
@@ -102,7 +102,7 @@ class ExamCog(ChairmanMaoCog):
         self.active_exam.give_up()
 #        await ctx.message.add_reaction(constants.dekinai_emoji)
 
-    async def run_exam(self, active_exam: ActiveExam) -> None:
+    async def run_exam(self, active_exam: Exam) -> None:
         constants = self.chairmanmao.constants()
         channel = constants.exam_channel
 
@@ -144,7 +144,7 @@ class ExamCog(ChairmanMaoCog):
 
         await self.show_results(active_exam)
 
-    async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
+    async def send_exam_start_embed(self, active_exam: Exam) -> None:
         deck = active_exam.deck
 
 #        description = f'{deck.name}'
@@ -185,14 +185,14 @@ class ExamCog(ChairmanMaoCog):
 
         await active_exam.channel.send(embed=embed)
 
-    async def send_answer(self, active_exam: ActiveExam, message: discord.Message) -> None:
+    async def send_answer(self, active_exam: Exam, message: discord.Message) -> None:
         correct = active_exam.answer(message.content.strip())  # noqa
 #        if correct:
 #            await message.add_reaction('✅')
 #        else:
 #            await message.add_reaction('❌')
 
-    async def send_next_question(self, active_exam: ActiveExam) -> None:
+    async def send_next_question(self, active_exam: Exam) -> None:
         question = active_exam.next_question()
 
         font = 'kuaile'
@@ -208,7 +208,7 @@ class ExamCog(ChairmanMaoCog):
         file = discord.File(fp=image_buffer, filename=filename)
         await active_exam.channel.send(file=file)
 
-    async def show_results(self, active_exam: ActiveExam) -> None:
+    async def show_results(self, active_exam: Exam) -> None:
         lines = []
 
         questions_answered = active_exam.deck.questions[:len(active_exam.answers_given)]
@@ -288,7 +288,7 @@ def make_hsk2_deck() -> 'Deck':
 
 
 @dataclass
-class ActiveExam:
+class Exam:
     member: discord.Member
     channel: discord.TextChannel
     deck: Deck
@@ -304,14 +304,14 @@ class ActiveExam:
     answers_given: t.List[Answer]
 
     @staticmethod
-    def make(member: discord.Member, channel: discord.TextChannel, deck: Deck) -> ActiveExam:
+    def make(member: discord.Member, channel: discord.TextChannel, deck: Deck) -> Exam:
         max_wrong = 2
         timelimit = {
             'HSK 1': 7,
             'HSK 2': 5,
         }[deck.name]
         now = datetime.now(timezone.utc).replace(microsecond=0)
-        return ActiveExam(
+        return Exam(
             member=member,
             channel=channel,
             deck=deck,
