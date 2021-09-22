@@ -1,7 +1,7 @@
 import typing as t
 import abc
 
-from .types import UserId, Profile
+from .types import UserId, Profile, ServerSettings
 
 
 class DocumentStore(abc.ABC):
@@ -22,6 +22,12 @@ class DocumentStore(abc.ABC):
 
     def profile(self, user_id: UserId) -> 'OpenProfileContextManager':
         return OpenProfileContextManager(self, user_id)
+
+    def load_server_settings(self) -> ServerSettings:
+        pass
+
+    def store_server_settings(self, ServerSettings) -> None:
+        pass
 
 
 class OpenProfileContextManager:

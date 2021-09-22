@@ -1,8 +1,10 @@
 from __future__ import annotations
 import typing as t
+from datetime import datetime
+
 import pymongo
 
-from .types import Profile, Role, Json, UserId
+from .types import Profile, Role, Json, UserId, ServerSettings
 from .document_store import DocumentStore
 
 
@@ -14,6 +16,7 @@ class MongoDbDocumentStore(DocumentStore):
         self.mongo_client = pymongo.MongoClient(mongo_url)
         self.db = self.mongo_client[mongo_db]
         self.profiles = self.db['Profiles']
+        self.server_settings = self.db['ServerSettings']
 
     def create_profile(self, user_id: UserId, discord_username: str) -> Profile:
         profile = Profile.make(user_id, discord_username)
@@ -35,6 +38,18 @@ class MongoDbDocumentStore(DocumentStore):
 
     def get_all_profiles(self) -> t.List[Profile]:
         return [profile_from_json(p) for p in self.profiles.find({})]
+
+    def load_server_settings(self) -> ServerSettings:
+        json_data = self.profiles.find_one({})
+        return ServerSettings(
+            last_bump=datetime.fromisoformat(json_data['last_bump'])
+        )
+
+    def store_server_settings(self, server_settings: ServerSettings) -> None:
+        doc = {
+            'last_bump': server_settings.last_bump.isoformat(),
+        }
+        self.server_settings.replace_one({}, doc)
 
 
 def profile_to_json(profile: Profile) -> Json:

@@ -67,5 +67,11 @@ class Role(Enum):
         return self.value < other.value
 
 
+@dataclass
+class ServerSettings:
+    last_bump: datetime
+    last_delete_warning: datetime
+
+
 UserId = int
 Json = t.Any
