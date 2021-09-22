@@ -2,6 +2,8 @@ from __future__ import annotations
 import typing as t
 import logging
 
+from dotenv import load_dotenv
+
 import discord
 from discord.ext import commands
 
@@ -108,3 +110,9 @@ class ChairmanMao:
 
         DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
         client.run(DISCORD_TOKEN)
+
+
+def main():
+    load_dotenv()
+    chairmanmao = ChairmanMao()
+    chairmanmao.run()

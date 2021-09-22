@@ -1,7 +1,4 @@
-from chairmanmao.chairmanmao import ChairmanMao
-from dotenv import load_dotenv
+from chairmanmao.chairmanmao import main
 
 
-load_dotenv()
-chairmanmao = ChairmanMao()
-chairmanmao.run()
+main()
