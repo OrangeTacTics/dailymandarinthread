@@ -1,11 +1,13 @@
 import typing as t
 import asyncio
 
-from chairmanmao.types import Profile, Role
+from chairmanmao.types import Role
 from chairmanmao.cogs import ChairmanMaoCog
 
 import discord
 from discord.ext import commands, tasks
+
+from chairmanmao.api import SyncInfo
 
 
 class SyncCog(ChairmanMaoCog):
@@ -43,37 +45,37 @@ class SyncCog(ChairmanMaoCog):
 
     async def incremental_member_update(self) -> None:
         for user_id in self.chairmanmao.flush_member_update_queue():
-            profile = self.chairmanmao.api.as_chairman().get_profile(user_id)
-            did_update = await self.update_member_nick(profile)
+            sync_info = self.chairmanmao.api.as_chairman().get_sync_info(user_id)
+            did_update = await self.update_member_nick(sync_info)
             if did_update:
                 await asyncio.sleep(0.5)
-            did_update = await self.update_member_roles(profile)
+            did_update = await self.update_member_roles(sync_info)
             if did_update:
                 await asyncio.sleep(0.5)
 
     async def full_member_update(self) -> None:
         user_ids = self.chairmanmao.api.as_chairman().list_users()
         for user_id in user_ids:
-            profile = self.chairmanmao.api.as_chairman().get_profile(user_id)
-            did_update = await self.update_member_nick(profile)
+            sync_info = self.chairmanmao.api.as_chairman().get_sync_info(user_id)
+            did_update = await self.update_member_nick(sync_info)
             if did_update:
                 await asyncio.sleep(0.5)
-            did_update = await self.update_member_roles(profile)
+            did_update = await self.update_member_roles(sync_info)
             if did_update:
                 await asyncio.sleep(0.5)
 
-    async def update_member_roles(self, profile: Profile) -> bool:
+    async def update_member_roles(self, sync_info: SyncInfo) -> bool:
         '''
             Return if roles updated.
         '''
-        member = self.profile_to_member(profile)
+        member = self.sync_info_to_member(sync_info)
         if member is None:
             return False
 
         current_roles = set(member.roles)
 
-        roles_to_add = self.roles_for(profile).difference(current_roles)
-        roles_to_remove = self.nonroles_for(profile).intersection(current_roles)
+        roles_to_add = self.roles_for(sync_info).difference(current_roles)
+        roles_to_remove = self.nonroles_for(sync_info).intersection(current_roles)
 
         if not roles_to_add and not roles_to_remove:
             return False
@@ -103,18 +105,18 @@ class SyncCog(ChairmanMaoCog):
         }
         return role_map[dmt_role]
 
-    def roles_for(self, profile: Profile) -> t.Set[discord.Role]:
+    def roles_for(self, sync_info: SyncInfo) -> t.Set[discord.Role]:
         constants = self.chairmanmao.constants()
 
-        if profile.is_jailed():
+        if Role.Jailed in sync_info.roles:
             return {constants.jailed_role}
         else:
-            discord_roles = {self.dmt_role_to_discord_role(dmt_role) for dmt_role in profile.roles}
+            discord_roles = {self.dmt_role_to_discord_role(dmt_role) for dmt_role in sync_info.roles}
             if constants.comrade_role not in discord_roles:
                 discord_roles.add(constants.comrade_role)
             return discord_roles
 
-    def nonroles_for(self, profile: Profile) -> t.Set[Role]:
+    def nonroles_for(self, sync_info: SyncInfo) -> t.Set[Role]:
         constants = self.chairmanmao.constants()
 
         all_roles = {
@@ -129,13 +131,13 @@ class SyncCog(ChairmanMaoCog):
             constants.hsk5_role,
             constants.hsk6_role,
         }
-        return all_roles.difference(self.roles_for(profile))
+        return all_roles.difference(self.roles_for(sync_info))
 
-    async def update_member_nick(self, profile: Profile) -> bool:
+    async def update_member_nick(self, sync_info: SyncInfo) -> bool:
         '''
             Return if nick updated.
         '''
-        member = self.profile_to_member(profile)
+        member = self.sync_info_to_member(sync_info)
         if member is None:
             return False
 
@@ -146,7 +148,7 @@ class SyncCog(ChairmanMaoCog):
         if member.id == constants.guild.owner.id:
             return False
 
-        new_nick = profile.nick_for()
+        new_nick = nick_for(sync_info)
 
         if new_nick == member.nick:
             return False
@@ -155,9 +157,39 @@ class SyncCog(ChairmanMaoCog):
         await member.edit(nick=new_nick)
         return True
 
-    def profile_to_member(self, profile: Profile) -> t.Optional[discord.Member]:
+    def sync_info_to_member(self, sync_info: SyncInfo) -> t.Optional[discord.Member]:
         constants = self.chairmanmao.constants()
         for member in constants.guild.members:
-            if member.id == profile.user_id:
+            if member.id == sync_info.user_id:
                 return member
         return None
+
+
+def nick_for(sync_info: SyncInfo) -> str:
+    if Role.Jailed in sync_info.roles:
+        return _add_label_to_nick(sync_info.display_name, "【劳改】")
+
+    else:
+        label = f' [{sync_info.credit}]'
+
+        hsk_level = sync_info.hsk_level
+        if hsk_level is not None:
+            hsk_label = {
+                1: '➀',
+                2: '➁',
+                3: '➂',
+                4: '➃',
+                5: '➄',
+                6: '➅',
+            }
+            label += ' HSK' + hsk_label[hsk_level]
+
+        if Role.Learner in sync_info.roles:
+            label += '✍'
+
+        return _add_label_to_nick(sync_info.display_name, label)
+
+
+def _add_label_to_nick(display_name: str, label: str) -> str:
+    cutoff = 32 - len(label)
+    return display_name[:cutoff] + label

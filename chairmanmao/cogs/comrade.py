@@ -21,9 +21,6 @@ class ComradeCog(ChairmanMaoCog):
 #        return
             raise
 
-        profile = self.chairmanmao.api.as_chairman().get_profile(member.id)
-        assert profile is not None
-
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{username}'s nickname has been changed to {name}")
 

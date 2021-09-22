@@ -25,6 +25,15 @@ class LeaderboardEntry:
 
 
 @dataclass
+class SyncInfo:
+    user_id: UserId
+    display_name: str
+    credit: int
+    roles: t.Set[Role]
+    hsk_level: t.Optional[int]
+
+
+@dataclass
 class Api:
     db: pymongo.MongoClient
 
@@ -61,16 +70,23 @@ class Api:
 class ChairmanApi:
     db: pymongo.MongoClient
 
-    def create_profile(self, user_id: UserId, discord_username: str) -> None:
+    def is_registered(self, user_id: UserId) -> bool:
+        profile = get_profile(self.db, user_id)
+        return profile is not None
+
+    def register(self, user_id: UserId, discord_username: str) -> None:
         create_profile(self.db, user_id, discord_username)
 
-    def get_profile(self, user_id: UserId) -> Profile:
+    def get_sync_info(self, user_id: UserId) -> SyncInfo:
         profile = get_profile(self.db, user_id)
-        return profile
-
-    def get_all_profiles(self) -> t.List[Profile]:
-        profiles = get_all_profiles(self.db)
-        return profiles
+        hsk_level = _hsk_level(profile)
+        return SyncInfo(
+            user_id=profile.user_id,
+            display_name=profile.display_name,
+            credit=profile.credit,
+            roles=set(profile.roles),
+            hsk_level=hsk_level,
+        )
 
     def honor(self, user_id: UserId, credit: int) -> int:
         assert credit > 0
@@ -288,6 +304,23 @@ def remove_role(profile: Profile, role: Role) -> bool:
         changed = False
 
     return changed
+
+
+def _hsk_level(profile: Profile) -> t.Optional[int]:
+    if Role.Hsk1 in profile.roles:
+        return 1
+    elif Role.Hsk2 in profile.roles:
+        return 2
+    elif Role.Hsk3 in profile.roles:
+        return 3
+    elif Role.Hsk4 in profile.roles:
+        return 4
+    elif Role.Hsk5 in profile.roles:
+        return 5
+    elif Role.Hsk6 in profile.roles:
+        return 6
+    else:
+        return None
 
 
 def main():

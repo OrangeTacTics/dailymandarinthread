@@ -10,26 +10,19 @@ class WelcomeCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        try:
-            self.chairmanmao.api.as_chairman().get_profile(member.id)
-            is_new_member = False
-        except:  # noqa
-            username = self.chairmanmao.member_to_username(member)
-            self.chairmanmao.api.as_chairman().create_profile(member.id, username)
-            is_new_member = True
-
         constants = self.chairmanmao.constants()
         username = self.chairmanmao.member_to_username(member)
 
         self.chairmanmao.queue_member_update(member.id)
 
-        if is_new_member:
-            self.chairmanmao.logger.info(f"New user joined: {username}. Member ID: {member.id}.")
+        if self.chairmanmao.is_registered(member.id):
+            self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
+            await constants.commentators_channel.send(f'{username} has returned to DMT.')
+        else:
+            self.chairmanmao.api.as_chairman().register(member.id, username)
+            self.chairmanmao.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
             await self.welcome(member)
             await constants.commentators_channel.send(f'{username} has joined DMT.')
-        else:
-            self.chairmanmao.logger.info(f"Former user joined: {username}. Member ID: {member.id}.")
-            await constants.commentators_channel.send(f'{username} has returned to DMT.')
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):

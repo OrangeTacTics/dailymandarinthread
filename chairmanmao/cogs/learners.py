@@ -78,7 +78,7 @@ class QuizResults:
     quiz_id: str
 
 
-async def get_quiz_results(api, message: discord.Message) -> t.Optional[QuizResults]:
+async def handle_kotoba(api, message: discord.Message) -> t.Optional[QuizResults]:
     fields = {}
 
     for embed in message.embeds:
@@ -194,12 +194,3 @@ def allowable_settings(deck_name: str, settings_json: Json) -> bool:
             return False
 
     return True
-
-
-async def handle_kotoba(api, message):
-    quiz_results = await get_quiz_results(api, message)
-    if quiz_results is not None:
-
-        profile = api.as_chairman().get_profile(quiz_results.user_id)
-        await message.channel.send(f'{profile.discord_username} has passed the {quiz_results.deck_name} quiz.')
-        chairmanmao.queue_member_update(profile.id)  # noqa
