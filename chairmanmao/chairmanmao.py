@@ -8,6 +8,7 @@ from discord.ext import commands
 import os
 
 from chairmanmao.filemanager import DoSpacesConfig, FileManager
+from chairmanmao.store.mongodb import MongoDbDocumentStore
 from chairmanmao.api import Api
 from chairmanmao.draw import DrawManager
 from chairmanmao.fourchan import FourChanManager
@@ -53,7 +54,8 @@ class ChairmanMao:
         MONGODB_URL = os.getenv('MONGODB_URL', '')
         MONGODB_DB = os.getenv('MONGODB_DB', '')
 
-        self.api = Api.connect(MONGODB_URL, MONGODB_DB)
+        store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
+        self.api = Api(store)
 
         self.member_update_queue: t.Set[discord.Member] = set()
         self.constants_cache: t.Optional[DiscordConstants] = None

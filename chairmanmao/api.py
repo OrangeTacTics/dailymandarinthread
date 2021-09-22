@@ -2,17 +2,12 @@ from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
 
-import os
 from datetime import datetime, timezone
 
-from dotenv import load_dotenv
-import pymongo
+import chairmanmao.types as cmt
 
-from chairmanmao.types import Profile, Role
-from chairmanmao.profile import get_profile, create_profile, get_all_profiles, open_profile, get_user_id
-
-#from chairmanmao.draw import draw, get_font_names
-#from chairmanmao.fourchan import get_dmt_thread, is_url_seen, see_url
+from chairmanmao.store import DocumentStore
+from chairmanmao.store.types import Profile, Role
 
 
 UserId = int
@@ -29,90 +24,87 @@ class SyncInfo:
     user_id: UserId
     display_name: str
     credit: int
-    roles: t.Set[Role]
+    roles: t.Set[cmt.Role]
     hsk_level: t.Optional[int]
 
 
 @dataclass
 class Api:
-    db: pymongo.MongoClient
-
-    @staticmethod
-    def connect(mongo_url: str, mongo_db: str) -> Api:
-        mongo_client = pymongo.MongoClient(mongo_url)
-        db = mongo_client[mongo_db]
-        return Api(
-            db=db,
-        )
-
-    def get_user_id(self, discord_username: str) -> UserId:
-        return get_user_id(self.db, discord_username)
+    store: DocumentStore
 
     def as_chairman(self) -> ChairmanApi:
         return ChairmanApi(
-            db=self.db,
+            store=self.store,
         )
 
     def as_party(self, user_id: UserId) -> PartyApi:
         return PartyApi(
-            db=self.db,
+            store=self.store,
             user_id=user_id,
         )
 
     def as_comrade(self, user_id: UserId) -> ComradeApi:
         return ComradeApi(
-            db=self.db,
+            store=self.store,
             user_id=user_id,
         )
 
 
 @dataclass
 class ChairmanApi:
-    db: pymongo.MongoClient
+    store: DocumentStore
 
     def is_registered(self, user_id: UserId) -> bool:
-        profile = get_profile(self.db, user_id)
+        profile = self.store.load_profile(user_id)
         return profile is not None
 
     def register(self, user_id: UserId, discord_username: str) -> None:
-        create_profile(self.db, user_id, discord_username)
+        self.store.create_profile(user_id, discord_username)
 
     def get_sync_info(self, user_id: UserId) -> SyncInfo:
-        profile = get_profile(self.db, user_id)
+        profile = self.store.load_profile(user_id)
         hsk_level = _hsk_level(profile)
+
+        cmt_roles = []
+        for role in profile.roles:
+            cmt_role = profile_role_to_cmt_role(role)
+            if cmt_role is not None:
+                cmt_roles.append(cmt_role)
+
         return SyncInfo(
             user_id=profile.user_id,
             display_name=profile.display_name,
             credit=profile.credit,
-            roles=set(profile.roles),
+            roles=set(cmt_roles),
             hsk_level=hsk_level,
         )
 
     def honor(self, user_id: UserId, credit: int) -> int:
         assert credit > 0
-        with open_profile(self.db, user_id) as profile:
+
+        with self.store.profile(user_id) as profile:
             profile.credit += credit
             return profile.credit
 
     def dishonor(self, user_id: UserId, credit: int) -> int:
         assert credit > 0
-        with open_profile(self.db, user_id) as profile:
+        with self.store.profile(user_id) as profile:
             profile.credit -= credit
             return profile.credit
 
     def set_name(self, user_id: UserId, name: str) -> None:
         assert len(name) < 32, 'Name must be 32 characters or less.'
-        with open_profile(self.db, user_id) as profile:
+        with self.store.profile(user_id) as profile:
             profile.display_name = name
 
     def list_users(self) -> t.List[UserId]:
         user_ids = []
-        for profile in get_all_profiles(self.db):
+        for profile in self.store.get_all_profiles():
             user_ids.append(profile.user_id)
         return user_ids
 
     def promote(self, user_id: UserId) -> None:
-        with open_profile(self.db, user_id) as profile:
+        with self.store.profile(user_id) as profile:
             if Role.Party not in profile.roles:
                 profile.roles.append(Role.Party)
                 profile.roles.sort()
@@ -120,7 +112,7 @@ class ChairmanApi:
                 raise Exception("Already a party member")
 
     def demote(self, user_id: UserId) -> None:
-        with open_profile(self.db, user_id) as profile:
+        with self.store.profile(user_id) as profile:
             if Role.Party in profile.roles:
                 profile.roles.remove(Role.Party)
                 profile.roles.sort()
@@ -137,7 +129,7 @@ class ChairmanApi:
             Role.Hsk6: 6,
         }
 
-        profile = get_profile(self.db, user_id)
+        profile = self.store.load_profile(user_id)
         for role, level in level_by_role.items():
             if role in profile.roles:
                 return level
@@ -154,7 +146,7 @@ class ChairmanApi:
             6: Role.Hsk6,
         }
 
-        with open_profile(self.db, user_id) as profile:
+        with self.store.profile(user_id) as profile:
             # Remove all roles
             for role in role_by_level.values():
                 remove_role(profile, role)
@@ -167,11 +159,11 @@ class ChairmanApi:
 
 @dataclass
 class PartyApi:
-    db: pymongo.MongoClient
+    store: DocumentStore
     user_id: UserId
 
     def jail(self, user_id: UserId) -> None:
-        with open_profile(self.db, user_id) as profile:
+        with self.store.profile(user_id) as profile:
             if Role.Jailed not in profile.roles:
                 profile.roles.append(Role.Jailed)
                 profile.roles.sort()
@@ -179,14 +171,14 @@ class PartyApi:
                 raise Exception("Already jailed")
 
     def unjail(self, user_id: UserId) -> None:
-        with open_profile(self.db, user_id) as profile:
+        with self.store.profile(user_id) as profile:
             if Role.Jailed in profile.roles:
                 profile.roles = sorted(role for role in profile.roles if role != Role.Jailed)
             else:
                 raise Exception("Not jailed")
 
     def stepdown(self) -> None:
-        with open_profile(self.db, self.user_id) as profile:
+        with self.store.profile(self.user_id) as profile:
             if Role.Party in profile.roles:
                 profile.roles = sorted(role for role in profile.roles if role != Role.Party)
             else:
@@ -195,24 +187,24 @@ class PartyApi:
 
 @dataclass
 class ComradeApi:
-    db: pymongo.MongoClient
+    store: DocumentStore
     user_id: UserId
 
     def get_discord_username(self, user_id: UserId) -> str:
-        profile = get_profile(self.db, user_id)
+        profile = self.store.load_profile(user_id)
         return profile.discord_username
 
     def get_display_name(self, user_id: UserId) -> str:
-        profile = get_profile(self.db, user_id)
+        profile = self.store.load_profile(user_id)
         return profile.display_name
 
     def social_credit(self, user_id: UserId) -> int:
-        profile = get_profile(self.db, user_id)
+        profile = self.store.load_profile(user_id)
         assert profile is not None
         return profile.credit
 
     def set_learner(self, flag: bool) -> None:
-        with open_profile(self.db, self.user_id) as profile:
+        with self.store.profile(self.user_id) as profile:
             if flag:
                 profile.roles.append(Role.Learner)
             else:
@@ -227,23 +219,23 @@ class ComradeApi:
         ...
 
     def mine(self, word: str) -> None:
-        with open_profile(self.db, self.user_id) as profile:
+        with self.store.profile(self.user_id) as profile:
             profile.mined_words.append(word)
             profile.mined_words = sorted(set(profile.mined_words))
 
     def get_mined(self) -> t.List[str]:
-        profile = get_profile(self.db, self.user_id)
+        profile = self.store.load_profile(self.user_id)
         assert profile is not None, f"No profile exists for {self.user_id}"
         return profile.mined_words
 
     def yuan(self) -> int:
-        profile = get_profile(self.db, self.user_id)
+        profile = self.store.load_profile(self.user_id)
         assert profile is not None, f"No profile exists for {self.user_id}"
         return profile.yuan
 
     def leaderboard(self) -> t.List[LeaderboardEntry]:
         entries = []
-        profiles = get_all_profiles(self.db)
+        profiles = self.store.get_all_profiles()
         profiles.sort(reverse=True, key=lambda profile: profile.credit)
 
         for profile in profiles[:10]:
@@ -255,16 +247,16 @@ class ComradeApi:
 
     def set_name(self, name: str) -> None:
         assert len(name) < 32, 'Name must be 32 characters or less.'
-        with open_profile(self.db, self.user_id) as profile:
+        with self.store.profile(self.user_id) as profile:
             profile.display_name = name
 
     def get_name(self) -> str:
-        profile = get_profile(self.db, self.user_id)
+        profile = self.store.load_profile(self.user_id)
         assert profile is not None, f"No profile exists for {self.user_id}"
         return profile.display_name
 
     def last_seen(self, user_id: UserId) -> datetime:
-        profile = get_profile(self.db, user_id)
+        profile = self.store.load_profile(user_id)
         assert profile is not None, f"No profile exists for {self.user_id}"
         last_seen = profile.last_seen
         last_seen = last_seen.replace(tzinfo=timezone.utc)
@@ -272,7 +264,7 @@ class ComradeApi:
         return last_seen
 
     def alert_activity(self) -> None:
-        with open_profile(self.db, self.user_id) as profile:
+        with self.store.profile(self.user_id) as profile:
             profile.last_seen = datetime.now(timezone.utc).replace(microsecond=0)
 
 
@@ -323,74 +315,17 @@ def _hsk_level(profile: Profile) -> t.Optional[int]:
         return None
 
 
-def main():
-    load_dotenv()
-
-    MONGODB_URL = os.getenv('MONGODB_TEST_URL', '')
-    MONGODB_DB = os.getenv('MONGODB_TEST_DB', '')
-
-    api = Api.connect(MONGODB_URL, MONGODB_DB)
-
-    user_id = api.get_user_id('OrangeTacTics#0949')
-    snickers_id = api.get_user_id('Snickers#0486')
-
-    chairman_api = api.as_chairman()
-    comrade_api = api.as_comrade(snickers_id)
-
-    print(comrade_api.last_seen(snickers_id))
-    comrade_api.alert_activity()
-    print(comrade_api.last_seen(snickers_id))
-
-    print('credit:', comrade_api.social_credit(user_id))
-
-    comrade_api.mine('猫')
-
-    for word in comrade_api.get_mined():
-        print('-', word)
-
-    print()
-    print('Yuan:', comrade_api.yuan())
-
-    print('Display name:', comrade_api.get_name())
-    comrade_api.set_name('Snick')
-    print('Display name:', comrade_api.get_name())
-    comrade_api.set_name('Snickers')
-    print('Display name:', comrade_api.get_name())
-    print()
-
-    lines = [
-        "The DMT Leaderboard",
-        "```",
-    ]
-    for entry in comrade_api.leaderboard():
-        line = f'{entry.credit} ... {entry.display_name}'
-        lines.append(line)
-
-    lines.append("```")
-    print('\n'.join(lines))
-    print()
-
-    print('Snickers credit:', comrade_api.social_credit(snickers_id))
-    print('dishonor 10...')
-    chairman_api.dishonor(snickers_id, 10)
-    print('Snickers credit:', comrade_api.social_credit(snickers_id))
-    print('honor 11...')
-    chairman_api.honor(snickers_id, 11)
-    print('Snickers credit:', comrade_api.social_credit(snickers_id))
-    print()
-
-    for word in api.as_comrade(snickers_id).get_mined():
-        print('-', word)
-    print()
-
-    last_seen = api.as_comrade(snickers_id).last_seen(snickers_id)
-    last_seen = last_seen.replace(tzinfo=timezone.utc)
-    now = datetime.now(timezone.utc).replace(microsecond=0)
-    havent_seen_in = now - last_seen
-    print(snickers_id, 'was last seen', int(havent_seen_in.total_seconds() / 60), 'minutes ago')
-    print('at', last_seen)
-    print()
-
-
-if __name__ == '__main__':
-    main()
+def profile_role_to_cmt_role(role: Role) -> t.Optional[cmt.Role]:
+    cmt_roles = {
+        Role.Comrade: cmt.Role.Comrade,
+        Role.Party: cmt.Role.Party,
+        Role.Learner: cmt.Role.Learner,
+        Role.Jailed: cmt.Role.Jailed,
+        Role.Hsk1: cmt.Role.Hsk1,
+        Role.Hsk2: cmt.Role.Hsk2,
+        Role.Hsk3: cmt.Role.Hsk3,
+        Role.Hsk4: cmt.Role.Hsk4,
+        Role.Hsk5: cmt.Role.Hsk5,
+        Role.Hsk6: cmt.Role.Hsk6,
+    }
+    return cmt_roles[role]
