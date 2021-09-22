@@ -1,8 +1,8 @@
 from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
-from datetime import datetime
 from enum import Enum
+from datetime import datetime, timezone
 
 
 @dataclass
@@ -22,6 +22,25 @@ class Profile:
 
     hanzi: t.List[str]
     mined_words: t.List[str]
+
+    @staticmethod
+    def make(user_id: UserId, discord_username: str) -> Profile:
+        assert discord_username[-5] == '#'
+        display_name = discord_username[:-5]
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+
+        return Profile(
+            discord_username=discord_username,
+            user_id=user_id,
+            created=now,
+            last_seen=now,
+            display_name=display_name,
+            credit=1000,
+            roles=[Role.Comrade],
+            yuan=0,
+            hanzi=[],
+            mined_words=[],
+        )
 
 
 class Role(Enum):

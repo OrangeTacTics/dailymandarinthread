@@ -8,6 +8,9 @@ class DocumentStore(abc.ABC):
     def create_profile(self, user_id: UserId, discord_username: str) -> Profile:
         pass
 
+    def profile_exists(self, user_id: UserId) -> bool:
+        pass
+
     def load_profile(self, user_id: UserId) -> Profile:
         pass
 
@@ -16,9 +19,6 @@ class DocumentStore(abc.ABC):
 
     def get_all_profiles(self) -> t.List[Profile]:
         pass
-
-    def profile_exists(self, user_id: UserId) -> bool:
-        return self.load_profile(user_id) is not None
 
     def profile(self, user_id: UserId) -> 'OpenProfileContextManager':
         return OpenProfileContextManager(self, user_id)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import typing as t
-import pymongo
+from pathlib import Path
+import json
 
 from .types import Profile, Role, Json, UserId
 from .document_store import DocumentStore
@@ -9,32 +10,40 @@ from .document_store import DocumentStore
 SCHEMA_VERSION = 5
 
 
-class MongoDbDocumentStore(DocumentStore):
-    def __init__(self, mongo_url: str, mongo_db: str) -> None:
-        self.mongo_client = pymongo.MongoClient(mongo_url)
-        self.db = self.mongo_client[mongo_db]
-        self.profiles = self.db['Profiles']
+class MemoryDocumentStore(DocumentStore):
+    def __init__(self) -> None:
+        self.profiles: t.Dict[UserId, Profile] = {}
 
     def create_profile(self, user_id: UserId, discord_username: str) -> Profile:
-        profile = Profile.make(user_id, discord_username)
-
         assert not self.profile_exists(user_id)
-        self.profiles.insert_one(profile_to_json(profile))
+        profile = Profile.make(user_id, discord_username)
+        self.profiles[profile.user_id] = profile
         return profile
 
     def profile_exists(self, user_id: UserId) -> bool:
-        return len(list(self.profiles.find({'user_id': user_id}))) > 0
+        return user_id in self.profiles
 
     def load_profile(self, user_id: UserId) -> Profile:
-        profile_json = self.profiles.find_one({'user_id': user_id})
-        return profile_from_json(profile_json)
+        return self.profiles[user_id]
 
     def store_profile(self, profile: Profile) -> None:
-        query = {'user_id': profile.user_id}
-        self.profiles.replace_one(query, profile_to_json(profile))
+        self.profiles[profile.user_id] = profile
 
     def get_all_profiles(self) -> t.List[Profile]:
-        return [profile_from_json(p) for p in self.profiles.find({})]
+        return list(self.profiles.values())
+
+    def load(self, filepath: Path) -> None:
+        self.profiles = {}
+        with open(filepath, 'r') as infile:
+            profiles = json.load(infile)
+
+        for profile in profiles:
+            self.profiles[profile['user_id']] = profile_from_json(profile)
+
+    def save(self, filepath: Path) -> None:
+        with open(filepath, 'w') as outfile:
+            profiles = [profile_to_json(p) for p in self.profiles.values()]
+            json.dump(profiles, outfile, indent=4, ensure_ascii=False)
 
 
 def profile_to_json(profile: Profile) -> Json:
@@ -42,8 +51,8 @@ def profile_to_json(profile: Profile) -> Json:
     return {
         'user_id': profile.user_id,
         'discord_username': profile.discord_username,
-        'created': profile.created,
-        'last_seen': profile.last_seen,
+        'created': datetime_to_json(profile.created),
+        'last_seen': datetime_to_json(profile.last_seen),
         'roles': roles,
         'display_name': profile.display_name,
         'credit': profile.credit,
@@ -60,8 +69,8 @@ def profile_from_json(profile_json: Json) -> Profile:
     return Profile(
         user_id=profile_json['user_id'],
         discord_username=profile_json['discord_username'],
-        created=profile_json['created'],
-        last_seen=profile_json['last_seen'],
+        created=datetime_from_json(profile_json['created']),
+        last_seen=datetime_from_json(profile_json['last_seen']),
         roles=roles,
         display_name=profile_json['display_name'],
         credit=profile_json['credit'],
@@ -69,3 +78,12 @@ def profile_from_json(profile_json: Json) -> Profile:
         mined_words=profile_json['mined_words'],
         yuan=profile_json['yuan'],
     )
+
+
+def datetime_from_json(json_datetime: str) -> datetime:
+    dt = datetime.fromisoformat(json_datetime)
+    return dt
+
+
+def datetime_to_json(dt: datetime) -> str:
+    return dt.isoformat()

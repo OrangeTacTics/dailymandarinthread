@@ -2,6 +2,7 @@ import os
 from datetime import datetime, timezone
 
 from chairmanmao.api import Api
+from chairmanmao.store.mongodb import MongoDbDocumentStore
 
 from dotenv import load_dotenv
 
@@ -33,10 +34,11 @@ if __name__ == '__main__':
 
     MONGODB_URL = os.getenv('MONGODB_URL', '')
     MONGODB_DB = os.getenv('MONGODB_DB', '')
-    ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', '')
 
-    api = Api.connect(MONGODB_URL, MONGODB_DB)
-    comrade_api = api.as_comrade(ADMIN_USERNAME)
+    store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
+    api = Api(store)
+
+    comrade_api = api.as_comrade(0)
     chairman_api = api.as_chairman()
 
     user_ids = chairman_api.list_users()
