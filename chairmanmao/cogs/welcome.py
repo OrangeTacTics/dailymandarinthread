@@ -15,7 +15,7 @@ class WelcomeCog(ChairmanMaoCog):
 
         self.chairmanmao.queue_member_update(member.id)
 
-        if self.chairmanmao.is_registered(member.id):
+        if self.chairmanmao.api.is_registered(member.id):
             self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
             await constants.commentators_channel.send(f'{username} has returned to DMT.')
         else:
