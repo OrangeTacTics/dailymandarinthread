@@ -70,7 +70,7 @@ class Role(Enum):
 @dataclass
 class ServerSettings:
     last_bump: datetime
-    last_delete_warning: datetime
+#    last_delete_warning: datetime
 
 
 UserId = int

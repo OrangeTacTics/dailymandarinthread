@@ -1,4 +1,5 @@
 import typing as t
+import subprocess
 
 from discord.ext import commands
 
@@ -82,3 +83,10 @@ class OwnerCog(ChairmanMaoCog):
         self.chairmanmao.api.set_hsk(member.id, hsk_level)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
+
+    @commands.command(name='version')
+    @commands.is_owner()
+    async def cmd_version(self, ctx):
+        proc = subprocess.run('git rev-parse HEAD'.split(' '), capture_output=True)
+        git_commit_hash = proc.stdout.decode().strip()
+        await ctx.send(f'`{git_commit_hash}`')
