@@ -2,6 +2,8 @@ from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
 import asyncio
+import random
+import csv
 
 import discord
 from discord.ext import commands, tasks
@@ -38,7 +40,6 @@ class ExamCog(ChairmanMaoCog):
     async def exam(self, ctx):
         constants = self.chairmanmao.constants()
         if ctx.invoked_subcommand is None:
-
             deck = make_hsk1_deck()
 
             lines = [
@@ -236,7 +237,7 @@ class ExamCog(ChairmanMaoCog):
 
         # if is not practice
         if not active_exam.fail_on_timeout:
-            questions_answered = active_exam.deck.questions[:len(active_exam.answers_given)]
+            questions_answered = active_exam.questions[:len(active_exam.answers_given)]
             longest_answer = max(len(question.question) for question in questions_answered)
 
             for question, answer in active_exam.grade():
@@ -267,7 +268,7 @@ class ExamCog(ChairmanMaoCog):
                 score = active_exam.score() * 100
                 embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
         else:
-            questions_answered = active_exam.deck.questions[:len(active_exam.answers_given)]
+            questions_answered = active_exam.questions[:len(active_exam.answers_given)]
             longest_answer = max(len(question.question) for question in questions_answered)
 
             title = 'Exam Practice: ' + active_exam.deck.name
@@ -291,17 +292,12 @@ class ExamCog(ChairmanMaoCog):
 def make_hsk1_deck() -> 'Deck':
     questions = []
 
-    import csv
-    import random
     with open('data/decks/hsk1.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(DeckQuestion(word['question'], word['answers'].split(','), word['meaning']))
-
-    random.shuffle(questions)
-    questions = questions[:10]
+            questions.append(Question(word['question'], word['answers'].split(','), word['meaning']))
 
     return Deck(
         name='HSK 1',
@@ -312,17 +308,12 @@ def make_hsk1_deck() -> 'Deck':
 def make_hsk2_deck() -> 'Deck':
     questions = []
 
-    import csv
-    import random
     with open('data/decks/hsk2.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(DeckQuestion(word['question'], word['answers'].split(','), word['meaning']))
-
-    random.shuffle(questions)
-    questions = questions[:15]
+            questions.append(Question(word['question'], word['answers'].split(','), word['meaning']))
 
     return Deck(
         name='HSK 2',
@@ -333,17 +324,12 @@ def make_hsk2_deck() -> 'Deck':
 def make_hsk3_deck() -> 'Deck':
     questions = []
 
-    import csv
-    import random
     with open('data/decks/hsk3.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(DeckQuestion(word['question'], word['answers'].split(','), word['meaning']))
-
-    random.shuffle(questions)
-    questions = questions[:20]
+            questions.append(Question(word['question'], word['answers'].split(','), word['meaning']))
 
     return Deck(
         name='HSK 3',
@@ -355,6 +341,7 @@ def make_hsk3_deck() -> 'Deck':
 class Exam:
     member: discord.Member
     channel: discord.TextChannel
+    questions: t.List[Question]
     deck: Deck
 
     max_wrong: t.Optional[int]
@@ -376,13 +363,28 @@ class Exam:
             'HSK 2': 7,
             'HSK 3': 7,
         }[deck.name]
+
+        if practice:
+            questions = list(deck.questions)
+        else:
+            question_count = {
+                'HSK 1': 10,
+                'HSK 2': 15,
+                'HSK 3': 20,
+            }[deck.name]
+            questions = questions[:question_count]
+
+        random.shuffle(questions)
+
         now = datetime.now(timezone.utc).replace(microsecond=0)
         return Exam(
             member=member,
             channel=channel,
             deck=deck,
+            questions=questions,
+
             max_wrong=max_wrong if not practice else None,
-            timelimit=timelimit if not practice else 15,
+            timelimit=timelimit if not practice else 30,
             fail_on_timeout=practice,
 
             exam_start=now,
@@ -403,17 +405,17 @@ class Exam:
     def ready_for_next_answer(self) -> bool:
         return len(self.answers_given) == self.current_question_index
 
-    def current_question(self) -> DeckQuestion:
-        return self.deck.questions[self.current_question_index]
+    def current_question(self) -> Question:
+        return self.questions[self.current_question_index]
 
-    def next_question(self) -> DeckQuestion:
+    def next_question(self) -> Question:
         assert not self.finished()
         now = datetime.now(timezone.utc)
 
         self.current_question_start = now
         self.current_question_index += 1
 
-        question = self.deck.questions[self.current_question_index]
+        question = self.questions[self.current_question_index]
         return question
 
     def waiting_for_answer(self) -> bool:
@@ -452,7 +454,7 @@ class Exam:
 
     def number_wrong(self) -> int:
         num_questions_answered = len(self.answers_given)
-        questions = self.deck.questions[:num_questions_answered]
+        questions = self.questions[:num_questions_answered]
 
         number_wrong = 0
 
@@ -462,9 +464,9 @@ class Exam:
 
         return number_wrong
 
-    def grade(self) -> t.List[t.Tuple[DeckQuestion, Answer]]:
+    def grade(self) -> t.List[t.Tuple[Question, Answer]]:
         num_questions_answered = len(self.answers_given)
-        questions = self.deck.questions[:num_questions_answered]
+        questions = self.questions[:num_questions_answered]
 
         results = []
 
@@ -492,7 +494,7 @@ class Exam:
         return self.max_wrong is not None and self.number_wrong() > self.max_wrong
 
     def _finished_all_questions_answered(self) -> bool:
-        return len(self.answers_given) == len(self.deck.questions)
+        return len(self.answers_given) == len(self.questions)
 
     def _finished_timeout(self) -> bool:
         return self.fail_on_timeout and self.number_timeouts() > 0
@@ -509,14 +511,14 @@ class Exam:
 @dataclass
 class Deck:
     name: str
-    questions: t.List[DeckQuestion]
+    questions: t.List[Question]
 
     def num_questions(self):
         return len(self.questions)
 
 
 @dataclass
-class DeckQuestion:
+class Question:
     question: str
     valid_answers: t.List[str]
     meaning: str
