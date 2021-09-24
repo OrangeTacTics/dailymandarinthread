@@ -267,12 +267,26 @@ class ExamCog(ChairmanMaoCog):
             if active_exam.passed() and active_exam.max_wrong is not None and active_exam.max_wrong > 0:
                 score = active_exam.score() * 100
                 embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
+
+        # if is practice
         else:
             questions_answered = active_exam.questions[:len(active_exam.answers_given)]
             longest_answer = max(len(question.question) for question in questions_answered)
 
             title = 'Exam Practice: ' + active_exam.deck.name
             color = 0x00ff00
+
+            sampled_corrections = [(q, a) for (q, a) in active_exam.grade() if isinstance(a, Incorrect)]
+            while len(sampled_corrections) > 5:
+                sampled_corrections.pop(random.randrange(len(sampled_corrections)))
+
+            for question, answer in sampled_corrections:
+                correct = isinstance(answer, Correct)
+                emoji = '✅' if correct else '❌'
+                correct_answer = question.valid_answers[0]
+                question_str = (question.question).ljust(longest_answer + 2, '　')
+                answer_str = answer if correct else f'{answer} → {correct_answer}'
+                lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
 
             embed = discord.Embed(
                 title=title,
