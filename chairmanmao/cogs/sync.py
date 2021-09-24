@@ -44,7 +44,14 @@ class SyncCog(ChairmanMaoCog):
         await ctx.send('Sync complete')
 
     async def incremental_member_update(self) -> None:
+        constants = self.chairmanmao.constants()
         for user_id in self.chairmanmao.flush_member_update_queue():
+            if not self.chairmanmao.api.is_registered(user_id):
+                user = discord.utils.get(constants.guild.members, id=user_id)
+                assert user is not None
+                username = self.chairmanmao.member_to_username(user)
+                self.chairmanmao.api.register(user_id, username)
+
             sync_info = self.chairmanmao.api.get_sync_info(user_id)
             did_update = await self.update_member_nick(sync_info)
             if did_update:

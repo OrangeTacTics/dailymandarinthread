@@ -33,8 +33,7 @@ class Api:
     store: DocumentStore
 
     def is_registered(self, user_id: UserId) -> bool:
-        profile = self.store.load_profile(user_id)
-        return profile is not None
+        return self.store.profile_exists(user_id)
 
     def register(self, user_id: UserId, discord_username: str) -> None:
         self.store.create_profile(user_id, discord_username)

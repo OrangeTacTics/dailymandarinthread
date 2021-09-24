@@ -13,8 +13,6 @@ class WelcomeCog(ChairmanMaoCog):
         constants = self.chairmanmao.constants()
         username = self.chairmanmao.member_to_username(member)
 
-        self.chairmanmao.queue_member_update(member.id)
-
         if self.chairmanmao.api.is_registered(member.id):
             self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
             await constants.commentators_channel.send(f'{username} has returned to DMT.')
@@ -23,6 +21,8 @@ class WelcomeCog(ChairmanMaoCog):
             self.chairmanmao.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
             await self.welcome(member)
             await constants.commentators_channel.send(f'{username} has joined DMT.')
+
+        self.chairmanmao.queue_member_update(member.id)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -73,3 +73,11 @@ class WelcomeCog(ChairmanMaoCog):
     @commands.command(name='welcomeme')
     async def cmd_welcomeme(self, ctx):
         await self.welcome(ctx.author)
+
+    @commands.is_owner()
+    @commands.command(name='register')
+    async def cmd_register(self, ctx, member: commands.MemberConverter):
+        assert not self.chairmanmao.api.is_registered(member.id)
+        username = self.chairmanmao.member_to_username(member)
+        self.chairmanmao.api.register(member.id, username)
+        self.chairmanmao.queue_member_update(member.id)
