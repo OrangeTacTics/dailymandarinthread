@@ -3,6 +3,8 @@ from __future__ import annotations
 import discord
 from discord.ext import commands
 from chairmanmao.cogs import ChairmanMaoCog
+from pathlib import Path
+import json
 
 
 class LearnersCog(ChairmanMaoCog):
@@ -37,3 +39,19 @@ class LearnersCog(ChairmanMaoCog):
             await ctx.send(f'{target_username} is unranked.')
         else:
             await ctx.send(f'{target_username} has reached HSK {hsk_level}.')
+
+    @commands.command(name='readers', help='List how many words you know in various readers.')
+    @commands.has_role('同志')
+    async def cmd_readers(self, ctx):
+        mined_words = set(self.chairmanmao.api.get_mined(ctx.author.id))
+
+        reader_words_dir = Path('data/reader_words')
+        for reader_words_filepath in reader_words_dir.iterdir():
+            with open(reader_words_filepath) as infile:
+                json_data = json.load(infile)
+                title = json_data['title']
+                words = json_data['words']
+
+            unknown_words = set(words).difference(mined_words)
+
+            await ctx.channel.send(f'{title}: {len(unknown_words)} unmined words')

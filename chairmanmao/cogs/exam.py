@@ -351,7 +351,7 @@ class ExamCog(ChairmanMaoCog):
         for question, answer in active_exam.grade():
 
             if isinstance(answer, Correct):
-                current_hsk = self.chairmanmao.api.mine(active_exam.member.id, question.question)
+                self.chairmanmao.api.mine(active_exam.member.id, question.question)
 
     async def reward(self, active_exam: ActiveExam) -> None:
         if active_exam.practice:
