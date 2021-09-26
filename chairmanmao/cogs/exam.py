@@ -1,6 +1,7 @@
 from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
+from datetime import datetime, timezone
 import asyncio
 import random
 import csv
@@ -9,7 +10,7 @@ import discord
 from discord.ext import commands, tasks
 
 from chairmanmao.cogs import ChairmanMaoCog
-from datetime import datetime, timezone
+from chairmanmao.types import Exam, Question
 
 
 class ExamCog(ChairmanMaoCog):
@@ -17,7 +18,7 @@ class ExamCog(ChairmanMaoCog):
     async def on_ready(self):
         self.chairmanmao.logger.info('ExamCog')
         self.loop.start()
-        self.active_exam: t.Optional[Exam] = None
+        self.active_exam: t.Optional[ActiveExam] = None
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -40,10 +41,10 @@ class ExamCog(ChairmanMaoCog):
     async def exam(self, ctx):
         constants = self.chairmanmao.constants()
         if ctx.invoked_subcommand is None:
-            deck = make_hsk1_deck()
+            exam = make_hsk1_exam()
 
             lines = [
-                f'The next exam you are scheduled to take is {deck.name}.',
+                f'The next exam you are scheduled to take is {exam.name}.',
             ]
 
             if ctx.channel.id == constants.exam_channel.id:
@@ -55,6 +56,7 @@ class ExamCog(ChairmanMaoCog):
 
     @exam.command(name='list')
     async def cmd_exam_list(self, ctx):
+#        exam_names = self.chairmanmao().api.get_exam_names()
         await ctx.send('Available exams: hsk1 hsk2')
 
     @exam.command(name='start')
@@ -111,21 +113,21 @@ class ExamCog(ChairmanMaoCog):
         self.active_exam.give_up()
 #        await ctx.message.add_reaction(constants.dekinai_emoji)
 
-    def create_exam(self, member: discord.Member, channel: discord.TextChannel, exam_name: str, practice: bool = False) -> Exam:
-        deck = {
-            'hsk1': make_hsk1_deck(),
-            'hsk2': make_hsk2_deck(),
-            'hsk3': make_hsk3_deck(),
+    def create_exam(self, member: discord.Member, channel: discord.TextChannel, exam_name: str, practice: bool = False) -> ActiveExam:
+        exam = {
+            'hsk1': make_hsk1_exam(),
+            'hsk2': make_hsk2_exam(),
+            'hsk3': make_hsk3_exam(),
         }[exam_name]
 
-        return Exam.make(
+        return ActiveExam.make(
             member=member,
             channel=channel,
-            deck=deck,
+            exam=exam,
             practice=practice,
         )
 
-    async def run_exam(self, active_exam: Exam) -> None:
+    async def run_exam(self, active_exam: ActiveExam) -> None:
         await self.send_exam_start_embed(active_exam)
 
         while not active_exam.finished():
@@ -136,7 +138,7 @@ class ExamCog(ChairmanMaoCog):
 
         await self.show_results(active_exam)
 
-    async def reply_to_answer(self, active_exam: Exam, answer: Answer) -> None:
+    async def reply_to_answer(self, active_exam: ActiveExam, answer: Answer) -> None:
         constants = self.chairmanmao.constants()
         question = active_exam.current_question()
 
@@ -168,13 +170,13 @@ class ExamCog(ChairmanMaoCog):
         if isinstance(answer, Timeout) and not active_exam.finished():
             await asyncio.sleep(1.5)
 
-    async def send_exam_start_embed(self, active_exam: Exam) -> None:
-        deck = active_exam.deck
+    async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
+        exam = active_exam.exam
 
-#        description = f'{deck.name}'
+#        description = f'{exam.name}'
 
         embed = discord.Embed(
-#            title='Exam',
+#            title='ActiveExam',
 #            description=description,
             color=0xffa500,
         )
@@ -185,13 +187,13 @@ class ExamCog(ChairmanMaoCog):
         )
         embed.add_field(
             name='Deck',
-            value=deck.name,
+            value=exam.name,
             inline=True,
         )
 
         embed.add_field(
             name='Questions',
-            value=f'{deck.num_questions()}',
+            value=f'{exam.num_questions}',
             inline=True,
         )
 
@@ -209,14 +211,14 @@ class ExamCog(ChairmanMaoCog):
 
         await active_exam.channel.send(embed=embed)
 
-    async def send_answer(self, active_exam: Exam, message: discord.Message) -> None:
+    async def send_answer(self, active_exam: ActiveExam, message: discord.Message) -> None:
         correct = active_exam.answer(message.content.strip())  # noqa
 #        if correct:
 #            await message.add_reaction('✅')
 #        else:
 #            await message.add_reaction('❌')
 
-    async def send_next_question(self, active_exam: Exam) -> None:
+    async def send_next_question(self, active_exam: ActiveExam) -> None:
         question = active_exam.next_question()
 
         font = 'kuaile'
@@ -232,7 +234,7 @@ class ExamCog(ChairmanMaoCog):
         file = discord.File(fp=image_buffer, filename=filename)
         await active_exam.channel.send(file=file)
 
-    async def show_results(self, active_exam: Exam) -> None:
+    async def show_results(self, active_exam: ActiveExam) -> None:
         lines = []
 
         # if is not practice
@@ -249,10 +251,10 @@ class ExamCog(ChairmanMaoCog):
                 lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
 
             if active_exam.passed():
-                title = 'Exam Passed: ' + active_exam.deck.name
+                title = 'ActiveExam Passed: ' + active_exam.exam.name
                 color = 0x00ff00
             else:
-                title = 'Exam Failed: ' + active_exam.deck.name
+                title = 'ActiveExam Failed: ' + active_exam.exam.name
                 color = 0xff0000
 
             embed = discord.Embed(
@@ -273,7 +275,7 @@ class ExamCog(ChairmanMaoCog):
             questions_answered = active_exam.questions[:len(active_exam.answers_given)]
             longest_answer = max(len(question.question) for question in questions_answered)
 
-            title = 'Exam Practice: ' + active_exam.deck.name
+            title = 'ActiveExam Practice: ' + active_exam.exam.name
             color = 0x00ff00
 
             sampled_corrections = [(q, a) for (q, a) in active_exam.grade() if isinstance(a, Incorrect)]
@@ -303,60 +305,69 @@ class ExamCog(ChairmanMaoCog):
         await active_exam.channel.send(embed=embed)
 
 
-def make_hsk1_deck() -> 'Deck':
-    questions = []
+def make_hsk1_exam() -> Exam:
+    deck = []
 
     with open('data/decks/hsk1.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
 
-    return Deck(
+    return Exam(
         name='HSK 1',
-        questions=questions,
+        deck=deck,
+        num_questions=10,
+        max_wrong=2,
+        timelimit=10,
     )
 
 
-def make_hsk2_deck() -> 'Deck':
-    questions = []
+def make_hsk2_exam() -> Exam:
+    deck = []
 
     with open('data/decks/hsk2.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
 
-    return Deck(
+    return Exam(
         name='HSK 2',
-        questions=questions,
+        deck=deck,
+        num_questions=15,
+        max_wrong=2,
+        timelimit=8,
     )
 
 
-def make_hsk3_deck() -> 'Deck':
-    questions = []
+def make_hsk3_exam() -> Exam:
+    deck = []
 
     with open('data/decks/hsk3.csv') as infile:
         fieldnames = ['question', 'answers', 'meaning', 'unused']
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            questions.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
 
-    return Deck(
+    return Exam(
         name='HSK 3',
-        questions=questions,
+        deck=deck,
+        num_questions=20,
+        max_wrong=2,
+        timelimit=7,
     )
 
 
 @dataclass
-class Exam:
+class ActiveExam:
     member: discord.Member
     channel: discord.TextChannel
     questions: t.List[Question]
-    deck: Deck
+    exam: Exam
 
     max_wrong: t.Optional[int]
     timelimit: int
@@ -370,35 +381,22 @@ class Exam:
     answers_given: t.List[Answer]
 
     @staticmethod
-    def make(member: discord.Member, channel: discord.TextChannel, deck: Deck, practice: bool) -> Exam:
-        max_wrong = 2
-        timelimit = {
-            'HSK 1': 10,
-            'HSK 2': 7,
-            'HSK 3': 7,
-        }[deck.name]
-
-        if practice:
-            questions = list(deck.questions)
-        else:
-            question_count = {
-                'HSK 1': 10,
-                'HSK 2': 15,
-                'HSK 3': 20,
-            }[deck.name]
-            questions = questions[:question_count]
-
+    def make(member: discord.Member, channel: discord.TextChannel, exam: Exam, practice: bool) -> ActiveExam:
+        questions = list(exam.deck)
         random.shuffle(questions)
 
+        if not practice:
+            questions = questions[:exam.num_questions]
+
         now = datetime.now(timezone.utc).replace(microsecond=0)
-        return Exam(
+        return ActiveExam(
             member=member,
             channel=channel,
-            deck=deck,
+            exam=exam,
             questions=questions,
 
-            max_wrong=max_wrong if not practice else None,
-            timelimit=timelimit if not practice else 30,
+            max_wrong=exam.max_wrong if not practice else None,
+            timelimit=exam.timelimit if not practice else 30,
             fail_on_timeout=practice,
 
             exam_start=now,
@@ -493,7 +491,7 @@ class Exam:
         return any(isinstance(a, Quit) for a in self.answers_given)
 
     def passed(self) -> bool:
-        assert self.finished(), 'Deck is not finished'
+        assert self.finished(), 'Exam is not finished'
         return not self.gave_up() and self.max_wrong is not None and self.number_wrong() <= self.max_wrong
 
     def number_timeouts(self) -> int:
@@ -520,22 +518,6 @@ class Exam:
             self._finished_all_questions_answered() or
             self._finished_timeout()
         )
-
-
-@dataclass
-class Deck:
-    name: str
-    questions: t.List[Question]
-
-    def num_questions(self):
-        return len(self.questions)
-
-
-@dataclass
-class Question:
-    question: str
-    valid_answers: t.List[str]
-    meaning: str
 
 
 @dataclass

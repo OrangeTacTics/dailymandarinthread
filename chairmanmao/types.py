@@ -48,5 +48,21 @@ class Role(Enum):
         return self.value < other.value
 
 
+@dataclass
+class Exam:
+    name: str
+    deck: t.List[Question]
+    num_questions: int
+    max_wrong: t.Optional[int]
+    timelimit: int
+
+
+@dataclass
+class Question:
+    question: str
+    valid_answers: t.List[str]
+    meaning: str
+
+
 UserId = int
 Json = t.Any
