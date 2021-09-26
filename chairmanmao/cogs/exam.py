@@ -171,6 +171,7 @@ class ExamCog(ChairmanMaoCog):
             await self.reply_to_answer(active_exam, answer)
 
         await self.show_results(active_exam)
+        self.mine_correct_answers(active_exam)
         await self.reward(active_exam)
 
     async def receive_answer(self, active_exam: ActiveExam) -> Answer:
@@ -345,6 +346,12 @@ class ExamCog(ChairmanMaoCog):
             embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
 
         await active_exam.channel.send(embed=embed)
+
+    def mine_correct_answers(self, active_exam: ActiveExam) -> None:
+        for question, answer in active_exam.grade():
+
+            if isinstance(answer, Correct):
+                current_hsk = self.chairmanmao.api.mine(active_exam.member.id, question.question)
 
     async def reward(self, active_exam: ActiveExam) -> None:
         if active_exam.practice:
