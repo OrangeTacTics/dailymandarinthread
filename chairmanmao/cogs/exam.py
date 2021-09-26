@@ -38,6 +38,7 @@ class ExamCog(ChairmanMaoCog):
                 self.active_exam.timeout()
 
     @commands.group()
+    @commands.has_role("中文学习者")
     async def exam(self, ctx):
         constants = self.chairmanmao.constants()
         if ctx.invoked_subcommand is None:
