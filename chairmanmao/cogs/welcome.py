@@ -42,9 +42,10 @@ class WelcomeCog(ChairmanMaoCog):
             "and you will see your social credit increase.",
             '',
             'You may use the `$learner` command to give yourself the @中文学习者 (Chinese learner) role. '
-            'This will give you access to our learning resources and to take tests.',
+            'This will give you access to our learning resources and to take exams.',
             '',
             'For more information about the various channels: https://dailymandarinthread.info/discord/channels/',
+            '',
             'For more information about the various roles: https://dailymandarinthread.info/discord/roles/',
             '',
             'Some good commands to know about:',
