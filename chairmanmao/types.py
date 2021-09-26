@@ -55,6 +55,7 @@ class Exam:
     num_questions: int
     max_wrong: t.Optional[int]
     timelimit: int
+    hsk_level: int
 
 
 @dataclass
