@@ -68,17 +68,24 @@ class ExamCog(ChairmanMaoCog):
         await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
 
     @exam.command(name='start')
-    async def cmd_exam_start(self, ctx, exam_name: t.Optional[str] = None):
-        if exam_name is None:
-            exam_name = self.next_exam_for(ctx.author)
-            if exam_name is None:
-                await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
-                return
+    async def cmd_exam_start(self, ctx, _exam_name: t.Optional[str] = None):
+        if _exam_name is not None:
+            description = '\n'.join([
+                'You may run an exam with `$exam start`',
+                'There is no need to specify the exam name.',
+            ])
+            embed = discord.Embed(
+                title="Note",
+                description=description,
+                color=0xff0000,
+            )
+            await ctx.channel.send(embed=embed)
 
+        exam_name = self.next_exam_for(ctx.author)
         exam: t.Optional[Exam] = EXAMS.get(exam_name)
 
         if exam is None:
-            await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
+            await ctx.send('There is currently no exam for you.')
             return
 
         constants = self.chairmanmao.constants()
