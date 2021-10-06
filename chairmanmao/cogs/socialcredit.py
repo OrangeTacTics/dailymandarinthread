@@ -72,7 +72,7 @@ class SocialCreditCog(ChairmanMaoCog):
         if isinstance(emoji, discord.Emoji):
             return not self.is_cringe_emoji(emoji)
         else:
-            return False
+            return True
 
     def is_cringe_emoji(self, emoji: t.Union[str, discord.Emoji]) -> bool:
         if isinstance(emoji, discord.Emoji):
