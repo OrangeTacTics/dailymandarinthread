@@ -90,7 +90,8 @@ class ChairmanMao:
     def run(self):
         intents = discord.Intents.default()
         intents.members = True
-        client = commands.Bot(command_prefix='$', intents=intents)
+        prefixes = ['$', '!']
+        client = commands.Bot(command_prefix=prefixes, intents=intents)
 
         client.add_cog(SyncCog(client, self))
         client.add_cog(ActivityCog(client, self))
