@@ -38,7 +38,6 @@ class ExamCog(ChairmanMaoCog):
                 self.active_exam.timeout()
 
     @commands.group()
-    @commands.has_role("中文学习者")
     async def exam(self, ctx):
         constants = self.chairmanmao.constants()
         if ctx.invoked_subcommand is None:
@@ -371,6 +370,7 @@ class ExamCog(ChairmanMaoCog):
         if active_exam.passed():
             username = self.chairmanmao.member_to_username(active_exam.member)
 
+            self.chairmanmao.api.set_learner(active_exam.member.id, True)
             self.chairmanmao.api.set_hsk(active_exam.member.id, active_exam.exam.hsk_level)
             self.chairmanmao.queue_member_update(active_exam.member.id)
             self.chairmanmao.logger.info(f'User {username} passed HSK {active_exam.exam.hsk_level}.')
