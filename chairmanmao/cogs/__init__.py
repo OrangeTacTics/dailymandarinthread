@@ -6,8 +6,12 @@ class ChairmanMaoCog(commands.Cog):
         self.client = client
         self.chairmanmao = chairmanmao
         self.logger = chairmanmao.logger
+        self.init()
 
     async def cog_before_invoke(self, ctx: commands.Context):
         author = self.chairmanmao.member_to_username(ctx.author)
         command_name = ctx.command.name
         self.logger.info(f'{author}: {command_name}()')
+
+    def init(self) -> None:
+        pass

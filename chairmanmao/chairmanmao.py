@@ -32,6 +32,7 @@ from chairmanmao.cogs.bump import BumpCog
 from chairmanmao.cogs.welcome import WelcomeCog
 from chairmanmao.cogs.exam import ExamCog
 from chairmanmao.cogs.moderation import ModerationCog
+from chairmanmao.cogs.tiananmen import TiananmenCog
 #from chairmanmao.cogs.invites import InvitesCog
 
 
@@ -107,6 +108,7 @@ class ChairmanMao:
         client.add_cog(WelcomeCog(client, self))
         client.add_cog(ExamCog(client, self))
         client.add_cog(ModerationCog(client, self))
+        client.add_cog(TiananmenCog(client, self))
         #client.add_cog(InvitesCog(client, self))
 
         DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')

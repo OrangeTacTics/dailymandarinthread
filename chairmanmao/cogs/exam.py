@@ -81,7 +81,10 @@ class ExamCog(ChairmanMaoCog):
             await ctx.channel.send(embed=embed)
 
         exam_name = self.next_exam_for(ctx.author)
-        exam: t.Optional[Exam] = EXAMS.get(exam_name)
+        if exam_name is not None:
+            exam: t.Optional[Exam] = EXAMS.get(exam_name)
+        else:
+            exam = None
 
         if exam is None:
             await ctx.send('There is currently no exam for you.')
@@ -438,7 +441,7 @@ def make_hsk3_exam() -> Exam:
     )
 
 
-EXAMS = {
+EXAMS: t.Dict[str, Exam] = {
     'hsk1': make_hsk1_exam(),
     'hsk2': make_hsk2_exam(),
     'hsk3': make_hsk3_exam(),
