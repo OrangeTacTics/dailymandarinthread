@@ -29,6 +29,7 @@ class DiscordConstants:
     exam_channel: discord.TextChannel
     learners_channel: discord.TextChannel
     rules_channel: discord.TextChannel
+    bump_channel: discord.TextChannel
 
     mao_emoji: discord.Emoji
     dekinai_emoji: discord.Emoji
@@ -65,6 +66,7 @@ class DiscordConstants:
             exam_channel=DiscordConstants._load_channel(guild, "🏫"),
             apologies_channel=DiscordConstants._load_channel(guild, "⛔"),
             tiananmen_channel=DiscordConstants._load_channel(guild, "🏯"),
+            bump_channel=DiscordConstants._load_channel(guild, "✊"),
 
             mao_emoji=DiscordConstants._load_emoji(guild, "mao"),
             dekinai_emoji=DiscordConstants._load_emoji(guild, "buneng"),

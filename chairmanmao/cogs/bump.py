@@ -26,7 +26,7 @@ class BumpCog(ChairmanMaoCog):
             duration_since_last_bump = now - self.last_bump
             if duration_since_last_bump.total_seconds() > TWO_HOURS_IN_SECONDS:
                 self.last_bump = None
-                channel = self.chairmanmao.constants().tiananmen_channel
+                channel = self.chairmanmao.constants().bumpers_channel
 
                 bumpers = self.chairmanmao.constants().bumpers_role.mention
                 await channel.send(f'{bumpers} Please bump the server with `!d bump`')
@@ -37,7 +37,7 @@ class BumpCog(ChairmanMaoCog):
             return
 
         constants = self.chairmanmao.constants()
-        if message.channel == constants.tiananmen_channel:
+        if message.channel == constants.bump_channel:
             if message.content.strip() == '!d bump':
                 self.last_bump = datetime.now(timezone.utc)
                 self.chairmanmao.logger.info('Server has been bumped')
