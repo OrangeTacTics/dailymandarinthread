@@ -26,7 +26,7 @@ class BumpCog(ChairmanMaoCog):
             duration_since_last_bump = now - self.last_bump
             if duration_since_last_bump.total_seconds() > TWO_HOURS_IN_SECONDS:
                 self.last_bump = None
-                channel = self.chairmanmao.constants().bumpers_channel
+                channel = self.chairmanmao.constants().bump_channel
 
                 bumpers = self.chairmanmao.constants().bumpers_role.mention
                 await channel.send(f'{bumpers} Please bump the server with `!d bump`')
