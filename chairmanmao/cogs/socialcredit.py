@@ -26,17 +26,22 @@ class SocialCreditCog(ChairmanMaoCog):
     @commands.cooldown(1, 5 * 60, commands.BucketType.guild)
     async def cmd_leaderboard(self, ctx, member: commands.MemberConverter = None):
         lines = [
-            "The DMT Leaderboard",
             "```",
         ]
 
         for entry in self.chairmanmao.api.leaderboard():
-            line = f'{entry.credit} ... {entry.display_name}'
+            line = f'{str(entry.credit).rjust(4)} ... {entry.display_name}'
             lines.append(discord.utils.remove_markdown(line))
 
         lines.append("```")
 
-        await ctx.send('\n'.join(lines))
+        embed = discord.Embed(
+            title="Daily Mandarin Thread Leaderboard",
+            description='\n'.join(lines),
+            color=0xff0000,
+        )
+
+        await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
