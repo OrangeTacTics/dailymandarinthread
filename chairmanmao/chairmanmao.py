@@ -113,9 +113,3 @@ class ChairmanMao:
 
         DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
         client.run(DISCORD_TOKEN)
-
-
-def main():
-    load_dotenv()
-    chairmanmao = ChairmanMao()
-    chairmanmao.run()

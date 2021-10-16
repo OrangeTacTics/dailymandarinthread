@@ -4,7 +4,10 @@ import json
 import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse
-from chairmanmao.graphql import schema
+
+from chairmanmao.graphql.schema import schema
+from chairmanmao.graphql.context import ChairmanMaoGraphQL
+
 
 from dotenv import load_dotenv
 import pymongo
@@ -26,6 +29,12 @@ db = client[MONGODB_DB]
 app = FastAPI()
 
 Json = t.Any
+
+graphql_app = ChairmanMaoGraphQL(schema)
+
+app.add_route("/graphql", graphql_app)
+app.add_websocket_route("/graphql", graphql_app)
+
 
 
 @app.middleware("http")

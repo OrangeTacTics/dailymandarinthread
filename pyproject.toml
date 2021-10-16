@@ -21,6 +21,7 @@ requests = "^2.26.0"
 PyJWT = "^2.1.0"
 python-dotenv = "^0.19.0"
 dnspython = "^2.1.0"
+websockets = "^10.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -28,5 +29,6 @@ mypy = "^0.910"
 pytest = "^6.2.5"
 
 [tool.poetry.scripts]
-chairmanmao = "chairmanmao:main"
+chairmanmao = "chairmanmao.main:bot"
+server = "chairmanmao.main:server"
 list-members = "scripts.members:main"
