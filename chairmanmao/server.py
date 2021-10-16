@@ -4,7 +4,6 @@ import json
 import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse
-from starlette.graphql import GraphQLApp
 from chairmanmao.graphql import schema
 
 from dotenv import load_dotenv
@@ -46,9 +45,6 @@ async def add_graphql_context(request: Request, call_next):
 
     response = await call_next(request)
     return response
-
-
-app.add_route("/graphql", GraphQLApp(schema=schema))
 
 
 async def query_graphql(query: str, auth_token: t.Optional[str] = None, params: t.Dict = {}) -> t.Any:
