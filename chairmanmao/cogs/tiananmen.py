@@ -25,7 +25,7 @@ class TiananmenCog(ChairmanMaoCog):
     async def loop(self):
         now = datetime.now(timezone.utc)
         for member_id, joined in self.young_members.items():
-            if now - joined >= timedelta(hours=2):
+            if now - joined >= timedelta(hours=24):
                 self.logger.info(f'Removing new member {member_id} from young users list.')
 
         self.young_members = {
