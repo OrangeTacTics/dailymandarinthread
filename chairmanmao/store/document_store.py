@@ -11,6 +11,9 @@ class DocumentStore(abc.ABC):
     def profile_exists(self, user_id: UserId) -> bool:
         pass
 
+    def load_profile_by_discord_username(self, discord_username: str) -> Profile:
+        pass
+
     def load_profile(self, user_id: UserId) -> Profile:
         pass
 

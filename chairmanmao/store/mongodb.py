@@ -28,6 +28,10 @@ class MongoDbDocumentStore(DocumentStore):
     def profile_exists(self, user_id: UserId) -> bool:
         return len(list(self.profiles.find({'user_id': user_id}))) > 0
 
+    def load_profile_by_discord_username(self, discord_username: str) -> Profile:
+        profile_json = self.profiles.find_one({'discord_username': discord_username})
+        return profile_from_json(profile_json)
+
     def load_profile(self, user_id: UserId) -> Profile:
         profile_json = self.profiles.find_one({'user_id': user_id})
         return profile_from_json(profile_json)

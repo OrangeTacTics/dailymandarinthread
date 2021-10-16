@@ -12,29 +12,38 @@ async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[s
     results = []
     for user_id in user_ids:
         profile = store.load_profile(int(user_id))
-
-        roles = []
-        for store_role in profile.roles:
-            schema_role = store_role_to_graphql_role(store_role)
-            if schema_role is not None:
-                roles.append(schema_role)
-
-        results.append(
-            schema.Profile(
-                userId=str(profile.user_id),
-                discord_username=profile.discord_username,
-                display_name=profile.display_name,
-                credit=profile.credit,
-                hanzi=profile.hanzi,
-                mined_words=profile.mined_words,
-                roles=roles,
-                created=profile.created,
-                last_seen=profile.last_seen,
-                yuan=profile.yuan,
-            )
-        )
+        results.append(store_profile_to_graphql_profile(profile))
 
     return results
+
+
+async def load_profiles_by_discord_usernames(store: DocumentStore, discord_usernames: t.List[str]) -> t.List[schema.Profile]:
+    results = []
+    for discord_username in discord_usernames:
+        profile = store.load_profile_by_discord_username(discord_username)
+        results.append(store_profile_to_graphql_profile(profile))
+    return results
+
+
+def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
+    roles = []
+    for store_role in profile.roles:
+        schema_role = store_role_to_graphql_role(store_role)
+        if schema_role is not None:
+            roles.append(schema_role)
+
+    return schema.Profile(
+        userId=str(profile.user_id),
+        discord_username=profile.discord_username,
+        display_name=profile.display_name,
+        credit=profile.credit,
+        hanzi=profile.hanzi,
+        mined_words=profile.mined_words,
+        roles=roles,
+        created=profile.created,
+        last_seen=profile.last_seen,
+        yuan=profile.yuan,
+    )
 
 
 def store_role_to_graphql_role(role: types.Role) -> t.Optional[schema.Role]:

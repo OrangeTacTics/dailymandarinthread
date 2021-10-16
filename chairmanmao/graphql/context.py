@@ -17,10 +17,13 @@ from chairmanmao.store.mongodb import MongoDbDocumentStore
 
 
 MemberId = str
+DiscordUsername = str
+
 
 @dataclass
 class Dataloaders:
     profile: DataLoader[MemberId, schema.Profile]
+    profile_by_discord_username: DataLoader[DiscordUsername, schema.Profile]
 
 
 @dataclass
@@ -54,6 +57,7 @@ class ChairmanMaoGraphQL(GraphQL):
         return Context(
             dataloaders=Dataloaders(
                 profile=DataLoader(load_fn=lambda ids: dl.load_profiles(store, ids)),
+                profile_by_discord_username=DataLoader(load_fn=lambda duns: dl.load_profiles_by_discord_usernames(store, duns)),
             ),
             api=api,
             discord_username=discord_username,
