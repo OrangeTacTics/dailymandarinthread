@@ -11,8 +11,11 @@ import chairmanmao.store.types as types
 async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[schema.Profile]:
     results = []
     for user_id in user_ids:
-        profile = store.load_profile(int(user_id))
-        results.append(store_profile_to_graphql_profile(profile))
+        try:
+            profile = store.load_profile(int(user_id))
+            results.append(store_profile_to_graphql_profile(profile))
+        except:
+            results.append(None)
 
     return results
 
@@ -20,8 +23,12 @@ async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[s
 async def load_profiles_by_discord_usernames(store: DocumentStore, discord_usernames: t.List[str]) -> t.List[schema.Profile]:
     results = []
     for discord_username in discord_usernames:
-        profile = store.load_profile_by_discord_username(discord_username)
-        results.append(store_profile_to_graphql_profile(profile))
+        try:
+            profile = store.load_profile_by_discord_username(discord_username)
+            results.append(store_profile_to_graphql_profile(profile))
+        except:
+            results.append(None)
+
     return results
 
 

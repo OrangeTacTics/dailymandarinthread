@@ -44,7 +44,7 @@ class Api:
                 'userId': str(user_id),
             },
         )
-        return results['profile']['userId'] is not None
+        return results['profile'] is not None
 
     async def register(self, user_id: UserId, discord_username: str) -> None:
         await self.client.query('''
