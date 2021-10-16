@@ -12,7 +12,6 @@ from starlette.websockets import WebSocket
 
 import chairmanmao.graphql.dataloaders as dl
 import chairmanmao.graphql.schema as schema
-from chairmanmao.api import Api
 from chairmanmao.store.mongodb import MongoDbDocumentStore
 
 
@@ -29,8 +28,8 @@ class Dataloaders:
 @dataclass
 class Context:
     dataloaders: Dataloaders
-    api: Api
     discord_username: t.Optional[str]
+    store: MongoDbDocumentStore
 
     @property
     def is_admin(self) -> bool:
@@ -47,7 +46,6 @@ class ChairmanMaoGraphQL(GraphQL):
         MONGODB_DB = os.getenv('MONGODB_DB', '')
 
         store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
-        api = Api(store)
 
         if request.state.token is not None:
             discord_username = request.state.token['username']
@@ -59,6 +57,6 @@ class ChairmanMaoGraphQL(GraphQL):
                 profile=DataLoader(load_fn=lambda ids: dl.load_profiles(store, ids)),
                 profile_by_discord_username=DataLoader(load_fn=lambda duns: dl.load_profiles_by_discord_usernames(store, duns)),
             ),
-            api=api,
             discord_username=discord_username,
+            store=store,
         )

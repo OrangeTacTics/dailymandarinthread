@@ -32,8 +32,10 @@ def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
         if schema_role is not None:
             roles.append(schema_role)
 
+
+
     return schema.Profile(
-        userId=str(profile.user_id),
+        user_id=str(profile.user_id),
         discord_username=profile.discord_username,
         display_name=profile.display_name,
         credit=profile.credit,
@@ -43,7 +45,24 @@ def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
         created=profile.created,
         last_seen=profile.last_seen,
         yuan=profile.yuan,
+        hsk=calc_hsk_level(profile),
     )
+
+
+def calc_hsk_level(profile: types.Profile) -> t.Optional[int]:
+    if types.Role.Hsk6 in profile.roles:
+        return 6
+    if types.Role.Hsk5 in profile.roles:
+        return 5
+    if types.Role.Hsk4 in profile.roles:
+        return 4
+    if types.Role.Hsk3 in profile.roles:
+        return 3
+    if types.Role.Hsk2 in profile.roles:
+        return 2
+    if types.Role.Hsk1 in profile.roles:
+        return 1
+    return None
 
 
 def store_role_to_graphql_role(role: types.Role) -> t.Optional[schema.Role]:
@@ -53,16 +72,4 @@ def store_role_to_graphql_role(role: types.Role) -> t.Optional[schema.Role]:
         return schema.Role.Learner
     if role == types.Role.Jailed:
         return schema.Role.Jailed
-#    if role == types.Role.Hsk1:
-#        return schema.Role.Hsk1
-#    if role == types.Role.Hsk2:
-#        return schema.Role.Hsk2
-#    if role == types.Role.Hsk3:
-#        return schema.Role.Hsk3
-#    if role == types.Role.Hsk4:
-#        return schema.Role.Hsk4
-#    if role == types.Role.Hsk5:
-#        return schema.Role.Hsk5
-#    if role == types.Role.Hsk6:
-#        return schema.Role.Hsk6
     return None

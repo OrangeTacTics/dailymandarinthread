@@ -1,8 +1,9 @@
 import typing as t
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 import strawberry as s
+import chairmanmao.store.types as types
 
 
 @s.enum
@@ -14,24 +15,36 @@ class Role(Enum):
 
 @s.type
 class Profile:
-  userId: str
-  discord_username: str
-  display_name: str
-  credit: int
-  hanzi: t.List[str]
-  mined_words: t.List[str]
-  roles: t.List[Role]
-  created: datetime
-  last_seen: datetime
-  yuan: int
+    user_id: str
+    discord_username: str
+    display_name: str
+    credit: int
+    hanzi: t.List[str]
+    mined_words: t.List[str]
+    roles: t.List[Role]
+    created: datetime
+    last_seen: datetime
+    yuan: int
+    hsk: t.Optional[int]
+
+
+@s.type
+class AdminQuery:
+    @s.field
+    async def all_profiles(self, info) -> t.List[Profile]:
+        assert info.context.is_admin, 'Must be admin'
+
+        profiles = []
+        for profile in info.context.store.get_all_profiles():
+            profiles.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
+        return profiles
 
 
 @s.type
 class Query:
     @s.field
     async def me(self, info) -> t.Optional[Profile]:
-        discord_username = info.context.discord_username
-        return await info.context.dataloaders.profile_by_discord_username.load(discord_username)
+        return await get_me(info)
 
     @s.field
     async def profile(
@@ -47,21 +60,194 @@ class Query:
             assert discord_username is not None, 'One of user_id or discord_username must be provided.'
             return await info.context.dataloaders.profile_by_discord_username.load(discord_username)
 
+    @s.field
+    async def leaderboard(self, info) -> t.List[Profile]:
+        entries = []
+        profiles = info.context.store.get_all_profiles()
+        profiles.sort(reverse=True, key=lambda profile: profile.credit)
+
+        for profile in profiles[:10]:
+            entries.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
+        return entries
+
+    @s.field
+    def admin(self, info) -> AdminQuery:
+        assert info.context.is_admin, 'Must be admin'
+        return AdminQuery()
+
 
 @s.type
-class Mutation:
+class AdminMutation:
+    @s.field
+    async def register(self, info, user_id: str, discord_username: str) -> Profile:
+        assert info.context.is_admin, 'Must be admin'
+        info.context.store.create_profile(int(user_id), discord_username)
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def alert_activity(self, info, user_ids: t.List[str]) -> datetime:
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+        for user_id in user_ids:
+            with info.context.store.profile(int(user_id)) as profile:
+                profile.last_seen = now
+
+        return now
+
+    @s.field
+    async def honor(self, info, user_id: str, amount: int) -> Profile:
+        assert amount > 0
+
+        with info.context.store.profile(int(user_id)) as profile:
+            profile.credit += amount
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def dishonor(self, info, user_id: str, amount: int) -> Profile:
+        assert amount > 0
+
+        with info.context.store.profile(int(user_id)) as profile:
+            profile.credit -= amount
+
+        return await info.context.dataloaders.profile.load(user_id)
+
     @s.field
     async def jail(self, info, user_id: str) -> Profile:
-        assert info.context.is_admin, 'Must be admin'
-        info.context.api.jail(int(user_id))
+        with info.context.store.profile(int(user_id)) as profile:
+            if not add_role(profile, types.Role.Jailed):
+                raise Exception("Already jailed")
+
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
     async def unjail(self, info, user_id: str) -> Profile:
-        assert info.context.is_admin, 'Must be admin'
-        info.context.api.unjail(int(user_id))
+        with info.context.store.profile(int(user_id)) as profile:
+            if not remove_role(profile, types.Role.Jailed):
+                raise Exception("Not jailed")
+
         return await info.context.dataloaders.profile.load(user_id)
 
+    @s.field
+    async def set_name(self, info, user_id: str, name: str) -> Profile:
+        assert len(name) < 32, 'Name must be 32 characters or less.'
+        with info.context.store.profile(int(user_id)) as profile:
+            profile.display_name = name
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def set_hsk(self, info, user_id: str, hsk: t.Optional[int]) -> Profile:
+        with info.context.store.profile(int(user_id)) as profile:
+            set_hsk(profile, hsk)
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def set_party(self, info, user_id: str, flag: bool = True) -> Profile:
+        with info.context.store.profile(int(user_id)) as profile:
+            if flag:
+                add_role(profile, types.Role.Party)
+            else:
+                remove_role(profile, types.Role.Party)
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def set_learner(self, info, user_id: str, flag: bool = True) -> Profile:
+        with info.context.store.profile(int(user_id)) as profile:
+            if flag:
+                add_role(profile, types.Role.Learner)
+            else:
+                remove_role(profile, types.Role.Learner)
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def mine(self, info, user_id: str, words: t.List[str], remove: bool = False) -> Profile:
+        with info.context.store.profile(int(user_id)) as profile:
+            new_words = set(profile.mined_words)
+
+            if remove:
+                new_words = new_words.difference(set(words))
+            else:
+                new_words = new_words.union(set(words))
+
+            profile.mined_words = sorted(new_words)
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+
+@s.type
+class Mutation:
+    @s.field
+    def admin(self, info) -> AdminMutation:
+        assert info.context.is_admin, 'Must be admin'
+        return AdminMutation()
+
+    @s.field
+    async def set_name(self, info, name: str) -> Profile:
+        assert len(name) < 32, 'Name must be 32 characters or less.'
+        me = await get_me(info)
+        with info.context.store.profile(int(me.user_id)) as profile:
+            profile.display_name = name
+
+        me.display_name = name
+        return me
+
+
+async def get_me(info) -> Profile:
+    discord_username = info.context.discord_username
+    return await info.context.dataloaders.profile_by_discord_username.load(discord_username)
+
+
+def add_role(profile: types.Profile, role: types.Role) -> bool:
+    '''
+        Returns whether the profile was changed.
+    '''
+    roles_set = set(profile.roles)
+    if role not in roles_set:
+        roles_set.add(role)
+        profile.roles = sorted(roles_set)
+        changed = True
+    else:
+        changed = False
+
+    return changed
+
+
+def remove_role(profile: types.Profile, role: types.Role) -> bool:
+    '''
+        Returns whether the profile was changed.
+    '''
+    roles_set = set(profile.roles)
+    if role in roles_set:
+        roles_set.remove(role)
+        profile.roles = sorted(roles_set)
+        changed = True
+    else:
+        changed = False
+
+    return changed
+
+
+def set_hsk(profile: types.Profile, hsk_level: t.Optional[int]) -> None:
+    role_by_level = {
+        1: types.Role.Hsk1,
+        2: types.Role.Hsk2,
+        3: types.Role.Hsk3,
+        4: types.Role.Hsk4,
+        5: types.Role.Hsk5,
+        6: types.Role.Hsk6,
+    }
+
+    # Remove all roles
+    for role in role_by_level.values():
+        remove_role(profile, role)
+
+    if hsk_level is not None:
+        # Then add the right one
+        role_to_add = role_by_level[hsk_level]
+        add_role(profile, role_to_add)
 
 schema = s.Schema(
     query=Query,
