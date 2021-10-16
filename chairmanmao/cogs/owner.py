@@ -84,6 +84,11 @@ class OwnerCog(ChairmanMaoCog):
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 
+    @commands.command(name='userid')
+    @commands.is_owner()
+    async def cmd_userid(self, ctx, member: commands.MemberConverter):
+        await ctx.send(f"{member}'s user id is {member.id}")
+
     @commands.command(name='version')
     @commands.is_owner()
     async def cmd_version(self, ctx):
