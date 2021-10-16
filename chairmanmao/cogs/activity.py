@@ -12,6 +12,8 @@ class ActivityCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_message(self, message):
         constants = self.chairmanmao.constants()
+        if message.author.bot:
+            return
 
         if isinstance(message.channel, discord.channel.TextChannel):
             if constants.comrade_role in message.author.roles:
