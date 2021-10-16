@@ -19,14 +19,14 @@ class OwnerCog(ChairmanMaoCog):
     @commands.command(name='promote')
     @commands.is_owner()
     async def cmd_promote(self, ctx, member: commands.MemberConverter):
-        self.chairmanmao.api.promote(member.id)
+        await self.chairmanmao.api.promote(member.id)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f'{ctx.author.display_name} has been promoted to the CCP.')
 
     @commands.command(name='demote')
     @commands.is_owner()
     async def cmd_demote(self, ctx, member: commands.MemberConverter):
-        self.chairmanmao.api.demote(member.id)
+        await self.chairmanmao.api.demote(member.id)
         self.chairmanmao.queue_member_update(member.id)
 
     @commands.command(name='honor', help="Add social credit to a user.")
@@ -35,7 +35,7 @@ class OwnerCog(ChairmanMaoCog):
         assert credit > 0
 
         target_username = self.chairmanmao.member_to_username(member)
-        new_credit = self.chairmanmao.api.honor(member.id, credit)
+        new_credit = await self.chairmanmao.api.honor(member.id, credit)
         old_credit = new_credit - credit
 
         self.chairmanmao.queue_member_update(member.id)
@@ -47,7 +47,7 @@ class OwnerCog(ChairmanMaoCog):
         assert credit > 0
 
         target_username = self.chairmanmao.member_to_username(member)
-        new_credit = self.chairmanmao.api.dishonor(member.id, credit)
+        new_credit = await self.chairmanmao.api.dishonor(member.id, credit)
         old_credit = new_credit + credit
 
         self.chairmanmao.queue_member_update(member.id)
@@ -59,7 +59,7 @@ class OwnerCog(ChairmanMaoCog):
         target_username = self.chairmanmao.member_to_username(member)
 
         try:
-            self.chairmanmao.api.set_name(member.id, name)
+            await self.chairmanmao.api.set_name(member.id, name)
         except:  # noqa
 #        await ctx.send("Names are 32 character max.")
 #        return
@@ -72,7 +72,7 @@ class OwnerCog(ChairmanMaoCog):
     @commands.is_owner()
     async def cmd_setlearner(self, ctx, member: commands.MemberConverter, flag: bool = True):
         target_username = self.chairmanmao.member_to_username(member)
-        self.chairmanmao.api.set_learner(flag)
+        await self.chairmanmao.api.set_learner(flag)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
 
@@ -80,7 +80,7 @@ class OwnerCog(ChairmanMaoCog):
     @commands.is_owner()
     async def cmd_sethsk(self, ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
         target_username = self.chairmanmao.member_to_username(member)
-        self.chairmanmao.api.set_hsk(member.id, hsk_level)
+        await self.chairmanmao.api.set_hsk(member.id, hsk_level)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 

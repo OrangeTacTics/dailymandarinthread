@@ -17,7 +17,7 @@ class LearnersCog(ChairmanMaoCog):
     async def cmd_learner(self, ctx, flag: bool = True):
         learner_role = discord.utils.get(ctx.guild.roles, name="中文学习者")
 
-        self.chairmanmao.api.set_learner(ctx.author.id, flag)
+        await self.chairmanmao.api.set_learner(ctx.author.id, flag)
         self.chairmanmao.queue_member_update(ctx.author.id)
         if flag:
             await ctx.send(f'{ctx.author.display_name} has been added to {learner_role.name}')
@@ -33,7 +33,7 @@ class LearnersCog(ChairmanMaoCog):
             target_member = ctx.author
 
         target_username = self.chairmanmao.member_to_username(target_member)
-        hsk_level = self.chairmanmao.api.get_hsk(target_member.id)
+        hsk_level = await self.chairmanmao.api.get_hsk(target_member.id)
 
         if hsk_level is None:
             await ctx.send(f'{target_username} is unranked.')
@@ -43,7 +43,7 @@ class LearnersCog(ChairmanMaoCog):
     @commands.command(name='readers', help='List how many words you know in various readers.')
     @commands.has_role('同志')
     async def cmd_readers(self, ctx):
-        mined_words = set(self.chairmanmao.api.get_mined(ctx.author.id))
+        mined_words = set(await self.chairmanmao.api.get_mined(ctx.author.id))
 
         reader_words_dir = Path('data/reader_words')
         for reader_words_filepath in reader_words_dir.iterdir():

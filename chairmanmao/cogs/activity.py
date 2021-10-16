@@ -17,4 +17,4 @@ class ActivityCog(ChairmanMaoCog):
 
         if isinstance(message.channel, discord.channel.TextChannel):
             if constants.comrade_role in message.author.roles:
-                self.chairmanmao.api.alert_activity(message.author.id)
+                await self.chairmanmao.api.alert_activity(message.author.id)

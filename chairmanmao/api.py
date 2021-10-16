@@ -2,12 +2,11 @@ from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
 
-from datetime import datetime, timezone
-
+from datetime import datetime
 import chairmanmao.types as cmt
 
-from chairmanmao.store import DocumentStore
-from chairmanmao.store.types import Profile, Role
+
+from chairmanmao.api_client import GraphQLClient
 
 
 UserId = int
@@ -30,250 +29,353 @@ class SyncInfo:
 
 @dataclass
 class Api:
-    store: DocumentStore
+    def __init__(self, endpoint: str, auth_token: str) -> None:
+        self.client = GraphQLClient(endpoint, auth_token)
 
-    def is_registered(self, user_id: UserId) -> bool:
-        return self.store.profile_exists(user_id)
+    async def is_registered(self, user_id: UserId) -> bool:
+        results = await self.client.query('''
+            query q($userId: String!) {
+                profile(userId: $userId) {
+                    userId
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        return results['profile']['userId'] is not None
 
-    def register(self, user_id: UserId, discord_username: str) -> None:
-        self.store.create_profile(user_id, discord_username)
-
-    def get_sync_info(self, user_id: UserId) -> SyncInfo:
-        profile = self.store.load_profile(user_id)
-        hsk_level = _hsk_level(profile)
-
-        cmt_roles = []
-        for role in profile.roles:
-            cmt_role = profile_role_to_cmt_role(role)
-            if cmt_role is not None:
-                cmt_roles.append(cmt_role)
-
-        return SyncInfo(
-            user_id=profile.user_id,
-            display_name=profile.display_name,
-            credit=profile.credit,
-            roles=set(cmt_roles),
-            hsk_level=hsk_level,
+    async def register(self, user_id: UserId, discord_username: str) -> None:
+        await self.client.query('''
+            mutation m($userId: String!, $discordUsername: String!) {
+                admin {
+                    register(userId: $userId, discordUsername: $discordUsername) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+                'discordUsername': discord_username,
+            },
         )
 
-    def honor(self, user_id: UserId, credit: int) -> int:
-        assert credit > 0
+    async def get_sync_info(self, user_id: UserId) -> SyncInfo:
+        results = await self.client.query('''
+            query hsk($userId: String!) {
+                profile(userId: $userId) {
+                    userId
+                    displayName
+                    credit
+                    roles
+                    hsk
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        profile = results['profile']
 
-        with self.store.profile(user_id) as profile:
-            profile.credit += credit
-            return profile.credit
+        roles = []
+        if 'Jailed' in profile['roles']:
+            roles.append(cmt.Role.Jailed)
+        else:
+            if 'Party' in profile['roles']:
+                roles.append(cmt.Role.Party)
+            if 'Learner' in profile['roles']:
+                roles.append(cmt.Role.Learner)
 
-    def dishonor(self, user_id: UserId, credit: int) -> int:
-        assert credit > 0
-        with self.store.profile(user_id) as profile:
-            profile.credit -= credit
-            return profile.credit
+        return SyncInfo(
+            user_id=int(profile['userId']),
+            display_name=profile['displayName'],
+            credit=profile['credit'],
+            roles=set(roles),
+            hsk_level=profile['hsk'],
+        )
 
-    def list_users(self) -> t.List[UserId]:
-        user_ids = []
-        for profile in self.store.get_all_profiles():
-            user_ids.append(profile.user_id)
-        return user_ids
+    async def honor(self, user_id: UserId, credit: int) -> int:
+        results = await self.client.query('''
+            mutation m($userId: String!, $credit: Int!) {
+                admin {
+                    honor(userId: $userId, amount: $credit) {
+                        credit
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+                'credit': credit,
+            },
+        )
+        return results['admin']['honor']['credit']
 
-    def promote(self, user_id: UserId) -> None:
-        with self.store.profile(user_id) as profile:
-            if Role.Party not in profile.roles:
-                profile.roles.append(Role.Party)
-                profile.roles.sort()
-            else:
-                raise Exception("Already a party member")
+    async def dishonor(self, user_id: UserId, credit: int) -> int:
+        results = await self.client.query('''
+            mutation m($userId: String!, $credit: Int!) {
+                admin {
+                    dishonor(userId: $userId, amount: $credit) {
+                        credit
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+                'credit': credit,
+            },
+        )
+        return results['admin']['dishonor']['credit']
 
-    def demote(self, user_id: UserId) -> None:
-        with self.store.profile(user_id) as profile:
-            if Role.Party in profile.roles:
-                profile.roles.remove(Role.Party)
-                profile.roles.sort()
-            else:
-                raise Exception("Not a party member")
+    async def promote(self, user_id: UserId) -> None:
+        await self.client.query('''
+            mutation m($userId: String!) {
+                admin {
+                    setParty(userId: $userId, flag: true) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
 
-    def get_hsk(self, user_id: UserId) -> t.Optional[int]:
-        level_by_role = {
-            Role.Hsk1: 1,
-            Role.Hsk2: 2,
-            Role.Hsk3: 3,
-            Role.Hsk4: 4,
-            Role.Hsk5: 5,
-            Role.Hsk6: 6,
-        }
+    async def demote(self, user_id: UserId) -> None:
+        await self.client.query('''
+            mutation m($userId: String!) {
+                admin {
+                    setParty(userId: $userId, flag: false) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
 
-        profile = self.store.load_profile(user_id)
-        for role, level in level_by_role.items():
-            if role in profile.roles:
-                return level
+    async def get_hsk(self, user_id: UserId) -> t.Optional[int]:
+        results = await self.client.query('''
+            query hsk($userId: String!) {
+                profile(userId: $userId) {
+                    hsk
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        return results['profile']['hsk']
 
-        return None
+    async def set_hsk(self, user_id: UserId, hsk_level: t.Optional[int]) -> None:
+        await self.client.query('''
+            mutation m($userId: String!, $hsk: Int) {
+                admin {
+                    setHsk(userId: $userId, hsk: $hsk) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+                'hsk': hsk_level,
+            },
+        )
 
-    def set_hsk(self, user_id: UserId, hsk_level: t.Optional[int]) -> None:
-        role_by_level = {
-            1: Role.Hsk1,
-            2: Role.Hsk2,
-            3: Role.Hsk3,
-            4: Role.Hsk4,
-            5: Role.Hsk5,
-            6: Role.Hsk6,
-        }
+    async def last_seen(self, user_id: UserId) -> datetime:
+        results = await self.client.query('''
+            query q($userId: String!) {
+                profile(userId: $userId) {
+                    lastSeen
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        return datetime.fromisoformat(results['profile']['lastSeen'])
 
-        with self.store.profile(user_id) as profile:
-            # Remove all roles
-            for role in role_by_level.values():
-                remove_role(profile, role)
+    async def jail(self, user_id: UserId) -> None:
+       await self.client.query('''
+            mutation m($userId: String!) {
+                admin {
+                    jail(userId: $userId) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
 
-            if hsk_level is not None:
-                # Then add the right one
-                role_to_add = role_by_level[hsk_level]
-                add_role(profile, role_to_add)
+    async def unjail(self, user_id: UserId) -> None:
+       await self.client.query('''
+            mutation m($userId: String!) {
+                admin {
+                    unjail(userId: $userId) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
 
-    def last_seen(self, user_id: UserId) -> datetime:
-        profile = self.store.load_profile(user_id)
-        last_seen = profile.last_seen
-        last_seen = last_seen.replace(tzinfo=timezone.utc)
-        last_seen = last_seen.replace(microsecond=0)
-        return last_seen
+    async def get_discord_username(self, user_id: UserId) -> str:
+        results = await self.client.query('''
+            query q($userId: String!) {
+                profile(userId: $userId) {
+                    discordUsername
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        return results['profile']['discordUsername']
 
-    def jail(self, user_id: UserId) -> None:
-        with self.store.profile(user_id) as profile:
-            if Role.Jailed not in profile.roles:
-                profile.roles.append(Role.Jailed)
-                profile.roles.sort()
-            else:
-                raise Exception("Already jailed")
+    async def get_display_name(self, user_id: UserId) -> str:
+        results = await self.client.query('''
+            query q($userId: String!) {
+                profile(userId: $userId) {
+                    displayName
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        return results['profile']['displayName']
 
-    def unjail(self, user_id: UserId) -> None:
-        with self.store.profile(user_id) as profile:
-            if Role.Jailed in profile.roles:
-                profile.roles = sorted(role for role in profile.roles if role != Role.Jailed)
-            else:
-                raise Exception("Not jailed")
+    async def social_credit(self, user_id: UserId) -> int:
+        results = await self.client.query('''
+            query q($userId: String!) {
+                profile(userId: $userId) {
+                    credit
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        return results['profile']['credit']
 
-    def get_discord_username(self, user_id: UserId) -> str:
-        profile = self.store.load_profile(user_id)
-        return profile.discord_username
+    async def set_learner(self, user_id: UserId, flag: bool) -> None:
+        await self.client.query('''
+            mutation m($userId: String!, $flag: Boolean!) {
+                admin {
+                    setParty(userId: $userId, flag: $flag) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+                'flag': flag,
+            },
+        )
 
-    def get_display_name(self, user_id: UserId) -> str:
-        profile = self.store.load_profile(user_id)
-        return profile.display_name
-
-    def social_credit(self, user_id: UserId) -> int:
-        profile = self.store.load_profile(user_id)
-        return profile.credit
-
-    def set_learner(self, user_id: UserId, flag: bool) -> None:
-        with self.store.profile(user_id) as profile:
-            if flag:
-                profile.roles.append(Role.Learner)
-            else:
-                profile.roles = [role for role in profile.roles if role != Role.Learner]
-
-            profile.roles = sorted(set(profile.roles))
-
-    def draw(self, font_name: str, text: str) -> None:
+    async def draw(self, font_name: str, text: str) -> None:
         ...
 
-    def upload_font(self, font_name: str, font_data: bytes) -> None:
+    async def upload_font(self, font_name: str, font_data: bytes) -> None:
         ...
 
-    def mine(self, user_id: UserId, word: str) -> None:
-        with self.store.profile(user_id) as profile:
-            profile.mined_words.append(word)
-            profile.mined_words = sorted(set(profile.mined_words))
+    async def mine(self, user_id: UserId, word: str) -> None:
+        await self.client.query('''
+            mutation alert($userId: String!, $words: [String!]!) {
+                admin {
+                    mine(userId: $userId, words: $words) {
+                        userId
+                    }
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+                'words': [word],
+            },
+        )
 
-    def get_mined(self, user_id) -> t.List[str]:
-        profile = self.store.load_profile(user_id)
-        return profile.mined_words
+    async def yuan(self, user_id) -> int:
+        results = await self.client.query('''
+            query q($userId: String!) {
+                profile(userId: $userId) {
+                    yuan
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+            },
+        )
+        return results['profile']['yuan']
 
-    def yuan(self, user_id) -> int:
-        profile = self.store.load_profile(user_id)
-        return profile.yuan
+    async def leaderboard(self) -> t.List[LeaderboardEntry]:
+        results = await self.client.query('''
+            query q {
+                leaderboard {
+                    displayName
+                    credit
+                }
+            }
+            '''
+        )
 
-    def leaderboard(self) -> t.List[LeaderboardEntry]:
         entries = []
-        profiles = self.store.get_all_profiles()
-        profiles.sort(reverse=True, key=lambda profile: profile.credit)
-
-        for profile in profiles[:10]:
+        for profile in results['leaderboard']:
             entries.append(LeaderboardEntry(
-                display_name=profile.display_name,
-                credit=profile.credit,
+                display_name=profile['displayName'],
+                credit=profile['credit'],
             ))
+
         return entries
 
-    def set_name(self, user_id, name: str) -> None:
-        assert len(name) < 32, 'Name must be 32 characters or less.'
-        with self.store.profile(user_id) as profile:
-            profile.display_name = name
+    async def set_name(self, user_id, name: str) -> None:
+        await self.client.query('''
+            mutation alert($userId: String!, $name: String!) {
+                admin {
+                    setName(userId: $userId, name: $name)
+                }
+            }
+            ''',
+            {
+                'userId': str(user_id),
+                'name': name,
 
-    def get_name(self, user_id: UserId) -> str:
-        profile = self.store.load_profile(user_id)
-        return profile.display_name
+            },
+        )
 
-    def alert_activity(self, user_id: UserId) -> None:
-        with self.store.profile(user_id) as profile:
-            profile.last_seen = datetime.now(timezone.utc).replace(microsecond=0)
+    async def get_name(self, user_id: UserId) -> str:
+        return await self.get_display_name(user_id)
 
-
-def add_role(profile: Profile, role: Role) -> bool:
-    '''
-        Returns whether the profile was changed.
-    '''
-    roles_set = set(profile.roles)
-    if role not in roles_set:
-        roles_set.add(role)
-        profile.roles = sorted(roles_set)
-        changed = True
-    else:
-        changed = False
-
-    return changed
-
-
-def remove_role(profile: Profile, role: Role) -> bool:
-    '''
-        Returns whether the profile was changed.
-    '''
-    roles_set = set(profile.roles)
-    if role in roles_set:
-        roles_set.remove(role)
-        profile.roles = sorted(roles_set)
-        changed = True
-    else:
-        changed = False
-
-    return changed
-
-
-def _hsk_level(profile: Profile) -> t.Optional[int]:
-    if Role.Hsk1 in profile.roles:
-        return 1
-    elif Role.Hsk2 in profile.roles:
-        return 2
-    elif Role.Hsk3 in profile.roles:
-        return 3
-    elif Role.Hsk4 in profile.roles:
-        return 4
-    elif Role.Hsk5 in profile.roles:
-        return 5
-    elif Role.Hsk6 in profile.roles:
-        return 6
-    else:
-        return None
-
-
-def profile_role_to_cmt_role(role: Role) -> t.Optional[cmt.Role]:
-    cmt_roles = {
-        Role.Comrade: cmt.Role.Comrade,
-        Role.Party: cmt.Role.Party,
-        Role.Learner: cmt.Role.Learner,
-        Role.Jailed: cmt.Role.Jailed,
-        Role.Hsk1: cmt.Role.Hsk1,
-        Role.Hsk2: cmt.Role.Hsk2,
-        Role.Hsk3: cmt.Role.Hsk3,
-        Role.Hsk4: cmt.Role.Hsk4,
-        Role.Hsk5: cmt.Role.Hsk5,
-        Role.Hsk6: cmt.Role.Hsk6,
-    }
-    return cmt_roles[role]
+    async def alert_activity(self, user_id: UserId) -> None:
+        await self.client.query('''
+            mutation alert($userIds: [String!]!) {
+                admin {
+                    alertActivity(userIds: $userIds)
+                }
+            }
+            ''',
+            {
+                'userIds': [str(user_id)],
+            },
+        )

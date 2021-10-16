@@ -33,7 +33,13 @@ class Context:
 
     @property
     def is_admin(self) -> bool:
-        return self.discord_username is not None and self.discord_username == os.environ['ADMIN_USERNAME']
+        if self.discord_username is None:
+            return False
+
+        return (
+            self.discord_username == os.environ['ADMIN_USERNAME'] or
+            self.discord_username == os.environ['BOT_USERNAME']
+        )
 
 
 class ChairmanMaoGraphQL(GraphQL):

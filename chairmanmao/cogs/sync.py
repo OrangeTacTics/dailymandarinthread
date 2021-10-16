@@ -36,23 +36,23 @@ class SyncCog(ChairmanMaoCog):
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send('Sync complete')
 
-    @commands.command(name='syncall')
-    @commands.is_owner()
-    async def cmd_syncall(self, ctx):
-        await ctx.send('Sync starting')
-        await self.full_member_update()
-        await ctx.send('Sync complete')
+#    @commands.command(name='syncall')
+#    @commands.is_owner()
+#    async def cmd_syncall(self, ctx):
+#        await ctx.send('Sync starting')
+#        await self.full_member_update()
+#        await ctx.send('Sync complete')
 
     async def incremental_member_update(self) -> None:
         constants = self.chairmanmao.constants()
         for user_id in self.chairmanmao.flush_member_update_queue():
-            if not self.chairmanmao.api.is_registered(user_id):
+            if not await self.chairmanmao.api.is_registered(user_id):
                 user = discord.utils.get(constants.guild.members, id=user_id)
                 assert user is not None
                 username = self.chairmanmao.member_to_username(user)
-                self.chairmanmao.api.register(user_id, username)
+                await self.chairmanmao.api.register(user_id, username)
 
-            sync_info = self.chairmanmao.api.get_sync_info(user_id)
+            sync_info = await self.chairmanmao.api.get_sync_info(user_id)
             did_update = await self.update_member_nick(sync_info)
             if did_update:
                 await asyncio.sleep(0.5)
@@ -60,16 +60,16 @@ class SyncCog(ChairmanMaoCog):
             if did_update:
                 await asyncio.sleep(0.5)
 
-    async def full_member_update(self) -> None:
-        user_ids = self.chairmanmao.api.list_users()
-        for user_id in user_ids:
-            sync_info = self.chairmanmao.api.get_sync_info(user_id)
-            did_update = await self.update_member_nick(sync_info)
-            if did_update:
-                await asyncio.sleep(0.5)
-            did_update = await self.update_member_roles(sync_info)
-            if did_update:
-                await asyncio.sleep(0.5)
+#    async def full_member_update(self) -> None:
+#        user_ids = await self.chairmanmao.api.list_users()
+#        for user_id in user_ids:
+#            sync_info = await self.chairmanmao.api.get_sync_info(user_id)
+#            did_update = await self.update_member_nick(sync_info)
+#            if did_update:
+#                await asyncio.sleep(0.5)
+#            did_update = await self.update_member_roles(sync_info)
+#            if did_update:
+#                await asyncio.sleep(0.5)
 
     async def update_member_roles(self, sync_info: SyncInfo) -> bool:
         '''

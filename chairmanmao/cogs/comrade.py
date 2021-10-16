@@ -15,7 +15,7 @@ class ComradeCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
 
         try:
-            self.chairmanmao.api.set_name(member.id, name)
+            await self.chairmanmao.api.set_name(member.id, name)
         except:  # noqa
 #        await ctx.send("Names are 32 character max.")
 #        return
@@ -27,7 +27,7 @@ class ComradeCog(ChairmanMaoCog):
     @commands.command(name='yuan')
     @commands.has_role('同志')
     async def cmd_yuan(self, ctx):
-        yuan = self.chairmanmao.api.yuan(ctx.author.id)
+        yuan = await self.chairmanmao.api.yuan(ctx.author.id)
         username = self.chairmanmao.member_to_username(ctx.author)
         await ctx.send(f"{username} has {yuan} RNB.")
 
@@ -35,6 +35,6 @@ class ComradeCog(ChairmanMaoCog):
     @commands.has_role('同志')
     async def cmd_mine(self, ctx, word: str):
         username = self.chairmanmao.member_to_username(ctx.author)
-        self.chairmanmao.api.mine(ctx.author.id, word)
+        await self.chairmanmao.api.mine(ctx.author.id, word)
 
         await ctx.send(f'{username} has mined: {word}')

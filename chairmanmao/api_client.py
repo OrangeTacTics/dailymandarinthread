@@ -11,7 +11,7 @@ class GraphQLClient:
         self.endpoint = endpoint
         self.auth_token = auth_token
 
-    async def query(self, query: str, variables: t.Optional[t.Dict[str, str]] = None) -> t.Any:
+    async def query(self, query: str, variables: t.Optional[t.Dict[str, t.Any]] = None) -> t.Any:
         async with httpx.AsyncClient() as client:
             headers = {
                 'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ class GraphQLClient:
             if self.auth_token is not None:
                 headers['Authorization'] = f'BEARER {self.auth_token}'
 
-            payload = {
+            payload: t.Dict[str, t.Any] = {
                 'query': query,
             }
 
@@ -51,6 +51,7 @@ async def main():
             profile(userId: $id) {
                 userId
                 discordUsername
+                lastSeen
                 credit
             }
         }

@@ -249,6 +249,7 @@ def set_hsk(profile: types.Profile, hsk_level: t.Optional[int]) -> None:
         role_to_add = role_by_level[hsk_level]
         add_role(profile, role_to_add)
 
+
 schema = s.Schema(
     query=Query,
     mutation=Mutation,

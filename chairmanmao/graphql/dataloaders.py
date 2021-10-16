@@ -32,7 +32,10 @@ def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
         if schema_role is not None:
             roles.append(schema_role)
 
-
+    hsk = calc_hsk_level(profile)
+    hsk_role = types.Role.__members__.get(f'Hsk{hsk}')
+    if hsk_role is not None:
+        roles.append(hsk_role)
 
     return schema.Profile(
         user_id=str(profile.user_id),
@@ -45,7 +48,7 @@ def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
         created=profile.created,
         last_seen=profile.last_seen,
         yuan=profile.yuan,
-        hsk=calc_hsk_level(profile),
+        hsk=hsk,
     )
 
 

@@ -41,7 +41,7 @@ class ExamCog(ChairmanMaoCog):
     async def exam(self, ctx):
         constants = self.chairmanmao.constants()
         if ctx.invoked_subcommand is None:
-            exam_name = self.next_exam_for(ctx.author)
+            exam_name = await self.next_exam_for(ctx.author)
             if exam_name is None:
                 await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
                 return
@@ -63,7 +63,7 @@ class ExamCog(ChairmanMaoCog):
 
     @exam.command(name='list')
     async def cmd_exam_list(self, ctx):
-#        exam_names = self.chairmanmao().api.get_exam_names()
+#        exam_names = await self.chairmanmao().api.get_exam_names()
         await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
 
     @exam.command(name='start')
@@ -80,7 +80,7 @@ class ExamCog(ChairmanMaoCog):
             )
             await ctx.channel.send(embed=embed)
 
-        exam_name = self.next_exam_for(ctx.author)
+        exam_name = await self.next_exam_for(ctx.author)
         if exam_name is not None:
             exam: t.Optional[Exam] = EXAMS.get(exam_name)
         else:
@@ -106,7 +106,7 @@ class ExamCog(ChairmanMaoCog):
     @exam.command(name='practice')
     async def cmd_exam_practice(self, ctx, exam_name: t.Optional[str] = None):
         if exam_name is None:
-            exam_name = self.next_exam_for(ctx.author)
+            exam_name = await self.next_exam_for(ctx.author)
             if exam_name is None:
                 await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
                 return
@@ -148,8 +148,8 @@ class ExamCog(ChairmanMaoCog):
         self.active_exam.give_up()
 #        await ctx.message.add_reaction(constants.dekinai_emoji)
 
-    def next_exam_for(self, member: discord.Member) -> t.Optional[str]:
-        current_hsk = self.chairmanmao.api.get_hsk(member.id)
+    async def next_exam_for(self, member: discord.Member) -> t.Optional[str]:
+        current_hsk = await self.chairmanmao.api.get_hsk(member.id)
         if current_hsk is None:
             return 'hsk1'
         else:
@@ -180,7 +180,7 @@ class ExamCog(ChairmanMaoCog):
             await self.reply_to_answer(active_exam, answer)
 
         await self.show_results(active_exam)
-        self.mine_correct_answers(active_exam)
+        await self.mine_correct_answers(active_exam)
         await self.reward(active_exam)
 
     async def receive_answer(self, active_exam: ActiveExam) -> Answer:
@@ -356,25 +356,25 @@ class ExamCog(ChairmanMaoCog):
 
         await active_exam.channel.send(embed=embed)
 
-    def mine_correct_answers(self, active_exam: ActiveExam) -> None:
+    async def mine_correct_answers(self, active_exam: ActiveExam) -> None:
         for question, answer in active_exam.grade():
 
             if isinstance(answer, Correct):
-                self.chairmanmao.api.mine(active_exam.member.id, question.question)
+                await self.chairmanmao.api.mine(active_exam.member.id, question.question)
 
     async def reward(self, active_exam: ActiveExam) -> None:
         if active_exam.practice:
             return
 
-        current_hsk = self.chairmanmao.api.get_hsk(active_exam.member.id)
+        current_hsk = await self.chairmanmao.api.get_hsk(active_exam.member.id)
         if current_hsk is not None and current_hsk >= active_exam.exam.hsk_level:
             return
 
         if active_exam.passed():
             username = self.chairmanmao.member_to_username(active_exam.member)
 
-            self.chairmanmao.api.set_learner(active_exam.member.id, True)
-            self.chairmanmao.api.set_hsk(active_exam.member.id, active_exam.exam.hsk_level)
+            await self.chairmanmao.api.set_learner(active_exam.member.id, True)
+            await self.chairmanmao.api.set_hsk(active_exam.member.id, active_exam.exam.hsk_level)
             self.chairmanmao.queue_member_update(active_exam.member.id)
             self.chairmanmao.logger.info(f'User {username} passed HSK {active_exam.exam.hsk_level}.')
             constants = self.chairmanmao.constants()

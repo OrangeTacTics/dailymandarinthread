@@ -2,8 +2,6 @@ from __future__ import annotations
 import typing as t
 import logging
 
-from dotenv import load_dotenv
-
 import discord
 from discord.ext import commands
 
@@ -54,11 +52,10 @@ class ChairmanMao:
     def __init__(self) -> None:
         self.logger = logger
 
-        MONGODB_URL = os.getenv('MONGODB_URL', '')
-        MONGODB_DB = os.getenv('MONGODB_DB', '')
+        GRAPHQL_ENDPOINT = os.getenv('GRAPHQL_ENDPOINT', '')
+        GRAPHQL_TOKEN = os.getenv('GRAPHQL_TOKEN', '')
 
-        store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
-        self.api = Api(store)
+        self.api = Api(GRAPHQL_ENDPOINT, GRAPHQL_TOKEN)
 
         self.member_update_queue: t.Set[discord.Member] = set()
         self.constants_cache: t.Optional[DiscordConstants] = None
