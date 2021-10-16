@@ -7,8 +7,9 @@ import strawberry as s
 
 @s.enum
 class Role(Enum):
-    party = "Party"
-    learner = "Learner"
+    Party = "Party"
+    Learner = "Learner"
+    Jailed = "Jailed"
 
 
 @s.type
@@ -21,7 +22,7 @@ class Profile:
   mined_words: t.List[str]
   roles: t.List[Role]
   created: datetime
-  last_message: datetime
+  last_seen: datetime
   yuan: int
 
 
@@ -29,9 +30,29 @@ class Profile:
 class Query:
     @s.field
     async def me(self, info) -> Profile:
-        return await info.context.dataloaders.profile.load(876378479585808404)
+        return await info.context.dataloaders.profile.load("876378479585808404")
+
+    @s.field
+    async def profile(self, info, user_id: str) -> Profile:
+        return await info.context.dataloaders.profile.load(user_id)
+
+
+@s.type
+class Mutation:
+    @s.field
+    async def jail(self, info, user_id: str) -> Profile:
+        assert info.context.is_admin(), 'Must be admin'
+        info.context.api.jail(int(user_id))
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def unjail(self, info, user_id: str) -> Profile:
+        assert info.context.is_admin(), 'Must be admin'
+        info.context.api.unjail(int(user_id))
+        return await info.context.dataloaders.profile.load(user_id)
 
 
 schema = s.Schema(
     query=Query,
+    mutation=Mutation,
 )

@@ -27,6 +27,11 @@ class Dataloaders:
 class Context:
     dataloaders: Dataloaders
     api: Api
+    discord_username: t.Optional[str]
+
+    @property
+    def is_admin(self) -> bool:
+        return self.discord_username is not None and self.discord_username == os.environ['ADMIN_USERNAME']
 
 
 class ChairmanMaoGraphQL(GraphQL):
@@ -41,9 +46,15 @@ class ChairmanMaoGraphQL(GraphQL):
         store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
         api = Api(store)
 
+        if request.state.token is not None:
+            discord_username = request.state.token['username']
+        else:
+            discord_username = None
+
         return Context(
             dataloaders=Dataloaders(
                 profile=DataLoader(load_fn=lambda ids: dl.load_profiles(store, ids)),
             ),
             api=api,
+            discord_username=discord_username,
         )

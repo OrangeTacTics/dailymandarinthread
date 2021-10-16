@@ -39,8 +39,6 @@ app.add_websocket_route("/graphql", graphql_app)
 
 @app.middleware("http")
 async def add_graphql_context(request: Request, call_next):
-    request.state.db = db
-
     if 'Authorization' in request.headers:
         auth_header = request.headers['Authorization']
         assert auth_header.startswith('BEARER ')

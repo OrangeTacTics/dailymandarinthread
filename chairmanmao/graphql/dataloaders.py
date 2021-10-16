@@ -5,12 +5,19 @@ from strawberry.dataloader import DataLoader
 
 import chairmanmao.graphql.schema as schema
 from chairmanmao.store import DocumentStore
+import chairmanmao.store.types as types
 
 
 async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[schema.Profile]:
     results = []
     for user_id in user_ids:
-        profile = store.load_profile(user_id)
+        profile = store.load_profile(int(user_id))
+
+        roles = []
+        for store_role in profile.roles:
+            schema_role = store_role_to_graphql_role(store_role)
+            if schema_role is not None:
+                roles.append(schema_role)
 
         results.append(
             schema.Profile(
@@ -18,13 +25,35 @@ async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[s
                 discord_username=profile.discord_username,
                 display_name=profile.display_name,
                 credit=profile.credit,
-                hanzi=[],
-                mined_words=[],
-                roles=[],
-                created=datetime.now(),
-                last_message=datetime.now(),
-                yuan=0,
+                hanzi=profile.hanzi,
+                mined_words=profile.mined_words,
+                roles=roles,
+                created=profile.created,
+                last_seen=profile.last_seen,
+                yuan=profile.yuan,
             )
         )
-    
+
     return results
+
+
+def store_role_to_graphql_role(role: types.Role) -> t.Optional[schema.Role]:
+    if role == types.Role.Party:
+        return schema.Role.Party
+    if role == types.Role.Learner:
+        return schema.Role.Learner
+    if role == types.Role.Jailed:
+        return schema.Role.Jailed
+#    if role == types.Role.Hsk1:
+#        return schema.Role.Hsk1
+#    if role == types.Role.Hsk2:
+#        return schema.Role.Hsk2
+#    if role == types.Role.Hsk3:
+#        return schema.Role.Hsk3
+#    if role == types.Role.Hsk4:
+#        return schema.Role.Hsk4
+#    if role == types.Role.Hsk5:
+#        return schema.Role.Hsk5
+#    if role == types.Role.Hsk6:
+#        return schema.Role.Hsk6
+    return None
