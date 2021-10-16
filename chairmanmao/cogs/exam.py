@@ -25,7 +25,7 @@ class ExamCog(ChairmanMaoCog):
         if self.active_exam:
             active_exam = self.active_exam
             if message.channel.id == active_exam.channel.id and message.author.id == active_exam.member.id:
-                if not message.content.startswith('$') and active_exam.ready_for_next_answer():
+                if not message.content.startswith('!') and active_exam.ready_for_next_answer():
                     await self.send_answer(active_exam, message)
 
     @tasks.loop(seconds=1)
@@ -52,9 +52,9 @@ class ExamCog(ChairmanMaoCog):
                 ]
 
                 if ctx.channel.id == constants.exam_channel.id:
-                    lines.append(f'To take the exam, use `$exam start`')
+                    lines.append(f'To take the exam, use `!exam start`')
                 else:
-                    lines.append(f'To take the exam, go to {constants.exam_channel.mention} and use `$exam start`')
+                    lines.append(f'To take the exam, go to {constants.exam_channel.mention} and use `!exam start`')
 
                 await ctx.send('\n'.join(lines))
 
@@ -70,7 +70,7 @@ class ExamCog(ChairmanMaoCog):
     async def cmd_exam_start(self, ctx, _exam_name: t.Optional[str] = None):
         if _exam_name is not None:
             description = '\n'.join([
-                'You may run an exam with `$exam start`',
+                'You may run an exam with `!exam start`',
                 'There is no need to specify the exam name.',
             ])
             embed = discord.Embed(
