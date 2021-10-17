@@ -30,39 +30,10 @@ class GraphQLClient:
                 self.endpoint,
                 json=payload,
                 headers=headers,
+                timeout=None,
             )
 
             res_json = res.json()
             if 'errors' in res_json:
                 raise Exception(res_json['errors'])
             return res_json['data']
-
-
-async def main():
-    endpoint = os.environ['GRAPHQL_ENDPOINT']
-    auth_token = os.environ['GRAPHQL_TOKEN']
-    client = GraphQLClient(
-        endpoint=endpoint,
-        auth_token=auth_token,
-    )
-
-    res = await client.query('''
-        query p($id: String) {
-            profile(userId: $id) {
-                userId
-                discordUsername
-                lastSeen
-                credit
-            }
-        }
-    ''',
-    variables={
-        'id': '182370676877819904',
-    })
-    print(res)
-
-
-if __name__ == '__main__':
-    import asyncio
-    load_dotenv()
-    asyncio.run(main())
