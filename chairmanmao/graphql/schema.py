@@ -29,6 +29,40 @@ class Profile:
 
 
 @s.type
+class Question:
+    question: str
+    valid_answers: t.List[str]
+    meaning: str
+
+
+@s.type
+class Exam:
+    name: str
+    num_questions: int
+    max_wrong: t.Optional[int]
+    timelimit: int
+    hsk_level: int
+    deck: t.List[Question]
+
+
+@s.input
+class NewQuestion:
+    question: str
+    valid_answers: t.List[str]
+    meaning: str
+
+
+@s.input
+class NewExam:
+    name: str
+    num_questions: int
+    max_wrong: t.Optional[int]
+    timelimit: int
+    hsk_level: int
+    deck: t.List[NewQuestion]
+
+
+@s.type
 class AdminQuery:
     @s.field
     async def all_profiles(self, info) -> t.List[Profile]:
@@ -69,6 +103,10 @@ class Query:
         for profile in profiles[:10]:
             entries.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
         return entries
+
+    @s.field
+    async def exam(self, info, name: str) -> t.Optional[Exam]:
+        return await info.context.dataloaders.exam.load(name)
 
     @s.field
     def admin(self, info) -> AdminQuery:
@@ -188,6 +226,27 @@ class AdminMutation:
             profile.mined_words = sorted(new_words)
 
         return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def create_exam(self, info, exam: NewExam) -> t.Optional[Exam]:
+        exam_doc = types.Exam(
+            name=exam.name,
+            num_questions=exam.num_questions,
+            max_wrong=exam.max_wrong,
+            timelimit=exam.timelimit,
+            hsk_level=exam.hsk_level,
+            deck=[
+                types.Question(
+                    question=q.question,
+                    valid_answers=q.valid_answers,
+                    meaning=q.meaning,
+                )
+                for q
+                in exam.deck
+            ],
+        )
+        info.context.store.store_exam(exam_doc)
+        return await info.context.dataloaders.exam.load(exam.name)
 
 
 @s.type

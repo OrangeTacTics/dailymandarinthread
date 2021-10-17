@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pymongo
 
-from .types import Profile, Role, Json, UserId, ServerSettings
+from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question
 from .document_store import DocumentStore
 
 
@@ -17,6 +17,7 @@ class MongoDbDocumentStore(DocumentStore):
         self.db = self.mongo_client[mongo_db]
         self.profiles = self.db['Profiles']
         self.server_settings = self.db['ServerSettings']
+        self.exams = self.db['Exams']
 
     def create_profile(self, user_id: UserId, discord_username: str) -> Profile:
         profile = Profile.make(user_id, discord_username)
@@ -42,6 +43,20 @@ class MongoDbDocumentStore(DocumentStore):
 
     def get_all_profiles(self) -> t.List[Profile]:
         return [profile_from_json(p) for p in self.profiles.find({})]
+
+    def get_exam_names(self) -> t.List[str]:
+        pass
+
+    def load_exam(self, exam_name: str) -> t.Optional[Exam]:
+        exam_json = self.exams.find_one({'name': exam_name})
+        if exam_json is not None:
+            return exam_from_json(exam_json)
+        else:
+            return None
+
+    def store_exam(self, exam: Exam) -> None:
+        query = {'name': exam.name}
+        self.exams.replace_one(query, exam_to_json(exam), upsert=True)
 
     def load_server_settings(self) -> ServerSettings:
         json_data = self.profiles.find_one({})
@@ -87,4 +102,42 @@ def profile_from_json(profile_json: Json) -> Profile:
         hanzi=profile_json['hanzi'],
         mined_words=profile_json['mined_words'],
         yuan=profile_json['yuan'],
+    )
+
+
+def exam_to_json(exam: Exam) -> Json:
+    return {
+        'name': exam.name,
+        'num_questions': exam.num_questions,
+        'max_wrong': exam.max_wrong,
+        'timelimit': exam.timelimit,
+        'hsk_level': exam.hsk_level,
+        'deck': [question_to_json(q) for q in exam.deck],
+    }
+
+
+def question_to_json(question: Question) -> Json:
+    return {
+        'question': question.question,
+        'valid_answers': question.valid_answers,
+        'meaning': question.meaning,
+    }
+
+
+def exam_from_json(exam_json: Json) -> Exam:
+    return Exam(
+        name=exam_json['name'],
+        num_questions=exam_json['num_questions'],
+        max_wrong=exam_json['max_wrong'],
+        timelimit=exam_json['timelimit'],
+        hsk_level=exam_json['hsk_level'],
+        deck=[question_from_json(q) for q in exam_json['deck']],
+    )
+
+
+def question_from_json(question_json: Json) -> Question:
+    return Question(
+        question=question_json['question'],
+        valid_answers=question_json['valid_answers'],
+        meaning=question_json['meaning'],
     )

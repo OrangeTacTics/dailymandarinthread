@@ -15,7 +15,7 @@ async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[s
             profile = store.load_profile(int(user_id))
             results.append(store_profile_to_graphql_profile(profile))
         except:
-            results.append(None)
+            results.append(None)  # type: ignore
 
     return results
 
@@ -27,7 +27,19 @@ async def load_profiles_by_discord_usernames(store: DocumentStore, discord_usern
             profile = store.load_profile_by_discord_username(discord_username)
             results.append(store_profile_to_graphql_profile(profile))
         except:
-            results.append(None)
+            results.append(None)  # type: ignore
+
+    return results
+
+
+async def load_exams(store: DocumentStore, exam_names: t.List[str]) -> t.List[schema.Exam]:
+    results = []
+    for exam_name in exam_names:
+        exam = store.load_exam(exam_name)
+        if exam is not None:
+            results.append(store_exam_to_graphql_exam(exam))
+        else:
+            results.append(None)  # type: ignore
 
     return results
 
@@ -42,7 +54,7 @@ def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
     hsk = calc_hsk_level(profile)
     hsk_role = types.Role.__members__.get(f'Hsk{hsk}')
     if hsk_role is not None:
-        roles.append(hsk_role)
+        roles.append(hsk_role)  # type: ignore
 
     return schema.Profile(
         user_id=str(profile.user_id),
@@ -83,3 +95,22 @@ def store_role_to_graphql_role(role: types.Role) -> t.Optional[schema.Role]:
     if role == types.Role.Jailed:
         return schema.Role.Jailed
     return None
+
+
+def store_exam_to_graphql_exam(exam: types.Exam) -> schema.Exam:
+    return schema.Exam(
+        name=exam.name,
+        num_questions=exam.num_questions,
+        max_wrong=exam.max_wrong,
+        timelimit=exam.timelimit,
+        hsk_level=exam.hsk_level,
+        deck=[
+            schema.Question(
+                meaning=card.meaning,
+                valid_answers=card.valid_answers,
+                question=card.question,
+            )
+            for card
+            in exam.deck
+        ],
+    )

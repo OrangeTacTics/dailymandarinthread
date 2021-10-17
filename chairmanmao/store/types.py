@@ -70,7 +70,23 @@ class Role(Enum):
 @dataclass
 class ServerSettings:
     last_bump: datetime
-#    last_delete_warning: datetime
+
+
+@dataclass
+class Exam:
+    name: str
+    deck: t.List[Question]
+    num_questions: int
+    max_wrong: t.Optional[int]
+    timelimit: int
+    hsk_level: int
+
+
+@dataclass
+class Question:
+    question: str
+    valid_answers: t.List[str]
+    meaning: str
 
 
 UserId = int

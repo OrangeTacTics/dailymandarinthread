@@ -23,6 +23,7 @@ DiscordUsername = str
 class Dataloaders:
     profile: DataLoader[MemberId, schema.Profile]
     profile_by_discord_username: DataLoader[DiscordUsername, schema.Profile]
+    exam: DataLoader[str, schema.Exam]
 
 
 @dataclass
@@ -62,6 +63,7 @@ class ChairmanMaoGraphQL(GraphQL):
             dataloaders=Dataloaders(
                 profile=DataLoader(load_fn=lambda ids: dl.load_profiles(store, ids)),
                 profile_by_discord_username=DataLoader(load_fn=lambda duns: dl.load_profiles_by_discord_usernames(store, duns)),
+                exam=DataLoader(load_fn=lambda exam_names: dl.load_exams(store, exam_names)),
             ),
             discord_username=discord_username,
             store=store,

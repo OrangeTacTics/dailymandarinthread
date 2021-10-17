@@ -1,7 +1,7 @@
 import typing as t
 import abc
 
-from .types import UserId, Profile, ServerSettings
+from .types import UserId, Profile, ServerSettings, Exam
 
 
 class DocumentStore(abc.ABC):
@@ -21,6 +21,15 @@ class DocumentStore(abc.ABC):
         pass
 
     def get_all_profiles(self) -> t.List[Profile]:
+        pass
+
+    def get_exam_names(self) -> t.List[str]:
+        pass
+
+    def load_exam(self, exam_name: str) -> t.Optional[Exam]:
+        pass
+
+    def store_exam(self, exam: Exam) -> None:
         pass
 
     def profile(self, user_id: UserId) -> 'OpenProfileContextManager':
