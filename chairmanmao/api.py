@@ -329,6 +329,25 @@ class Api:
         )
         return results['profile']['yuan']
 
+    async def transfer(self, from_user_id: UserId, to_user_id: UserId, amount: int):
+        await self.client.query('''
+            mutation m($fromUserId: String!, $toUserId: String!, $amount: Int!) {
+                admin {
+                    transfer(
+                        fromUserId: $fromUserId,
+                        toUserId: $toUserId,
+                        amount: $amount,
+                    )
+                }
+            }
+            ''',
+            {
+                'fromUserId': str(from_user_id),
+                'toUserId': str(to_user_id),
+                'amount': amount,
+            },
+        )
+
     async def leaderboard(self) -> t.List[LeaderboardEntry]:
         results = await self.client.query('''
             query q {

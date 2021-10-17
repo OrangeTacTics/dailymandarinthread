@@ -112,6 +112,19 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
+    async def transfer(self, info, from_user_id: str, to_user_id: str, amount: int) -> bool:
+        assert amount > 0
+
+        with info.context.store.profile(int(from_user_id)) as from_profile:
+            assert amount <= from_profile.yuan, 'Insufficient funds'
+            from_profile.yuan -= amount
+
+        with info.context.store.profile(int(to_user_id)) as to_profile:
+            to_profile.yuan += amount
+
+        return True
+
+    @s.field
     async def jail(self, info, user_id: str) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
             if not add_role(profile, types.Role.Jailed):
