@@ -11,20 +11,22 @@ TWO_HOURS_IN_SECONDS = 2 * 60 * 60
 class BumpCog(ChairmanMaoCog):
     def __init__(self, client, chairmanmao) -> None:
         super().__init__(client, chairmanmao)
-        self.last_bump = None
+        self.last_bump = datetime.now(timezone.utc)
 
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info('BumpCog')
-        self.last_bump = datetime.now(timezone.utc)
         self.loop_bump_timer.start()
+
+    def seconds_since_last_bump(self) -> int:
+        now = datetime.now(timezone.utc)
+        duration_since_last_bump = now - self.last_bump
+        return int(duration_since_last_bump.total_seconds())
 
     @tasks.loop(minutes=1)
     async def loop_bump_timer(self):
         if self.last_bump is not None:
-            now = datetime.now(timezone.utc)
-            duration_since_last_bump = now - self.last_bump
-            if duration_since_last_bump.total_seconds() > TWO_HOURS_IN_SECONDS:
+            if self.seconds_since_last_bump() > TWO_HOURS_IN_SECONDS:
                 self.last_bump = None
                 channel = self.chairmanmao.constants().bump_channel
 
@@ -36,8 +38,16 @@ class BumpCog(ChairmanMaoCog):
         if message.author.bot:
             return
 
+        if self.seconds_since_last_bump() < TWO_HOURS_IN_SECONDS:
+            return
+
         constants = self.chairmanmao.constants()
         if message.channel == constants.bump_channel:
             if message.content.strip() == '!d bump':
                 self.last_bump = datetime.now(timezone.utc)
+                await self.chairmanmao.api.transfer(
+                    await self.chairmanmao.chairmanmao_user_id(),
+                    message.author.id,
+                    1,
+                )
                 self.chairmanmao.logger.info('Server has been bumped')

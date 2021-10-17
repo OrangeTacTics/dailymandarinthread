@@ -65,6 +65,9 @@ class ChairmanMao:
         self.draw_manager = DrawManager(file_manager)
         self.fourchan_manager = FourChanManager(file_manager)
 
+    async def chairmanmao_user_id(self) -> int:
+        return await self.api.get_user_id(os.environ['BOT_USERNAME'])
+
     def load_constants(self, guild: discord.Guild) -> None:
         assert self.constants_cache is None
         self.constants_cache = DiscordConstants.load(guild)

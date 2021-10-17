@@ -97,6 +97,20 @@ class Api:
             hsk_level=profile['hsk'],
         )
 
+    async def get_user_id(self, discord_username: str) -> UserId:
+        results = await self.client.query('''
+            query q($discordUsername: String!) {
+                profile(discordUsername: $discordUsername) {
+                    userId
+                }
+            }
+            ''',
+            {
+                'discordUsername': discord_username,
+            },
+        )
+        return results['profile']['userId']
+
     async def honor(self, user_id: UserId, credit: int) -> int:
         results = await self.client.query('''
             mutation m($userId: String!, $credit: Int!) {
