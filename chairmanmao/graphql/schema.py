@@ -63,6 +63,11 @@ class NewExam:
 
 
 @s.type
+class ServerSettings:
+    last_bump: datetime
+
+
+@s.type
 class AdminQuery:
     @s.field
     async def all_profiles(self, info) -> t.List[Profile]:
@@ -72,6 +77,13 @@ class AdminQuery:
         for profile in info.context.store.get_all_profiles():
             profiles.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
         return profiles
+
+    @s.field
+    async def server_settings(self, info) -> ServerSettings:
+        server_settings = info.context.store.load_server_settings()
+        return ServerSettings(
+            last_bump=server_settings.last_bump
+        )
 
 
 @s.type

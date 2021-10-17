@@ -59,14 +59,14 @@ class MongoDbDocumentStore(DocumentStore):
         self.exams.replace_one(query, exam_to_json(exam), upsert=True)
 
     def load_server_settings(self) -> ServerSettings:
-        json_data = self.profiles.find_one({})
+        json_data = self.server_settings.find_one({})
         return ServerSettings(
-            last_bump=datetime.fromisoformat(json_data['last_bump'])
+            last_bump=json_data['last_bump'],
         )
 
     def store_server_settings(self, server_settings: ServerSettings) -> None:
         doc = {
-            'last_bump': server_settings.last_bump.isoformat(),
+            'last_bump': server_settings.last_bump,
         }
         self.server_settings.replace_one({}, doc)
 
