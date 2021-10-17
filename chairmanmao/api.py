@@ -295,7 +295,7 @@ class Api:
         await self.client.query('''
             mutation m($userId: String!, $flag: Boolean!) {
                 admin {
-                    setParty(userId: $userId, flag: $flag) {
+                    setLearner(userId: $userId, flag: $flag) {
                         userId
                     }
                 }
