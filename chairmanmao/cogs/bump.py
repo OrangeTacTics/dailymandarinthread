@@ -33,6 +33,12 @@ class BumpCog(ChairmanMaoCog):
                 bumpers = self.chairmanmao.constants().bumpers_role.mention
                 await channel.send(f'{bumpers} Please bump the server with `!d bump`')
 
+    @commands.command(name='d')
+    @commands.has_role('同志')
+    async def cmd_d(self, ctx):
+        '''Suppress error message in logs'''
+        return
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
