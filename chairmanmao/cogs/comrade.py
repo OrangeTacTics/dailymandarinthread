@@ -29,13 +29,13 @@ class ComradeCog(ChairmanMaoCog):
     async def cmd_yuan(self, ctx):
         yuan = await self.chairmanmao.api.yuan(ctx.author.id)
         username = self.chairmanmao.member_to_username(ctx.author)
-        await ctx.send(f"{username} has {yuan} RNB.")
+        await ctx.send(f"{username} has {yuan} RMB.")
 
     @commands.command(name='give')
     @commands.has_role('同志')
     async def cmd_give(self, ctx, to_member: commands.MemberConverter, amount: int):
         await self.chairmanmao.api.transfer(ctx.author.id, to_member.id, amount)
-        await ctx.send(f"{ctx.author.mention} has given {amount} RNB to {to_member.mention}")
+        await ctx.send(f"{ctx.author.mention} has given {amount} RMB to {to_member.mention}")
 
     @commands.command(name='mine', help='Mine a word.')
     @commands.has_role('同志')
