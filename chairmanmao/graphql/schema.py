@@ -260,6 +260,15 @@ class AdminMutation:
         info.context.store.store_exam(exam_doc)
         return await info.context.dataloaders.exam.load(exam.name)
 
+    @s.field
+    async def set_last_bump(self, info) -> datetime:
+        now = datetime.now(timezone.utc)
+
+        server_settings = info.context.store.load_server_settings()
+        server_settings.last_bump = now
+        info.context.store.store_server_settings(server_settings)
+        return now
+
 
 @s.type
 class Mutation:

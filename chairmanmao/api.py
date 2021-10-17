@@ -412,3 +412,25 @@ class Api:
                 'userIds': [str(user_id)],
             },
         )
+
+    async def last_bump(self) -> datetime:
+        results = await self.client.query('''
+            query q {
+                admin {
+                    serverSettings {
+                        lastBump
+                    }
+                }
+            }
+            ''')
+        return datetime.fromisoformat(results['admin']['serverSettings']['lastBump'])
+
+    async def set_last_bump(self) -> datetime:
+        results = await self.client.query('''
+            mutation q {
+                admin {
+                    setLastBump
+                }
+            }
+            ''')
+        return datetime.fromisoformat(results['admin']['setLastBump'])

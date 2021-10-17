@@ -1,6 +1,6 @@
 from __future__ import annotations
 import typing as t
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pymongo
 
@@ -61,7 +61,7 @@ class MongoDbDocumentStore(DocumentStore):
     def load_server_settings(self) -> ServerSettings:
         json_data = self.server_settings.find_one({})
         return ServerSettings(
-            last_bump=json_data['last_bump'],
+            last_bump=json_data['last_bump'].replace(tzinfo=timezone.utc),
         )
 
     def store_server_settings(self, server_settings: ServerSettings) -> None:
