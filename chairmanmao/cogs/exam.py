@@ -441,10 +441,72 @@ def make_hsk3_exam() -> Exam:
     )
 
 
+def make_hsk4_exam() -> Exam:
+    deck = []
+
+    with open('data/decks/hsk4.csv') as infile:
+        fieldnames = ['question', 'answers', 'meaning', 'unused']
+        reader = csv.DictReader(infile, fieldnames=fieldnames)
+
+        for word in reader:
+            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+
+    return Exam(
+        name='HSK 4',
+        deck=deck,
+        num_questions=20,
+        max_wrong=2,
+        timelimit=7,
+        hsk_level=4,
+    )
+
+
+def make_hsk5_exam() -> Exam:
+    deck = []
+
+    with open('data/decks/hsk5.csv') as infile:
+        fieldnames = ['question', 'answers', 'meaning', 'unused']
+        reader = csv.DictReader(infile, fieldnames=fieldnames)
+
+        for word in reader:
+            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+
+    return Exam(
+        name='HSK 5',
+        deck=deck,
+        num_questions=20,
+        max_wrong=2,
+        timelimit=7,
+        hsk_level=5,
+    )
+
+
+def make_hsk6_exam() -> Exam:
+    deck = []
+
+    with open('data/decks/hsk6.csv') as infile:
+        fieldnames = ['question', 'answers', 'meaning', 'unused']
+        reader = csv.DictReader(infile, fieldnames=fieldnames)
+
+        for word in reader:
+            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+
+    return Exam(
+        name='HSK 6',
+        deck=deck,
+        num_questions=20,
+        max_wrong=2,
+        timelimit=7,
+        hsk_level=6,
+    )
+
 EXAMS: t.Dict[str, Exam] = {
     'hsk1': make_hsk1_exam(),
     'hsk2': make_hsk2_exam(),
     'hsk3': make_hsk3_exam(),
+    'hsk4': make_hsk4_exam(),
+    'hsk5': make_hsk5_exam(),
+    'hsk6': make_hsk6_exam(),
 }
 
 
