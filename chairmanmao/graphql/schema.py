@@ -2,8 +2,22 @@ import typing as t
 from datetime import datetime, timezone
 from enum import Enum
 
+from dragonmapper.transcriptions import pinyin_to_zhuyin
 import strawberry as s
 import chairmanmao.store.types as types
+
+
+@s.type
+class DictEntry:
+    simplified: str
+    traditional: str
+    pinyin: str
+    meanings: t.List[str]
+
+    @s.field
+    def zhuyin(self) -> str:
+        zhuyin = pinyin_to_zhuyin(self.pinyin)
+        return zhuyin
 
 
 @s.enum
@@ -124,6 +138,43 @@ class Query:
     def admin(self, info) -> AdminQuery:
         assert info.context.is_admin, 'Must be admin'
         return AdminQuery()
+
+    @s.field
+    def dict(self, word: str) -> t.List[DictEntry]:
+        results = []
+        with open('data/cedict_ts.u8') as infile:
+            for line in infile:
+                if line.startswith('#'):
+                    continue
+                dictentry = parse_dictentry(line)
+                if dictentry.simplified == word or dictentry.traditional == word:
+                    results.append(dictentry)
+        return results
+
+
+def parse_dictentry(line: str) -> DictEntry:
+    traditional, simplified, *_ = line.split(' ')
+    left_brace = line.index('[')
+    right_brace = line.index(']')
+    pinyin = line[left_brace + 1:right_brace]
+
+    slash = line.index('/')
+    meanings = []
+    try:
+        while True:
+            line = line[slash + 1:]
+            slash = line.index('/')
+            meaning = line[:slash]
+            meanings.append(meaning)
+    except:
+        pass
+
+    return DictEntry(
+        simplified=simplified,
+        traditional=traditional,
+        pinyin=pinyin,
+        meanings=meanings,
+    )
 
 
 @s.type
