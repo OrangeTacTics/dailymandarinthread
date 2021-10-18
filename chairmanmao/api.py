@@ -28,6 +28,15 @@ class SyncInfo:
 
 
 @dataclass
+class DictEntry:
+    simplified: str
+    traditional: str
+    pinyin: str
+    zhuyin: str
+    meanings: t.List[str]
+
+
+@dataclass
 class Api:
     def __init__(self, endpoint: str, auth_token: str) -> None:
         self.client = GraphQLClient(endpoint, auth_token)
@@ -434,3 +443,31 @@ class Api:
             }
             ''')
         return datetime.fromisoformat(results['admin']['setLastBump'])
+
+    async def lookup_word(self, word: str) -> DictEntry:
+        results = await self.client.query('''
+            query q($word: String!) {
+                dict(word: $word) {
+                    simplified
+                    meanings
+                    traditional
+                    pinyin
+                    zhuyin
+                }
+            }
+            ''',
+            {
+                'word': word,
+            }
+        )
+        return [
+            DictEntry(
+                simplified=result['simplified'],
+                traditional=result['traditional'],
+                pinyin=result['pinyin'],
+                zhuyin=result['zhuyin'],
+                meanings=result['meanings'],
+            )
+            for result
+            in results['dict']
+        ]

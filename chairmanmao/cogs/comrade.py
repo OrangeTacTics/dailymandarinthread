@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from chairmanmao.cogs import ChairmanMaoCog
@@ -44,3 +45,39 @@ class ComradeCog(ChairmanMaoCog):
         await self.chairmanmao.api.mine(ctx.author.id, word)
 
         await ctx.send(f'{username} has mined: {word}')
+
+    @commands.command(name='definition')
+    @commands.has_role('同志')
+    async def cmd_mine(self, ctx, word: str):
+        definitions = await self.chairmanmao.api.lookup_word(word)
+
+        if len(definitions) == 0:
+            await ctx.send('Word not found: ' + word)
+        else:
+            definition = definitions[0]
+
+            if definition.traditional != definition.simplified:
+                word = f'{definition.simplified} [{definition.traditional}]'
+            else:
+                word = definition.simplified
+
+            embed = discord.Embed(
+                title="Definition",
+                description=word,
+                color=0xff0000,
+            )
+
+
+            embed.add_field(
+                name='Pronunciation',
+                value=f'{definition.pinyin} [{definition.zhuyin}]',
+                inline=False,
+            )
+
+            embed.add_field(
+                name='Meaning',
+                value='\n'.join(meaning for meaning in definition.meanings),
+                inline=False,
+            )
+
+            await ctx.send(embed=embed)
