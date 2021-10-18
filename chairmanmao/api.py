@@ -444,7 +444,7 @@ class Api:
             ''')
         return datetime.fromisoformat(results['admin']['setLastBump'])
 
-    async def lookup_word(self, word: str) -> DictEntry:
+    async def lookup_word(self, word: str) -> t.List[DictEntry]:
         results = await self.client.query('''
             query q($word: String!) {
                 dict(word: $word) {

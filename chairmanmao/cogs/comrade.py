@@ -48,7 +48,7 @@ class ComradeCog(ChairmanMaoCog):
 
     @commands.command(name='definition')
     @commands.has_role('同志')
-    async def cmd_mine(self, ctx, word: str):
+    async def cmd_definition(self, ctx, word: str):
         definitions = await self.chairmanmao.api.lookup_word(word)
 
         if len(definitions) == 0:

@@ -22,8 +22,9 @@ class PartyCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
-        await constants.commentators_channel.send(f'{ctx.author.display_name} has jailed Comrade {username}.')
+        self.chairmanmao.logger.info(f'{ctx.author.display_name} has jailed Comrade {username}.')
         await constants.apologies_channel.send(f'Comrade {username} has been jailed.')
+        await self.chairmanmao.api.dishonor(member.id, 25)
 
     @commands.command(name='unjail')
     @commands.has_role('共产党员')
@@ -32,5 +33,6 @@ class PartyCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
+        self.chairmanmao.logger.info(f'{ctx.author.display_name} has unjailed Comrade {username}.')
         await constants.commentators_channel.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
         await constants.apologies_channel.send(f'Comrade {username} has been unjailed.')
