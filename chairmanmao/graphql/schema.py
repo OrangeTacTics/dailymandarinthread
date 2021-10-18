@@ -2,7 +2,7 @@ import typing as t
 from datetime import datetime, timezone
 from enum import Enum
 
-from dragonmapper.transcriptions import pinyin_to_zhuyin
+from dragonmapper.transcriptions import pinyin_to_zhuyin, numbered_syllable_to_accented
 import strawberry as s
 import chairmanmao.store.types as types
 
@@ -11,12 +11,17 @@ import chairmanmao.store.types as types
 class DictEntry:
     simplified: str
     traditional: str
-    pinyin: str
+    pinyin_numbered: str
     meanings: t.List[str]
 
     @s.field
+    def pinyin(self) -> str:
+        pinyin = numbered_syllable_to_accented(self.pinyin_numbered)
+        return pinyin
+
+    @s.field
     def zhuyin(self) -> str:
-        zhuyin = pinyin_to_zhuyin(self.pinyin)
+        zhuyin = pinyin_to_zhuyin(self.pinyin_numbered)
         return zhuyin
 
 
@@ -156,7 +161,7 @@ def parse_dictentry(line: str) -> DictEntry:
     traditional, simplified, *_ = line.split(' ')
     left_brace = line.index('[')
     right_brace = line.index(']')
-    pinyin = line[left_brace + 1:right_brace]
+    pinyin_numbered = line[left_brace + 1:right_brace]
 
     slash = line.index('/')
     meanings = []
@@ -172,7 +177,7 @@ def parse_dictentry(line: str) -> DictEntry:
     return DictEntry(
         simplified=simplified,
         traditional=traditional,
-        pinyin=pinyin,
+        pinyin_numbered=pinyin_numbered,
         meanings=meanings,
     )
 
