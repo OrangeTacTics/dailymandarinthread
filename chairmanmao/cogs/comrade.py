@@ -56,27 +56,39 @@ class ComradeCog(ChairmanMaoCog):
         else:
             definition = definitions[0]
 
-            if definition.traditional != definition.simplified:
-                word = f'{definition.simplified} [{definition.traditional}]'
-            else:
-                word = definition.simplified
-
             embed = discord.Embed(
                 title="Definition",
-                description=word,
                 color=0xff0000,
             )
+
+            embed.add_field(
+                name="Simplified",
+                value=definition.simplified,
+                inline=True,
+            )
+
+            if definition.traditional != definition.simplified:
+                embed.add_field(
+                    name="Traditional",
+                    value=definition.traditional,
+                    inline=True,
+                )
 
 
             embed.add_field(
                 name='Pronunciation',
-                value=f'{definition.pinyin} [{definition.zhuyin}]',
+                value=f'{definition.pinyin}\n{definition.zhuyin}',
                 inline=False,
             )
 
+            meaning_lines = []
+            for i, meaning in enumerate(definition.meanings[:9]):
+                num = chr(ord('➀') + i)
+                meaning_lines.append(f'{num} {meaning}')
+
             embed.add_field(
                 name='Meaning',
-                value='\n'.join(meaning for meaning in definition.meanings),
+                value='\n'.join(meaning_lines),
                 inline=False,
             )
 
