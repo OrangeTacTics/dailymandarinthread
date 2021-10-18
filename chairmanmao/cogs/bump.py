@@ -14,7 +14,7 @@ class BumpCog(ChairmanMaoCog):
 
         # fake for just a moment
         self.last_bump = datetime.now(timezone.utc)
-        self.has_notified = True
+        self.has_notified = False
 
     @commands.Cog.listener()
     async def on_ready(self):
