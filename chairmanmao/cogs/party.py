@@ -34,5 +34,4 @@ class PartyCog(ChairmanMaoCog):
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
         self.chairmanmao.logger.info(f'{ctx.author.display_name} has unjailed Comrade {username}.')
-        await constants.commentators_channel.send(f'{ctx.author.display_name} has unjailed Comrade {username}.')
         await constants.apologies_channel.send(f'Comrade {username} has been unjailed.')
