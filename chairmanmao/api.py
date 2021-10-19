@@ -395,7 +395,9 @@ class Api:
         await self.client.query('''
             mutation alert($userId: String!, $name: String!) {
                 admin {
-                    setName(userId: $userId, name: $name)
+                    setName(userId: $userId, name: $name) {
+                        userId
+                    }
                 }
             }
             ''',
