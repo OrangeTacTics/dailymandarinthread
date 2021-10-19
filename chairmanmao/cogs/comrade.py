@@ -27,9 +27,12 @@ class ComradeCog(ChairmanMaoCog):
 
     @commands.command(name='yuan')
     @commands.has_role('同志')
-    async def cmd_yuan(self, ctx):
-        yuan = await self.chairmanmao.api.yuan(ctx.author.id)
-        username = self.chairmanmao.member_to_username(ctx.author)
+    async def cmd_yuan(self, ctx, member: commands.MemberConverter = None):
+        if member is None:
+            member = ctx.author
+
+        yuan = await self.chairmanmao.api.yuan(member.id)
+        username = self.chairmanmao.member_to_username(member)
         await ctx.send(f"{username} has {yuan} RMB.")
 
     @commands.command(name='give')
