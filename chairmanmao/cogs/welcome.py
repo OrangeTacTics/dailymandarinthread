@@ -29,6 +29,7 @@ class WelcomeCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.logger.info(f"User left: {username}. Member ID: {member.id}.")
         constants = self.chairmanmao.constants()
+        await self.chairmanmao.api.jail(member.id)
         await constants.commentators_channel.send(f'{username} has left DMT.')
 
     async def welcome(self, member) -> None:
