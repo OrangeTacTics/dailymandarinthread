@@ -1,3 +1,5 @@
+import typing as t
+
 from discord.ext import commands
 
 from chairmanmao.cogs import ChairmanMaoCog
@@ -17,13 +19,19 @@ class PartyCog(ChairmanMaoCog):
 
     @commands.command(name='jail')
     @commands.has_role('共产党员')
-    async def cmd_jail(self, ctx, member: commands.MemberConverter):
+    async def cmd_jail(self, ctx, member: commands.MemberConverter, *, reason: t.Optional[str] = None):
         await self.chairmanmao.api.jail(member.id)
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
-        self.chairmanmao.logger.info(f'{ctx.author.display_name} has jailed Comrade {username}.')
-        await constants.apologies_channel.send(f'Comrade {username} has been jailed.')
+        self.chairmanmao.logger.info(f'{ctx.author.display_name} has jailed Comrade {username}. Reason: {repr(reason)}')
+
+        if reason is None:
+            display_reason = ''
+        else:
+            display_reason = f'Reason: {reason}'
+
+        await constants.apologies_channel.send(f'Comrade {username} has been jailed. {display_reason}')
         await self.chairmanmao.api.dishonor(member.id, 25)
 
     @commands.command(name='unjail')
