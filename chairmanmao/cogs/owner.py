@@ -29,30 +29,6 @@ class OwnerCog(ChairmanMaoCog):
         await self.chairmanmao.api.demote(member.id)
         self.chairmanmao.queue_member_update(member.id)
 
-    @commands.command(name='honor', help="Add social credit to a user.")
-    @commands.is_owner()
-    async def cmd_honor(self, ctx, member: commands.MemberConverter, credit: int):
-        assert credit > 0
-
-        target_username = self.chairmanmao.member_to_username(member)
-        new_credit = await self.chairmanmao.api.honor(member.id, credit)
-        old_credit = new_credit - credit
-
-        self.chairmanmao.queue_member_update(member.id)
-        await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
-
-    @commands.command(name='dishonor', help="Remove social credit from a user.")
-    @commands.is_owner()
-    async def cmd_dishonor(self, ctx, member: commands.MemberConverter, credit: int):
-        assert credit > 0
-
-        target_username = self.chairmanmao.member_to_username(member)
-        new_credit = await self.chairmanmao.api.dishonor(member.id, credit)
-        old_credit = new_credit + credit
-
-        self.chairmanmao.queue_member_update(member.id)
-        await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
-
     @commands.command(name='setname', help="Sets the name of another user.")
     @commands.is_owner()
     async def cmd_setname(self, ctx, member: commands.MemberConverter, name: str):

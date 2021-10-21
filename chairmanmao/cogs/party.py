@@ -35,3 +35,41 @@ class PartyCog(ChairmanMaoCog):
         constants = self.chairmanmao.constants()
         self.chairmanmao.logger.info(f'{ctx.author.display_name} has unjailed Comrade {username}.')
         await constants.apologies_channel.send(f'Comrade {username} has been unjailed.')
+
+    @commands.command(name='honor', help="Add social credit to a user.")
+    @commands.has_role('共产党员')
+    async def cmd_honor(self, ctx, member: commands.MemberConverter, credit: int):
+        assert credit > 0
+
+        constants = self.chairmanmao.constants()
+
+        if ctx.author != constants.guild.owner:
+            if credit > 25:
+                await ctx.send('Party members can only honor 25 social credit at a time.')
+                return
+
+        target_username = self.chairmanmao.member_to_username(member)
+        new_credit = await self.chairmanmao.api.honor(member.id, credit)
+        old_credit = new_credit - credit
+
+        self.chairmanmao.queue_member_update(member.id)
+        await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
+
+    @commands.command(name='dishonor', help="Remove social credit from a user.")
+    @commands.has_role('共产党员')
+    async def cmd_dishonor(self, ctx, member: commands.MemberConverter, credit: int):
+        assert credit > 0
+
+        constants = self.chairmanmao.constants()
+
+        if ctx.author != constants.guild.owner:
+            if credit > 25:
+                await ctx.send('Party members can only dishonor 25 social credit at a time.')
+                return
+
+        target_username = self.chairmanmao.member_to_username(member)
+        new_credit = await self.chairmanmao.api.dishonor(member.id, credit)
+        old_credit = new_credit + credit
+
+        self.chairmanmao.queue_member_update(member.id)
+        await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
