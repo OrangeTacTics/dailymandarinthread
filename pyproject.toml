@@ -28,6 +28,7 @@ dragonmapper = "^0.2.6"
 flake8 = "^3.9.2"
 mypy = "^0.910"
 pytest = "^6.2.5"
+black = "^21.9b0"
 
 [tool.poetry.scripts]
 chairmanmao = "chairmanmao.main:bot"
