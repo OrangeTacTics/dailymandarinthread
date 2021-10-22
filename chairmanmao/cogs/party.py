@@ -1,5 +1,6 @@
 import typing as t
 
+import discord
 from discord.ext import commands
 
 from chairmanmao.cogs import ChairmanMaoCog
@@ -26,12 +27,24 @@ class PartyCog(ChairmanMaoCog):
         constants = self.chairmanmao.constants()
         self.chairmanmao.logger.info(f'{ctx.author.display_name} has jailed Comrade {username}. Reason: {repr(reason)}')
 
-        if reason is None:
-            display_reason = ''
-        else:
-            display_reason = f'Reason: {reason}'
+        embed = discord.Embed(
+            title='Comrade has been jailed!',
+            description=f'Comrade {member.mention} has been jailed.',
+            color=0xff0000,
+        )
 
-        await constants.apologies_channel.send(f'Comrade {username} has been jailed. {display_reason}')
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar_url,
+        )
+
+        if reason is not None:
+            embed.add_field(
+                name='Reason',
+                value=reason,
+            )
+
+        await constants.apologies_channel.send(embed=embed)
         await self.chairmanmao.api.dishonor(member.id, 25)
 
     @commands.command(name='unjail')
@@ -42,7 +55,19 @@ class PartyCog(ChairmanMaoCog):
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
         self.chairmanmao.logger.info(f'{ctx.author.display_name} has unjailed Comrade {username}.')
-        await constants.apologies_channel.send(f'Comrade {username} has been unjailed.')
+
+        embed = discord.Embed(
+            title='Comrade has been unjailed!',
+            description=f'Comrade {member.mention} has been unjailed.',
+            color=0xff0000,
+        )
+
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar_url,
+        )
+
+        await constants.apologies_channel.send(embed=embed)
 
     @commands.command(name='honor', help="Add social credit to a user.")
     @commands.has_role('共产党员')
