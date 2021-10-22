@@ -1,8 +1,8 @@
 import typing as t
 
-import chairmanmao.graphql.schema as schema
-from chairmanmao.store import DocumentStore
-import chairmanmao.store.types as types
+import server.graphql.schema as schema
+from ..store import DocumentStore
+import server.store.types as types
 
 
 async def load_profiles(

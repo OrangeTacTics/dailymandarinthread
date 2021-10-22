@@ -31,6 +31,6 @@ pytest = "^6.2.5"
 black = "^21.9b0"
 
 [tool.poetry.scripts]
-chairmanmao = "chairmanmao.main:bot"
-server = "chairmanmao.main:server"
+chairmanmao = "chairmanmao:main"
+server = "server:main"
 list-members = "scripts.members:main"

@@ -4,7 +4,8 @@ from enum import Enum
 
 from dragonmapper.transcriptions import pinyin_to_zhuyin, numbered_syllable_to_accented
 import strawberry as s
-import chairmanmao.store.types as types
+
+import server.store.types as types
 
 
 @s.type

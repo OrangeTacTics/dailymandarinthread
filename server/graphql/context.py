@@ -9,9 +9,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.websockets import WebSocket
 
-import chairmanmao.graphql.dataloaders as dl
-import chairmanmao.graphql.schema as schema
-from chairmanmao.store.mongodb import MongoDbDocumentStore
+import server.graphql.dataloaders as dl
+import server.graphql.schema as schema
+from ..store.mongodb import MongoDbDocumentStore
 
 
 MemberId = str

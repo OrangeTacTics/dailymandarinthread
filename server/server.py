@@ -5,9 +5,8 @@ import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse
 
-from chairmanmao.graphql.schema import schema
-from chairmanmao.graphql.context import ChairmanMaoGraphQL
-
+from .graphql.schema import schema
+from .graphql.context import ChairmanMaoGraphQL
 
 from dotenv import load_dotenv
 import pymongo
