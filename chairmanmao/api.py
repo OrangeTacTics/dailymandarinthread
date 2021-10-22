@@ -3,7 +3,7 @@ import typing as t
 from dataclasses import dataclass
 
 from datetime import datetime
-import chairmanmao.types as cmt
+import chairmanmao.types as types
 
 
 from chairmanmao.api_client import GraphQLClient
@@ -23,7 +23,7 @@ class SyncInfo:
     user_id: UserId
     display_name: str
     credit: int
-    roles: t.Set[cmt.Role]
+    roles: t.Set[types.Role]
     hsk_level: t.Optional[int]
 
 
@@ -94,12 +94,12 @@ class Api:
 
         roles = []
         if "Jailed" in profile["roles"]:
-            roles.append(cmt.Role.Jailed)
+            roles.append(types.Role.Jailed)
         else:
             if "Party" in profile["roles"]:
-                roles.append(cmt.Role.Party)
+                roles.append(types.Role.Party)
             if "Learner" in profile["roles"]:
-                roles.append(cmt.Role.Learner)
+                roles.append(types.Role.Learner)
 
         return SyncInfo(
             user_id=int(profile["userId"]),
