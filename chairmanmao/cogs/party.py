@@ -29,7 +29,7 @@ class PartyCog(ChairmanMaoCog):
 
         embed = discord.Embed(
             title='Comrade has been jailed!',
-            description=f'Comrade {member.mention} has been jailed.',
+            description=f'{member.mention} has been jailed.',
             color=0xff0000,
         )
 
@@ -58,7 +58,7 @@ class PartyCog(ChairmanMaoCog):
 
         embed = discord.Embed(
             title='Comrade has been unjailed!',
-            description=f'Comrade {member.mention} has been unjailed.',
+            description=f'{member.mention} has been unjailed.',
             color=0xff0000,
         )
 
@@ -71,7 +71,7 @@ class PartyCog(ChairmanMaoCog):
 
     @commands.command(name='honor', help="Add social credit to a user.")
     @commands.has_role('共产党员')
-    async def cmd_honor(self, ctx, member: commands.MemberConverter, credit: int):
+    async def cmd_honor(self, ctx, member: commands.MemberConverter, credit: int, *, reason: t.Optional[str] = None):
         assert credit > 0
 
         constants = self.chairmanmao.constants()
@@ -86,11 +86,30 @@ class PartyCog(ChairmanMaoCog):
         old_credit = new_credit - credit
 
         self.chairmanmao.queue_member_update(member.id)
-        await ctx.send(f'{target_username} has had their credit score increased from {old_credit} to {new_credit}.')
+
+        embed = discord.Embed(
+            title='Comrade has been honored!',
+            description=f'Comrade {member.mention} has been granted {credit} social credit.',
+            color=0x00ff00,
+        )
+
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar_url,
+        )
+
+        if reason is not None:
+            embed.add_field(
+                name='Reason',
+                value=reason,
+                inline=True,
+            )
+
+        await ctx.send(embed=embed)
 
     @commands.command(name='dishonor', help="Remove social credit from a user.")
     @commands.has_role('共产党员')
-    async def cmd_dishonor(self, ctx, member: commands.MemberConverter, credit: int):
+    async def cmd_dishonor(self, ctx, member: commands.MemberConverter, credit: int, *, reason: t.Optional[str] = None):
         assert credit > 0
 
         constants = self.chairmanmao.constants()
@@ -105,4 +124,23 @@ class PartyCog(ChairmanMaoCog):
         old_credit = new_credit + credit
 
         self.chairmanmao.queue_member_update(member.id)
-        await ctx.send(f'{target_username} has had their credit score decreased from {old_credit} to {new_credit}.')
+
+        embed = discord.Embed(
+            title='Comrade has been dishonored!',
+            description=f'Comrade {member.mention} has lost {credit} social credit.',
+            color=0xff0000,
+        )
+
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar_url,
+        )
+
+        if reason is not None:
+            embed.add_field(
+                name='Reason',
+                value=reason,
+                inline=True,
+            )
+
+        await ctx.send(embed=embed)
