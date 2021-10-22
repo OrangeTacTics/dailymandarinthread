@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from chairmanmao.cogs import ChairmanMaoCog
@@ -15,12 +16,58 @@ class WelcomeCog(ChairmanMaoCog):
 
         if await self.chairmanmao.api.is_registered(member.id):
             self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
-            await constants.commentators_channel.send(f'{username} has returned to DMT.')
+
+            embed = discord.Embed(
+                title='A former Comrade has rejoined us!',
+                description=f'{member.mention} has returned to the Daily Mandarin Thread.',
+                color=0xff0000,
+            )
+
+            embed.set_author(
+                name=member.display_name,
+                icon_url=member.avatar_url,
+            )
+
+            await constants.commentators_channel.send(embed=embed)
+
+            embed = discord.Embed(
+                title='Comrade has been jailed!',
+                description=f'{member.mention} has been jailed.',
+                color=0xff0000,
+            )
+
+            embed.set_author(
+                name=member.display_name,
+                icon_url=member.avatar_url,
+            )
+
+            embed.add_field(
+                name='Reason',
+                value="Defecting from the Daily Mandarin Thread.",
+            )
+            await constants.apologies_channel.send(embed=embed)
+
         else:
             await self.chairmanmao.api.register(member.id, username)
+
             self.chairmanmao.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
-            await self.welcome(member)
-            await constants.commentators_channel.send(f'{username} has joined DMT.')
+
+            try:
+                await self.welcome(member)
+            except:
+                self.chairmanmao.logger.info(f"Could not send welcome message to {username}. Member ID: {member.id}.")
+
+            embed = discord.Embed(
+                title='A new Comrade has joined us!',
+                description=f'{member.mention} has joined the Daily Mandarin Thread.',
+                color=0xff0000,
+            )
+
+            embed.set_author(
+                name=member.display_name,
+                icon_url=member.avatar_url,
+            )
+            await constants.commentators_channel.send(embed=embed)
 
         self.chairmanmao.queue_member_update(member.id)
 
@@ -30,7 +77,19 @@ class WelcomeCog(ChairmanMaoCog):
         self.chairmanmao.logger.info(f"User left: {username}. Member ID: {member.id}.")
         constants = self.chairmanmao.constants()
         await self.chairmanmao.api.jail(member.id)
-        await constants.commentators_channel.send(f'{username} has left DMT.')
+
+        embed = discord.Embed(
+            title='A Comrade has defected!',
+            description=f'{member.mention} has defected from the Daily Mandarin Thread.',
+            color=0xff0000,
+        )
+
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar_url,
+        )
+
+        await constants.commentators_channel.send(embed=embed)
 
     async def welcome(self, member) -> None:
         welcome_lines = [
