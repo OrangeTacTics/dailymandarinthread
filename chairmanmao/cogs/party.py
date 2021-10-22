@@ -96,9 +96,9 @@ class PartyCog(ChairmanMaoCog):
                 )
                 return
 
-        target_username = self.chairmanmao.member_to_username(member)
-        new_credit = await self.chairmanmao.api.honor(member.id, credit)
-        old_credit = new_credit - credit
+        #        target_username = self.chairmanmao.member_to_username(member)
+        #        new_credit = await self.chairmanmao.api.honor(member.id, credit)
+        #        old_credit = new_credit - credit
 
         self.chairmanmao.queue_member_update(member.id)
 
@@ -143,9 +143,9 @@ class PartyCog(ChairmanMaoCog):
                 )
                 return
 
-        target_username = self.chairmanmao.member_to_username(member)
-        new_credit = await self.chairmanmao.api.dishonor(member.id, credit)
-        old_credit = new_credit + credit
+        #        target_username = self.chairmanmao.member_to_username(member)
+        #        new_credit = await self.chairmanmao.api.dishonor(member.id, credit)
+        #        old_credit = new_credit + credit
 
         self.chairmanmao.queue_member_update(member.id)
 

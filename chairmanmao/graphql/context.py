@@ -2,7 +2,6 @@ import typing as t
 from dataclasses import dataclass
 import os
 
-from strawberry.types import Info
 from strawberry.asgi import GraphQL
 from strawberry.dataloader import DataLoader
 

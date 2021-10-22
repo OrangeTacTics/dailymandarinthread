@@ -8,7 +8,6 @@ from discord.ext import commands
 import os
 
 from chairmanmao.filemanager import DoSpacesConfig, FileManager
-from chairmanmao.store.mongodb import MongoDbDocumentStore
 from chairmanmao.api import Api
 from chairmanmao.draw import DrawManager
 from chairmanmao.fourchan import FourChanManager

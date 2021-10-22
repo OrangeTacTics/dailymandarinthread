@@ -1,9 +1,5 @@
 import typing as t
-import jwt
-import json
 import httpx
-import os
-from dotenv import load_dotenv
 
 
 class GraphQLClient:

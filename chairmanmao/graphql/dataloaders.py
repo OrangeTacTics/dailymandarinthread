@@ -1,7 +1,4 @@
 import typing as t
-from datetime import datetime
-
-from strawberry.dataloader import DataLoader
 
 import chairmanmao.graphql.schema as schema
 from chairmanmao.store import DocumentStore
