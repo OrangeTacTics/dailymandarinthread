@@ -18,11 +18,11 @@ class DoSpacesConfig:
     @staticmethod
     def from_environment() -> DoSpacesConfig:
         return DoSpacesConfig(
-            DO_SPACES_KEY=os.environ['DO_SPACES_KEY'],
-            DO_SPACES_SECRET=os.environ['DO_SPACES_SECRET'],
-            DO_SPACES_BUCKETNAME=os.environ['DO_SPACES_BUCKETNAME'],
-            DO_SPACES_URL=os.environ['DO_SPACES_URL'],
-            DO_SPACES_REGION=os.environ['DO_SPACES_REGION'],
+            DO_SPACES_KEY=os.environ["DO_SPACES_KEY"],
+            DO_SPACES_SECRET=os.environ["DO_SPACES_SECRET"],
+            DO_SPACES_BUCKETNAME=os.environ["DO_SPACES_BUCKETNAME"],
+            DO_SPACES_URL=os.environ["DO_SPACES_URL"],
+            DO_SPACES_REGION=os.environ["DO_SPACES_REGION"],
         )
 
 
@@ -32,7 +32,7 @@ class FileManager:
 
         self.session = boto3.session.Session()
         self.client = self.session.client(
-            's3',
+            "s3",
             region_name=config.DO_SPACES_REGION,
             endpoint_url=config.DO_SPACES_URL,
             aws_access_key_id=config.DO_SPACES_KEY,
@@ -51,11 +51,11 @@ class FileManager:
     def list(self, dirname: str) -> t.List[str]:
         results = []
         response = self.client.list_objects(Bucket=self.config.DO_SPACES_BUCKETNAME)
-        for obj in response['Contents']:
-            key = obj['Key']
-            if key == dirname + '/':
+        for obj in response["Contents"]:
+            key = obj["Key"]
+            if key == dirname + "/":
                 continue
 
-            if key.startswith(dirname + '/'):
+            if key.startswith(dirname + "/"):
                 results.append(key)
         return results

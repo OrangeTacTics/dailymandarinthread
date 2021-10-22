@@ -13,7 +13,7 @@ class TiananmenCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('TiananmenCog')
+        self.chairmanmao.logger.info("TiananmenCog")
         self.loop.start()
 
     @commands.Cog.listener()
@@ -26,12 +26,13 @@ class TiananmenCog(ChairmanMaoCog):
         now = datetime.now(timezone.utc)
         for member_id, joined in self.young_members.items():
             if now - joined >= timedelta(hours=24):
-                self.logger.info(f'Removing new member {member_id} from young users list.')
+                self.logger.info(
+                    f"Removing new member {member_id} from young users list."
+                )
 
         self.young_members = {
             member_id: joined
-            for (member_id, joined)
-            in self.young_members.items()
+            for (member_id, joined) in self.young_members.items()
             if now - joined < timedelta(hours=2)
         }
 
@@ -40,19 +41,16 @@ class TiananmenCog(ChairmanMaoCog):
         constants = self.chairmanmao.constants()
 
         if (
-            isinstance(message.channel, discord.channel.TextChannel) and
-            message.author.id in self.young_members and
-            message.channel != constants.apologies_channel
+            isinstance(message.channel, discord.channel.TextChannel)
+            and message.author.id in self.young_members
+            and message.channel != constants.apologies_channel
         ):
             if is_infraction(message):
                 self.chairmanmao.api.jail(message.author.id)
                 self.chairmanmao.queue_member_update(message.author.id)
-                self.logger.info('Jailed new user for infraction')
+                self.logger.info("Jailed new user for infraction")
 
 
 def is_infraction(message: discord.Message) -> bool:
     content = message.content.lower()
-    return (
-        'tiananmen' in content or
-        'taiwan' in content
-    )
+    return "tiananmen" in content or "taiwan" in content

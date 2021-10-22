@@ -7,7 +7,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class ActivityCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('ActivityCog')
+        self.chairmanmao.logger.info("ActivityCog")
 
     @commands.Cog.listener()
     async def on_message(self, message):

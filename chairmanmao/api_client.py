@@ -11,20 +11,22 @@ class GraphQLClient:
         self.endpoint = endpoint
         self.auth_token = auth_token
 
-    async def query(self, query: str, variables: t.Optional[t.Dict[str, t.Any]] = None) -> t.Any:
+    async def query(
+        self, query: str, variables: t.Optional[t.Dict[str, t.Any]] = None
+    ) -> t.Any:
         async with httpx.AsyncClient() as client:
             headers = {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             }
             if self.auth_token is not None:
-                headers['Authorization'] = f'BEARER {self.auth_token}'
+                headers["Authorization"] = f"BEARER {self.auth_token}"
 
             payload: t.Dict[str, t.Any] = {
-                'query': query,
+                "query": query,
             }
 
             if variables is not None:
-                payload['variables'] = variables
+                payload["variables"] = variables
 
             res = await client.post(
                 self.endpoint,
@@ -34,6 +36,6 @@ class GraphQLClient:
             )
 
             res_json = res.json()
-            if 'errors' in res_json:
-                raise Exception(res_json['errors'])
-            return res_json['data']
+            if "errors" in res_json:
+                raise Exception(res_json["errors"])
+            return res_json["data"]

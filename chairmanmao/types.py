@@ -41,7 +41,7 @@ class Role(Enum):
         for role in Role:
             if role.value == role_name:
                 return role
-        raise ValueError(f'{role_name} is not a valid Role.')
+        raise ValueError(f"{role_name} is not a valid Role.")
 
     def __lt__(self, other: object) -> bool:
         assert isinstance(other, Role)

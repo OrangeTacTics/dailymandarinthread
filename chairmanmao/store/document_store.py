@@ -32,7 +32,7 @@ class DocumentStore(abc.ABC):
     def store_exam(self, exam: Exam) -> None:
         pass
 
-    def profile(self, user_id: UserId) -> 'OpenProfileContextManager':
+    def profile(self, user_id: UserId) -> "OpenProfileContextManager":
         return OpenProfileContextManager(self, user_id)
 
     def load_server_settings(self) -> ServerSettings:

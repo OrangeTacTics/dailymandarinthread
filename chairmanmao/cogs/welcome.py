@@ -7,7 +7,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class WelcomeCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('WelcomeCog')
+        self.chairmanmao.logger.info("WelcomeCog")
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -15,12 +15,14 @@ class WelcomeCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
 
         if await self.chairmanmao.api.is_registered(member.id):
-            self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
+            self.chairmanmao.logger.info(
+                f"A former Comrade rejoined us: {username}. Member ID: {member.id}."
+            )
 
             embed = discord.Embed(
-                title='A former Comrade has rejoined us!',
-                description=f'{member.mention} has returned to the Daily Mandarin Thread.',
-                color=0xff0000,
+                title="A former Comrade has rejoined us!",
+                description=f"{member.mention} has returned to the Daily Mandarin Thread.",
+                color=0xFF0000,
             )
 
             embed.set_author(
@@ -31,9 +33,9 @@ class WelcomeCog(ChairmanMaoCog):
             await constants.commentators_channel.send(embed=embed)
 
             embed = discord.Embed(
-                title='Comrade has been jailed!',
-                description=f'{member.mention} has been jailed.',
-                color=0xff0000,
+                title="Comrade has been jailed!",
+                description=f"{member.mention} has been jailed.",
+                color=0xFF0000,
             )
 
             embed.set_author(
@@ -42,7 +44,7 @@ class WelcomeCog(ChairmanMaoCog):
             )
 
             embed.add_field(
-                name='Reason',
+                name="Reason",
                 value="Defecting from the Daily Mandarin Thread.",
             )
             await constants.apologies_channel.send(embed=embed)
@@ -50,17 +52,21 @@ class WelcomeCog(ChairmanMaoCog):
         else:
             await self.chairmanmao.api.register(member.id, username)
 
-            self.chairmanmao.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
+            self.chairmanmao.logger.info(
+                f"A new Comrade has joined us: {username}. Member ID: {member.id}."
+            )
 
             try:
                 await self.welcome(member)
             except:
-                self.chairmanmao.logger.info(f"Could not send welcome message to {username}. Member ID: {member.id}.")
+                self.chairmanmao.logger.info(
+                    f"Could not send welcome message to {username}. Member ID: {member.id}."
+                )
 
             embed = discord.Embed(
-                title='A new Comrade has joined us!',
-                description=f'{member.mention} has joined the Daily Mandarin Thread.',
-                color=0xff0000,
+                title="A new Comrade has joined us!",
+                description=f"{member.mention} has joined the Daily Mandarin Thread.",
+                color=0xFF0000,
             )
 
             embed.set_author(
@@ -79,9 +85,9 @@ class WelcomeCog(ChairmanMaoCog):
         await self.chairmanmao.api.jail(member.id)
 
         embed = discord.Embed(
-            title='A Comrade has defected!',
-            description=f'{member.mention} has defected from the Daily Mandarin Thread.',
-            color=0xff0000,
+            title="A Comrade has defected!",
+            description=f"{member.mention} has defected from the Daily Mandarin Thread.",
+            color=0xFF0000,
         )
 
         embed.set_author(
@@ -93,50 +99,50 @@ class WelcomeCog(ChairmanMaoCog):
 
     async def welcome(self, member) -> None:
         welcome_lines = [
-            'Welcome to the Daily Mandarin Thread',
-            'https://dailymandarinthread.info',
-            '',
-            'Our general chat channel is called #🐉网络评论员.',
-            '',
+            "Welcome to the Daily Mandarin Thread",
+            "https://dailymandarinthread.info",
+            "",
+            "Our general chat channel is called #🐉网络评论员.",
+            "",
             "The numbers in our members' usernames are their social credit score. Be a good citizen, "
             "and you will see your social credit increase.",
-            '',
-            'You may use the `!learner` command to give yourself the @中文学习者 (Chinese learner) role. '
-            'This will give you access to our learning resources and to take exams.',
-            '',
-            'For more information about the various channels: https://dailymandarinthread.info/discord/channels/',
-            '',
-            'For more information about the various roles: https://dailymandarinthread.info/discord/roles/',
-            '',
-            'Some good commands to know about:',
-            '```',
-            '    !name',
-            '        Change your nickname.',
-            '',
-            '    !draw 猫',
-            '        Draws a character.',
-            '',
-            '    !learner',
-            '        Grants yourself the @中文学习者 role.',
-            '',
-            '    !exam',
-            '        Test your Chinese abilities. @中文学习者 only.',
-            '',
-            '    !leaderboard',
-            '        Shows the social credit leaderboard.',
-            '```',
+            "",
+            "You may use the `!learner` command to give yourself the @中文学习者 (Chinese learner) role. "
+            "This will give you access to our learning resources and to take exams.",
+            "",
+            "For more information about the various channels: https://dailymandarinthread.info/discord/channels/",
+            "",
+            "For more information about the various roles: https://dailymandarinthread.info/discord/roles/",
+            "",
+            "Some good commands to know about:",
+            "```",
+            "    !name",
+            "        Change your nickname.",
+            "",
+            "    !draw 猫",
+            "        Draws a character.",
+            "",
+            "    !learner",
+            "        Grants yourself the @中文学习者 role.",
+            "",
+            "    !exam",
+            "        Test your Chinese abilities. @中文学习者 only.",
+            "",
+            "    !leaderboard",
+            "        Shows the social credit leaderboard.",
+            "```",
         ]
-        welcome_message = '\n'.join(welcome_lines)
+        welcome_message = "\n".join(welcome_lines)
 
         channel = await member.create_dm()
         await channel.send(welcome_message)
 
-    @commands.command(name='welcomeme')
+    @commands.command(name="welcomeme")
     async def cmd_welcomeme(self, ctx):
         await self.welcome(ctx.author)
 
     @commands.is_owner()
-    @commands.command(name='register')
+    @commands.command(name="register")
     async def cmd_register(self, ctx, member: commands.MemberConverter):
         assert not await self.chairmanmao.api.is_registered(member.id)
         username = self.chairmanmao.member_to_username(member)

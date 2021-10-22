@@ -16,7 +16,7 @@ from chairmanmao.types import Exam, Question
 class ExamCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('ExamCog')
+        self.chairmanmao.logger.info("ExamCog")
         self.loop.start()
         self.active_exam: t.Optional[ActiveExam] = None
 
@@ -24,8 +24,14 @@ class ExamCog(ChairmanMaoCog):
     async def on_message(self, message):
         if self.active_exam:
             active_exam = self.active_exam
-            if message.channel.id == active_exam.channel.id and message.author.id == active_exam.member.id:
-                if not message.content.startswith('!') and active_exam.ready_for_next_answer():
+            if (
+                message.channel.id == active_exam.channel.id
+                and message.author.id == active_exam.member.id
+            ):
+                if (
+                    not message.content.startswith("!")
+                    and active_exam.ready_for_next_answer()
+                ):
                     await self.send_answer(active_exam, message)
 
     @tasks.loop(seconds=1)
@@ -43,40 +49,44 @@ class ExamCog(ChairmanMaoCog):
         if ctx.invoked_subcommand is None:
             exam_name = await self.next_exam_for(ctx.author)
             if exam_name is None:
-                await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
+                await ctx.send("Available exams: " + " ".join(self.exam_names()))
                 return
 
             if exam_name is not None:
                 lines = [
-                    f'The next exam you are scheduled to take is {exam_name}.',
+                    f"The next exam you are scheduled to take is {exam_name}.",
                 ]
 
                 if ctx.channel.id == constants.exam_channel.id:
-                    lines.append(f'To take the exam, use `!exam start`')
+                    lines.append(f"To take the exam, use `!exam start`")
                 else:
-                    lines.append(f'To take the exam, go to {constants.exam_channel.mention} and use `!exam start`')
+                    lines.append(
+                        f"To take the exam, go to {constants.exam_channel.mention} and use `!exam start`"
+                    )
 
-                await ctx.send('\n'.join(lines))
+                await ctx.send("\n".join(lines))
 
             else:
-                await ctx.send(f'There are currently no exams ready for you.')
+                await ctx.send(f"There are currently no exams ready for you.")
 
-    @exam.command(name='list')
+    @exam.command(name="list")
     async def cmd_exam_list(self, ctx):
-#        exam_names = await self.chairmanmao().api.get_exam_names()
-        await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
+        #        exam_names = await self.chairmanmao().api.get_exam_names()
+        await ctx.send("Available exams: " + " ".join(self.exam_names()))
 
-    @exam.command(name='start')
+    @exam.command(name="start")
     async def cmd_exam_start(self, ctx, _exam_name: t.Optional[str] = None):
         if _exam_name is not None:
-            description = '\n'.join([
-                'You may run an exam with `!exam start`',
-                'There is no need to specify the exam name.',
-            ])
+            description = "\n".join(
+                [
+                    "You may run an exam with `!exam start`",
+                    "There is no need to specify the exam name.",
+                ]
+            )
             embed = discord.Embed(
                 title="Note",
                 description=description,
-                color=0xff0000,
+                color=0xFF0000,
             )
             await ctx.channel.send(embed=embed)
 
@@ -87,73 +97,86 @@ class ExamCog(ChairmanMaoCog):
             exam = None
 
         if exam is None:
-            await ctx.send('There is currently no exam for you.')
+            await ctx.send("There is currently no exam for you.")
             return
 
         constants = self.chairmanmao.constants()
         if ctx.channel.id != constants.exam_channel.id:
-            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
+            await ctx.send(
+                f"This command must be run in {constants.exam_channel.mention}"
+            )
             return
 
         if self.active_exam is not None:
-            await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
+            await ctx.send(
+                f"{self.active_exam.member.mention} is currently taking an exam"
+            )
             return
 
         active_exam = self.create_active_exam(ctx.author, ctx.channel, exam)
         self.active_exam = active_exam
         await self.run_exam(active_exam)
 
-    @exam.command(name='practice')
+    @exam.command(name="practice")
     async def cmd_exam_practice(self, ctx, exam_name: t.Optional[str] = None):
         if exam_name is None:
             exam_name = await self.next_exam_for(ctx.author)
             if exam_name is None:
-                await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
+                await ctx.send("Available exams: " + " ".join(self.exam_names()))
                 return
 
         exam: t.Optional[Exam] = EXAMS.get(exam_name)
 
         if exam is None:
-            await ctx.send('Available exams: ' + ' '.join(self.exam_names()))
+            await ctx.send("Available exams: " + " ".join(self.exam_names()))
             return
 
         constants = self.chairmanmao.constants()
         if ctx.channel.id != constants.exam_channel.id:
-            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
+            await ctx.send(
+                f"This command must be run in {constants.exam_channel.mention}"
+            )
             return
 
         if self.active_exam is not None:
-            await ctx.send(f'{self.active_exam.member.mention} is currently taking an exam')
+            await ctx.send(
+                f"{self.active_exam.member.mention} is currently taking an exam"
+            )
             return
 
-        active_exam = self.create_active_exam(ctx.author, ctx.channel, exam, practice=True)
+        active_exam = self.create_active_exam(
+            ctx.author, ctx.channel, exam, practice=True
+        )
         self.active_exam = active_exam
         await self.run_exam(active_exam)
 
-    @exam.command(name='quit')
+    @exam.command(name="quit")
     async def cmd_exam_quit(self, ctx):
         constants = self.chairmanmao.constants()
         if ctx.channel.id != constants.exam_channel.id:
-            await ctx.send(f'This command must be run in {constants.exam_channel.mention}')
+            await ctx.send(
+                f"This command must be run in {constants.exam_channel.mention}"
+            )
             return
 
         if self.active_exam is None:
-#            await ctx.send(f'There is no exam in progress.')
+            #            await ctx.send(f'There is no exam in progress.')
             return
 
         if self.active_exam.member.id != ctx.author.id:
-#            await ctx.send(f"The exam in progress isn't yours")
+            #            await ctx.send(f"The exam in progress isn't yours")
             return
 
         self.active_exam.give_up()
-#        await ctx.message.add_reaction(constants.dekinai_emoji)
+
+    #        await ctx.message.add_reaction(constants.dekinai_emoji)
 
     async def next_exam_for(self, member: discord.Member) -> t.Optional[str]:
         current_hsk = await self.chairmanmao.api.get_hsk(member.id)
         if current_hsk is None:
-            return 'hsk1'
+            return "hsk1"
         else:
-            exam_name = f'hsk{current_hsk+1}'
+            exam_name = f"hsk{current_hsk+1}"
             if exam_name in EXAMS:
                 return exam_name
             else:
@@ -162,7 +185,13 @@ class ExamCog(ChairmanMaoCog):
     def exam_names(self) -> t.List[str]:
         return sorted(EXAMS.keys())
 
-    def create_active_exam(self, member: discord.Member, channel: discord.TextChannel, exam: Exam, practice: bool = False) -> ActiveExam:
+    def create_active_exam(
+        self,
+        member: discord.Member,
+        channel: discord.TextChannel,
+        exam: Exam,
+        practice: bool = False,
+    ) -> ActiveExam:
         return ActiveExam.make(
             member=member,
             channel=channel,
@@ -194,23 +223,25 @@ class ExamCog(ChairmanMaoCog):
         question = active_exam.current_question()
 
         if isinstance(answer, Correct):
-            emoji = '✅'
-            color = 0x00ff00
-            correct_answer = f'{question.valid_answers[0]}'
+            emoji = "✅"
+            color = 0x00FF00
+            correct_answer = f"{question.valid_answers[0]}"
         elif isinstance(answer, Incorrect):
-            emoji = '❌'
-            color = 0xff0000
-            correct_answer = f'{answer} → {question.valid_answers[0]}'
+            emoji = "❌"
+            color = 0xFF0000
+            correct_answer = f"{answer} → {question.valid_answers[0]}"
         elif isinstance(answer, Timeout):
-            emoji = '⏲️'
-            color = 0xd0deec
-            correct_answer = f'{question.valid_answers[0]}'
-        else: # isinstance(answer, Quit):
+            emoji = "⏲️"
+            color = 0xD0DEEC
+            correct_answer = f"{question.valid_answers[0]}"
+        else:  # isinstance(answer, Quit):
             emoji = constants.dekinai_emoji
-            color = 0xffdbac
-            correct_answer = f'{question.valid_answers[0]}'
+            color = 0xFFDBAC
+            correct_answer = f"{question.valid_answers[0]}"
 
-        description = f'{emoji}　{question.question}　　{correct_answer}　　*{question.meaning}*'
+        description = (
+            f"{emoji}　{question.question}　　{correct_answer}　　*{question.meaning}*"
+        )
 
         embed = discord.Embed(
             description=description,
@@ -224,12 +255,12 @@ class ExamCog(ChairmanMaoCog):
     async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
         exam = active_exam.exam
 
-#        description = f'{exam.name}'
+        #        description = f'{exam.name}'
 
         embed = discord.Embed(
-#            title='ActiveExam',
-#            description=description,
-            color=0xffa500,
+            #            title='ActiveExam',
+            #            description=description,
+            color=0xFFA500,
         )
 
         embed.set_author(
@@ -237,42 +268,45 @@ class ExamCog(ChairmanMaoCog):
             icon_url=active_exam.member.avatar_url,
         )
         embed.add_field(
-            name='Deck',
+            name="Deck",
             value=exam.name,
             inline=True,
         )
 
         embed.add_field(
-            name='Questions',
-            value=f'{exam.num_questions}',
+            name="Questions",
+            value=f"{exam.num_questions}",
             inline=True,
         )
 
         embed.add_field(
-            name='Time Limit',
-            value=f'{active_exam.timelimit} seconds',
+            name="Time Limit",
+            value=f"{active_exam.timelimit} seconds",
             inline=False,
         )
         if active_exam.max_wrong is not None:
             embed.add_field(
-                name='Mistakes Allowed',
-                value=f'{active_exam.max_wrong}',
+                name="Mistakes Allowed",
+                value=f"{active_exam.max_wrong}",
                 inline=True,
             )
 
         await active_exam.channel.send(embed=embed)
 
-    async def send_answer(self, active_exam: ActiveExam, message: discord.Message) -> None:
+    async def send_answer(
+        self, active_exam: ActiveExam, message: discord.Message
+    ) -> None:
         correct = active_exam.answer(message.content.strip())  # noqa
-#        if correct:
-#            await message.add_reaction('✅')
-#        else:
-#            await message.add_reaction('❌')
+
+    #        if correct:
+    #            await message.add_reaction('✅')
+    #        else:
+    #            await message.add_reaction('❌')
 
     async def send_next_question(self, active_exam: ActiveExam) -> None:
         question = active_exam.load_next_question()
 
-        font = 'kuaile'
+        font = "kuaile"
         size = 64
         color = (255, 0, 0)
         image_buffer = self.chairmanmao.draw_manager.draw(
@@ -281,70 +315,90 @@ class ExamCog(ChairmanMaoCog):
             size=size,
             color=color,
         )
-        filename = 'hanzi_' + '_'.join('u' + hex(ord(char))[2:] for char in question.question) + '.png'
+        filename = (
+            "hanzi_"
+            + "_".join("u" + hex(ord(char))[2:] for char in question.question)
+            + ".png"
+        )
         file = discord.File(fp=image_buffer, filename=filename)
         await active_exam.channel.send(file=file)
-        self.chairmanmao.logger.info(f'{question.question}　　{question.valid_answers[0]}')
+        self.chairmanmao.logger.info(
+            f"{question.question}　　{question.valid_answers[0]}"
+        )
 
     async def show_results(self, active_exam: ActiveExam) -> None:
         lines = []
 
         # if is not practice
         if not active_exam.fail_on_timeout:
-            questions_answered = active_exam.questions[:len(active_exam.answers_given)]
-            longest_answer = max(len(question.question) for question in questions_answered)
+            questions_answered = active_exam.questions[: len(active_exam.answers_given)]
+            longest_answer = max(
+                len(question.question) for question in questions_answered
+            )
 
             for question, answer in active_exam.grade():
                 correct = isinstance(answer, Correct)
-                emoji = '✅' if correct else '❌'
+                emoji = "✅" if correct else "❌"
                 correct_answer = question.valid_answers[0]
-                question_str = (question.question).ljust(longest_answer + 2, '　')
-                answer_str = answer if correct else f'{answer} → {correct_answer}'
-                lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
+                question_str = (question.question).ljust(longest_answer + 2, "　")
+                answer_str = answer if correct else f"{answer} → {correct_answer}"
+                lines.append(
+                    f"{emoji}　{question_str} {answer_str}　*{question.meaning}*"
+                )
 
             if active_exam.passed():
-                title = 'ActiveExam Passed: ' + active_exam.exam.name
-                color = 0x00ff00
+                title = "ActiveExam Passed: " + active_exam.exam.name
+                color = 0x00FF00
             else:
-                title = 'ActiveExam Failed: ' + active_exam.exam.name
-                color = 0xff0000
+                title = "ActiveExam Failed: " + active_exam.exam.name
+                color = 0xFF0000
 
             embed = discord.Embed(
                 title=title,
-                description='\n'.join(lines),
+                description="\n".join(lines),
                 color=color,
             )
             embed.set_author(
                 name=active_exam.member.display_name,
                 icon_url=active_exam.member.avatar_url,
             )
-            if active_exam.passed() and active_exam.max_wrong is not None and active_exam.max_wrong > 0:
+            if (
+                active_exam.passed()
+                and active_exam.max_wrong is not None
+                and active_exam.max_wrong > 0
+            ):
                 score = active_exam.score() * 100
-                embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
+                embed.add_field(name="Score", value=f"{score:2.1f}%", inline=True)
 
         # if is practice
         else:
-            questions_answered = active_exam.questions[:len(active_exam.answers_given)]
-            longest_answer = max(len(question.question) for question in questions_answered)
+            questions_answered = active_exam.questions[: len(active_exam.answers_given)]
+            longest_answer = max(
+                len(question.question) for question in questions_answered
+            )
 
-            title = 'ActiveExam Practice: ' + active_exam.exam.name
-            color = 0x00ff00
+            title = "ActiveExam Practice: " + active_exam.exam.name
+            color = 0x00FF00
 
-            sampled_corrections = [(q, a) for (q, a) in active_exam.grade() if isinstance(a, Incorrect)]
+            sampled_corrections = [
+                (q, a) for (q, a) in active_exam.grade() if isinstance(a, Incorrect)
+            ]
             while len(sampled_corrections) > 5:
                 sampled_corrections.pop(random.randrange(len(sampled_corrections)))
 
             for question, answer in sampled_corrections:
                 correct = isinstance(answer, Correct)
-                emoji = '✅' if correct else '❌'
+                emoji = "✅" if correct else "❌"
                 correct_answer = question.valid_answers[0]
-                question_str = (question.question).ljust(longest_answer + 2, '　')
-                answer_str = answer if correct else f'{answer} → {correct_answer}'
-                lines.append(f'{emoji}　{question_str} {answer_str}　*{question.meaning}*')
+                question_str = (question.question).ljust(longest_answer + 2, "　")
+                answer_str = answer if correct else f"{answer} → {correct_answer}"
+                lines.append(
+                    f"{emoji}　{question_str} {answer_str}　*{question.meaning}*"
+                )
 
             embed = discord.Embed(
                 title=title,
-                description='\n'.join(lines),
+                description="\n".join(lines),
                 color=color,
             )
             embed.set_author(
@@ -352,7 +406,7 @@ class ExamCog(ChairmanMaoCog):
                 icon_url=active_exam.member.avatar_url,
             )
             score = active_exam.score() * 100
-            embed.add_field(name='Score', value=f'{score:2.1f}%', inline=True)
+            embed.add_field(name="Score", value=f"{score:2.1f}%", inline=True)
 
         await active_exam.channel.send(embed=embed)
 
@@ -360,7 +414,9 @@ class ExamCog(ChairmanMaoCog):
         for question, answer in active_exam.grade():
 
             if isinstance(answer, Correct):
-                await self.chairmanmao.api.mine(active_exam.member.id, question.question)
+                await self.chairmanmao.api.mine(
+                    active_exam.member.id, question.question
+                )
 
     async def reward(self, active_exam: ActiveExam) -> None:
         if active_exam.practice:
@@ -374,25 +430,33 @@ class ExamCog(ChairmanMaoCog):
             username = self.chairmanmao.member_to_username(active_exam.member)
 
             await self.chairmanmao.api.set_learner(active_exam.member.id, True)
-            await self.chairmanmao.api.set_hsk(active_exam.member.id, active_exam.exam.hsk_level)
+            await self.chairmanmao.api.set_hsk(
+                active_exam.member.id, active_exam.exam.hsk_level
+            )
             self.chairmanmao.queue_member_update(active_exam.member.id)
-            self.chairmanmao.logger.info(f'User {username} passed HSK {active_exam.exam.hsk_level}.')
+            self.chairmanmao.logger.info(
+                f"User {username} passed HSK {active_exam.exam.hsk_level}."
+            )
             constants = self.chairmanmao.constants()
-            await constants.commentators_channel.send(f'{username} passed the HSK {active_exam.exam.hsk_level} exam.')
+            await constants.commentators_channel.send(
+                f"{username} passed the HSK {active_exam.exam.hsk_level} exam."
+            )
 
 
 def make_hsk1_exam() -> Exam:
     deck = []
 
-    with open('data/decks/hsk1.csv') as infile:
-        fieldnames = ['question', 'answers', 'meaning', 'unused']
+    with open("data/decks/hsk1.csv") as infile:
+        fieldnames = ["question", "answers", "meaning", "unused"]
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(
+                Question(word["question"], word["answers"].split(","), word["meaning"])
+            )
 
     return Exam(
-        name='HSK 1',
+        name="HSK 1",
         deck=deck,
         num_questions=10,
         max_wrong=2,
@@ -404,15 +468,17 @@ def make_hsk1_exam() -> Exam:
 def make_hsk2_exam() -> Exam:
     deck = []
 
-    with open('data/decks/hsk2.csv') as infile:
-        fieldnames = ['question', 'answers', 'meaning', 'unused']
+    with open("data/decks/hsk2.csv") as infile:
+        fieldnames = ["question", "answers", "meaning", "unused"]
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(
+                Question(word["question"], word["answers"].split(","), word["meaning"])
+            )
 
     return Exam(
-        name='HSK 2',
+        name="HSK 2",
         deck=deck,
         num_questions=15,
         max_wrong=2,
@@ -424,15 +490,17 @@ def make_hsk2_exam() -> Exam:
 def make_hsk3_exam() -> Exam:
     deck = []
 
-    with open('data/decks/hsk3.csv') as infile:
-        fieldnames = ['question', 'answers', 'meaning', 'unused']
+    with open("data/decks/hsk3.csv") as infile:
+        fieldnames = ["question", "answers", "meaning", "unused"]
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(
+                Question(word["question"], word["answers"].split(","), word["meaning"])
+            )
 
     return Exam(
-        name='HSK 3',
+        name="HSK 3",
         deck=deck,
         num_questions=20,
         max_wrong=2,
@@ -444,15 +512,17 @@ def make_hsk3_exam() -> Exam:
 def make_hsk4_exam() -> Exam:
     deck = []
 
-    with open('data/decks/hsk4.csv') as infile:
-        fieldnames = ['question', 'answers', 'meaning', 'unused']
+    with open("data/decks/hsk4.csv") as infile:
+        fieldnames = ["question", "answers", "meaning", "unused"]
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(
+                Question(word["question"], word["answers"].split(","), word["meaning"])
+            )
 
     return Exam(
-        name='HSK 4',
+        name="HSK 4",
         deck=deck,
         num_questions=20,
         max_wrong=2,
@@ -464,15 +534,17 @@ def make_hsk4_exam() -> Exam:
 def make_hsk5_exam() -> Exam:
     deck = []
 
-    with open('data/decks/hsk5.csv') as infile:
-        fieldnames = ['question', 'answers', 'meaning', 'unused']
+    with open("data/decks/hsk5.csv") as infile:
+        fieldnames = ["question", "answers", "meaning", "unused"]
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(
+                Question(word["question"], word["answers"].split(","), word["meaning"])
+            )
 
     return Exam(
-        name='HSK 5',
+        name="HSK 5",
         deck=deck,
         num_questions=20,
         max_wrong=2,
@@ -484,15 +556,17 @@ def make_hsk5_exam() -> Exam:
 def make_hsk6_exam() -> Exam:
     deck = []
 
-    with open('data/decks/hsk6.csv') as infile:
-        fieldnames = ['question', 'answers', 'meaning', 'unused']
+    with open("data/decks/hsk6.csv") as infile:
+        fieldnames = ["question", "answers", "meaning", "unused"]
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            deck.append(Question(word['question'], word['answers'].split(','), word['meaning']))
+            deck.append(
+                Question(word["question"], word["answers"].split(","), word["meaning"])
+            )
 
     return Exam(
-        name='HSK 6',
+        name="HSK 6",
         deck=deck,
         num_questions=20,
         max_wrong=2,
@@ -500,13 +574,14 @@ def make_hsk6_exam() -> Exam:
         hsk_level=6,
     )
 
+
 EXAMS: t.Dict[str, Exam] = {
-    'hsk1': make_hsk1_exam(),
-    'hsk2': make_hsk2_exam(),
-    'hsk3': make_hsk3_exam(),
-    'hsk4': make_hsk4_exam(),
-    'hsk5': make_hsk5_exam(),
-    'hsk6': make_hsk6_exam(),
+    "hsk1": make_hsk1_exam(),
+    "hsk2": make_hsk2_exam(),
+    "hsk3": make_hsk3_exam(),
+    "hsk4": make_hsk4_exam(),
+    "hsk5": make_hsk5_exam(),
+    "hsk6": make_hsk6_exam(),
 }
 
 
@@ -530,12 +605,14 @@ class ActiveExam:
     answers_given: t.List[Answer]
 
     @staticmethod
-    def make(member: discord.Member, channel: discord.TextChannel, exam: Exam, practice: bool) -> ActiveExam:
+    def make(
+        member: discord.Member, channel: discord.TextChannel, exam: Exam, practice: bool
+    ) -> ActiveExam:
         questions = list(exam.deck)
         random.shuffle(questions)
 
         if not practice:
-            questions = questions[:exam.num_questions]
+            questions = questions[: exam.num_questions]
 
         now = datetime.now(timezone.utc).replace(microsecond=0)
 
@@ -544,14 +621,12 @@ class ActiveExam:
             channel=channel,
             exam=exam,
             questions=questions,
-
             max_wrong=exam.max_wrong if not practice else None,
             timelimit=exam.timelimit if not practice else 30,
             fail_on_timeout=practice,
             practice=practice,
-
             exam_start=now,
-            current_question_index=-1, # -1 because we need to call load_next_question() as least once.
+            current_question_index=-1,  # -1 because we need to call load_next_question() as least once.
             current_question_start=now,
             answers_given=[],
         )
@@ -585,8 +660,12 @@ class ActiveExam:
         return any(isinstance(a, Quit) for a in self.answers_given)
 
     def passed(self) -> bool:
-        assert self.finished(), 'Exam is not finished'
-        return not self.gave_up() and self.max_wrong is not None and self.number_wrong() <= self.max_wrong
+        assert self.finished(), "Exam is not finished"
+        return (
+            not self.gave_up()
+            and self.max_wrong is not None
+            and self.number_wrong() <= self.max_wrong
+        )
 
     def number_timeouts(self) -> int:
         number_timeout = 0
@@ -607,10 +686,10 @@ class ActiveExam:
 
     def finished(self) -> bool:
         return (
-            self.gave_up() or
-            self._finished_too_many_wrong() or
-            self._finished_all_questions_answered() or
-            self._finished_timeout()
+            self.gave_up()
+            or self._finished_too_many_wrong()
+            or self._finished_all_questions_answered()
+            or self._finished_timeout()
         )
 
     def number_wrong(self) -> int:
@@ -650,7 +729,7 @@ class ActiveExam:
 
     def answer(self, answer: str) -> bool:
         current_question = self.current_question()
-        assert current_question, 'No question was asked'
+        assert current_question, "No question was asked"
 
         correct = answer.lower() in current_question.valid_answers
 
@@ -671,13 +750,13 @@ class ActiveExam:
 @dataclass
 class Timeout:
     def __str__(self) -> str:
-        return '*timed out*'
+        return "*timed out*"
 
 
 @dataclass
 class Quit:
     def __str__(self) -> str:
-        return '*gave up*'
+        return "*gave up*"
 
 
 @dataclass

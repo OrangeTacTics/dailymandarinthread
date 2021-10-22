@@ -8,7 +8,9 @@ from chairmanmao.store import DocumentStore
 import chairmanmao.store.types as types
 
 
-async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[schema.Profile]:
+async def load_profiles(
+    store: DocumentStore, user_ids: t.List[str]
+) -> t.List[schema.Profile]:
     results = []
     for user_id in user_ids:
         try:
@@ -20,7 +22,9 @@ async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[s
     return results
 
 
-async def load_profiles_by_discord_usernames(store: DocumentStore, discord_usernames: t.List[str]) -> t.List[schema.Profile]:
+async def load_profiles_by_discord_usernames(
+    store: DocumentStore, discord_usernames: t.List[str]
+) -> t.List[schema.Profile]:
     results = []
     for discord_username in discord_usernames:
         try:
@@ -32,7 +36,9 @@ async def load_profiles_by_discord_usernames(store: DocumentStore, discord_usern
     return results
 
 
-async def load_exams(store: DocumentStore, exam_names: t.List[str]) -> t.List[schema.Exam]:
+async def load_exams(
+    store: DocumentStore, exam_names: t.List[str]
+) -> t.List[schema.Exam]:
     results = []
     for exam_name in exam_names:
         exam = store.load_exam(exam_name)
@@ -52,7 +58,7 @@ def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
             roles.append(schema_role)
 
     hsk = calc_hsk_level(profile)
-    hsk_role = types.Role.__members__.get(f'Hsk{hsk}')
+    hsk_role = types.Role.__members__.get(f"Hsk{hsk}")
     if hsk_role is not None:
         roles.append(hsk_role)  # type: ignore
 
@@ -110,7 +116,6 @@ def store_exam_to_graphql_exam(exam: types.Exam) -> schema.Exam:
                 valid_answers=card.valid_answers,
                 question=card.question,
             )
-            for card
-            in exam.deck
+            for card in exam.deck
         ],
     )

@@ -31,7 +31,8 @@ from chairmanmao.cogs.welcome import WelcomeCog
 from chairmanmao.cogs.exam import ExamCog
 from chairmanmao.cogs.moderation import ModerationCog
 from chairmanmao.cogs.tiananmen import TiananmenCog
-#from chairmanmao.cogs.invites import InvitesCog
+
+# from chairmanmao.cogs.invites import InvitesCog
 
 
 ################################################################################
@@ -43,7 +44,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 stream = logging.StreamHandler()
-streamformat = logging.Formatter("%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+streamformat = logging.Formatter(
+    "%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+)
 stream.setFormatter(streamformat)
 logger.addHandler(stream)
 
@@ -52,8 +55,8 @@ class ChairmanMao:
     def __init__(self) -> None:
         self.logger = logger
 
-        GRAPHQL_ENDPOINT = os.getenv('GRAPHQL_ENDPOINT', '')
-        GRAPHQL_TOKEN = os.getenv('GRAPHQL_TOKEN', '')
+        GRAPHQL_ENDPOINT = os.getenv("GRAPHQL_ENDPOINT", "")
+        GRAPHQL_TOKEN = os.getenv("GRAPHQL_TOKEN", "")
 
         self.api = Api(GRAPHQL_ENDPOINT, GRAPHQL_TOKEN)
 
@@ -66,7 +69,7 @@ class ChairmanMao:
         self.fourchan_manager = FourChanManager(file_manager)
 
     async def chairmanmao_user_id(self) -> int:
-        return await self.api.get_user_id(os.environ['BOT_USERNAME'])
+        return await self.api.get_user_id(os.environ["BOT_USERNAME"])
 
     def load_constants(self, guild: discord.Guild) -> None:
         assert self.constants_cache is None
@@ -78,7 +81,7 @@ class ChairmanMao:
 
     @staticmethod
     def member_to_username(member) -> str:
-        return member.name + '#' + member.discriminator
+        return member.name + "#" + member.discriminator
 
     def queue_member_update(self, user_id: UserId) -> None:
         self.member_update_queue.add(user_id)
@@ -91,7 +94,7 @@ class ChairmanMao:
     def run(self):
         intents = discord.Intents.default()
         intents.members = True
-        prefixes = ['$', '!']
+        prefixes = ["$", "!"]
         client = commands.Bot(command_prefix=prefixes, intents=intents)
 
         client.add_cog(SyncCog(client, self))
@@ -109,7 +112,7 @@ class ChairmanMao:
         client.add_cog(ExamCog(client, self))
         client.add_cog(ModerationCog(client, self))
         client.add_cog(TiananmenCog(client, self))
-        #client.add_cog(InvitesCog(client, self))
+        # client.add_cog(InvitesCog(client, self))
 
-        DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+        DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
         client.run(DISCORD_TOKEN)

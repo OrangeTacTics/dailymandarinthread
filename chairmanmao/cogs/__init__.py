@@ -11,7 +11,7 @@ class ChairmanMaoCog(commands.Cog):
     async def cog_before_invoke(self, ctx: commands.Context):
         author = self.chairmanmao.member_to_username(ctx.author)
         command_name = ctx.command.name
-        self.logger.info(f'{author}: {command_name}()')
+        self.logger.info(f"{author}: {command_name}()")
 
     def init(self) -> None:
         pass

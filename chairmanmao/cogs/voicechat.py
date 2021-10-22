@@ -7,7 +7,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class VoiceChatCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('VoiceChatCog')
+        self.chairmanmao.logger.info("VoiceChatCog")
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):

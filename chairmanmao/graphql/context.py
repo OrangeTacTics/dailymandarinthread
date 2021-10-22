@@ -38,8 +38,8 @@ class Context:
             return False
 
         return (
-            self.discord_username == os.environ['ADMIN_USERNAME'] or
-            self.discord_username == os.environ['BOT_USERNAME']
+            self.discord_username == os.environ["ADMIN_USERNAME"]
+            or self.discord_username == os.environ["BOT_USERNAME"]
         )
 
 
@@ -49,21 +49,27 @@ class ChairmanMaoGraphQL(GraphQL):
         request: t.Union[Request, WebSocket],
         response: t.Optional[Response] = None,
     ) -> t.Any:
-        MONGODB_URL = os.getenv('MONGODB_URL', '')
-        MONGODB_DB = os.getenv('MONGODB_DB', '')
+        MONGODB_URL = os.getenv("MONGODB_URL", "")
+        MONGODB_DB = os.getenv("MONGODB_DB", "")
 
         store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
 
         if request.state.token is not None:
-            discord_username = request.state.token['username']
+            discord_username = request.state.token["username"]
         else:
             discord_username = None
 
         return Context(
             dataloaders=Dataloaders(
                 profile=DataLoader(load_fn=lambda ids: dl.load_profiles(store, ids)),
-                profile_by_discord_username=DataLoader(load_fn=lambda duns: dl.load_profiles_by_discord_usernames(store, duns)),
-                exam=DataLoader(load_fn=lambda exam_names: dl.load_exams(store, exam_names)),
+                profile_by_discord_username=DataLoader(
+                    load_fn=lambda duns: dl.load_profiles_by_discord_usernames(
+                        store, duns
+                    )
+                ),
+                exam=DataLoader(
+                    load_fn=lambda exam_names: dl.load_exams(store, exam_names)
+                ),
             ),
             discord_username=discord_username,
             store=store,

@@ -25,7 +25,7 @@ class Profile:
 
     @staticmethod
     def make(user_id: UserId, discord_username: str) -> Profile:
-        assert discord_username[-5] == '#'
+        assert discord_username[-5] == "#"
         display_name = discord_username[:-5]
         now = datetime.now(timezone.utc).replace(microsecond=0)
 
@@ -60,7 +60,7 @@ class Role(Enum):
         for role in Role:
             if role.value == role_name:
                 return role
-        raise ValueError(f'{role_name} is not a valid Role.')
+        raise ValueError(f"{role_name} is not a valid Role.")
 
     def __lt__(self, other: object) -> bool:
         assert isinstance(other, Role)

@@ -15,12 +15,12 @@ import os
 
 load_dotenv()
 
-MONGODB_URL = os.getenv('MONGODB_URL')
-MONGODB_DB = os.getenv('MONGODB_DB')
-CLIENT_ID = os.getenv('DISCORD_CLIENT_ID')
-CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
-JWT_KEY = t.cast(str, os.getenv('JWT_KEY'))
-SERVER_HOSTNAME = os.getenv('SERVER_HOSTNAME', '')
+MONGODB_URL = os.getenv("MONGODB_URL")
+MONGODB_DB = os.getenv("MONGODB_DB")
+CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
+CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
+JWT_KEY = t.cast(str, os.getenv("JWT_KEY"))
+SERVER_HOSTNAME = os.getenv("SERVER_HOSTNAME", "")
 
 
 client = pymongo.MongoClient(MONGODB_URL)
@@ -36,17 +36,18 @@ app.add_route("/graphql", graphql_app)
 app.add_websocket_route("/graphql", graphql_app)
 
 
-
 @app.middleware("http")
 async def add_graphql_context(request: Request, call_next):
-    if 'Authorization' in request.headers:
-        auth_header = request.headers['Authorization']
-        assert auth_header.startswith('BEARER ')
-        token = auth_header[len('BEARER '):]
+    if "Authorization" in request.headers:
+        auth_header = request.headers["Authorization"]
+        assert auth_header.startswith("BEARER ")
+        token = auth_header[len("BEARER ") :]
         request.state.token = jwt.decode(token, JWT_KEY, algorithms=["HS256"])
 
-    elif 'token' in request.cookies:
-        request.state.token = jwt.decode(request.cookies['token'], JWT_KEY, algorithms=["HS256"])
+    elif "token" in request.cookies:
+        request.state.token = jwt.decode(
+            request.cookies["token"], JWT_KEY, algorithms=["HS256"]
+        )
     else:
         request.state.token = None
 
@@ -54,41 +55,49 @@ async def add_graphql_context(request: Request, call_next):
     return response
 
 
-async def query_graphql(query: str, auth_token: t.Optional[str] = None, params: t.Dict = {}) -> t.Any:
+async def query_graphql(
+    query: str,
+    auth_token: t.Optional[str] = None,
+    params: t.Dict = {},
+) -> t.Any:
     async with httpx.AsyncClient() as client:
         headers = {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         }
         if auth_token is not None:
-            headers['Authorization'] = f'BEARER {auth_token}'
+            headers["Authorization"] = f"BEARER {auth_token}"
 
         payload = {
-            'query': query,
-            'variables': params,
+            "query": query,
+            "variables": params,
         }
-        resp = await client.post(SERVER_HOSTNAME + '/graphql', json=payload, headers=headers)
-        print(json.dumps(
-            json.loads(resp.text),
-            indent=4))
+        resp = await client.post(
+            SERVER_HOSTNAME + "/graphql", json=payload, headers=headers
+        )
+        print(json.dumps(json.loads(resp.text), indent=4))
         print()
         resp.raise_for_status()
 
-    return resp.json()['data']
+    return resp.json()["data"]
 
 
 @app.get("/profile/{user_id}")
-async def route_profile_memberid(request: Request, response: JSONResponse, user_id: str):
+async def route_profile_memberid(
+    request: Request,
+    response: JSONResponse,
+    user_id: str,
+):
     auth_token = request.cookies["token"]
-    query = '''
+    query = """
         query find($userId: String) {
             profile(userId: $userId) {
                 userId
                 displayName
             }
         }
-    '''
+    """
     params = {
-        'userId': user_id,
+        "userId": user_id,
     }
     data = await query_graphql(query, auth_token, params)
 
@@ -96,36 +105,44 @@ async def route_profile_memberid(request: Request, response: JSONResponse, user_
 
 
 @app.get("/profile/search/{query_string}")
-async def route_profile_search(request: Request, response: JSONResponse, query_string: str):
+async def route_profile_search(
+    request: Request,
+    response: JSONResponse,
+    query_string: str,
+):
     auth_token = request.cookies["token"]
-    query = '''
+    query = """
         query find($query: String) {
             findProfile(query: $query) {
                 userId
                 displayName
             }
         }
-    '''
+    """
     params = {
-        'query': query_string,
+        "query": query_string,
     }
     data = await query_graphql(query, auth_token, params)
-    profile = data['findProfile']
+    profile = data["findProfile"]
     if profile is not None:
-        user_id = profile['userId']
-        print('Found user_id', user_id)
+        user_id = profile["userId"]
+        print("Found user_id", user_id)
         return RedirectResponse(f"/profile/{user_id}")
     else:
-        return PlainTextResponse(content='User not found')
+        return PlainTextResponse(content="User not found")
 
 
 @app.get("/profile")
-async def route_profile(request: Request, response: JSONResponse, code: t.Optional[str] = None):
+async def route_profile(
+    request: Request,
+    response: JSONResponse,
+    code: t.Optional[str] = None,
+):
     if request.state.token is None:
         return RedirectResponse("/login")
     else:
         auth_token = request.cookies["token"]
-        query = '''
+        query = """
             {
                 me {
                     userId
@@ -137,7 +154,7 @@ async def route_profile(request: Request, response: JSONResponse, code: t.Option
                     minedWords
                 }
             }
-        '''
+        """
 
         data = await query_graphql(query, auth_token)
         json_str = json.dumps(data, indent=4, ensure_ascii=False)
@@ -146,14 +163,14 @@ async def route_profile(request: Request, response: JSONResponse, code: t.Option
 
 @app.get("/leaderboard")
 async def route_leaderboard():
-    query = '''
+    query = """
         query leaderboard {
           leaderboard {
             name
             credit
           }
         }
-    '''
+    """
 
     data = await query_graphql(query)
     json_str = json.dumps(data, indent=4, ensure_ascii=False)
@@ -163,38 +180,40 @@ async def route_leaderboard():
 @app.get("/logout")
 async def route_logout(response: JSONResponse):
     response.delete_cookie(key="token")
-    return 'Bye'
+    return "Bye"
 
 
 async def code_to_access_token(code: str) -> str:
-    url = 'https://discord.com/api/oauth2/token'
+    url = "https://discord.com/api/oauth2/token"
 
     payload = {
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-        'grant_type': 'authorization_code',
-        'redirect_uri': 'https://dailymandarinthread.info/login',
-        'code': code,
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "grant_type": "authorization_code",
+        "redirect_uri": "https://dailymandarinthread.info/login",
+        "code": code,
     }
 
     headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
     }
 
     async with httpx.AsyncClient() as client:
         oauth_resp = await client.post(url, data=payload, headers=headers)
 
-    access_token = oauth_resp.json()['access_token']
+    access_token = oauth_resp.json()["access_token"]
     return access_token
 
 
 async def get_discord_profile(access_token: str) -> Json:
     headers = {
-        'Authorization': f'Bearer {access_token}',
+        "Authorization": f"Bearer {access_token}",
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.get('https://discord.com/api/v9/users/@me', headers=headers)
+        response = await client.get(
+            "https://discord.com/api/v9/users/@me", headers=headers
+        )
     profile = response.json()
     return profile
 
@@ -212,7 +231,7 @@ async def route_login(request: Request, code: t.Optional[str] = None):
         access_token = await code_to_access_token(code)
         profile = await get_discord_profile(access_token)
 
-        username = profile['username'] + "#" + profile['discriminator']
+        username = profile["username"] + "#" + profile["discriminator"]
         cookie_json = jwt.encode(
             {
                 "username": username,

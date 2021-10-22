@@ -8,10 +8,10 @@ from chairmanmao.cogs import ChairmanMaoCog
 class SocialCreditCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info('SocialCreditCog')
+        self.chairmanmao.logger.info("SocialCreditCog")
 
-    @commands.command(name='socialcredit', help='See your social credit score.')
-    @commands.has_role('同志')
+    @commands.command(name="socialcredit", help="See your social credit score.")
+    @commands.has_role("同志")
     async def cmd_socialcredit(self, ctx, member: commands.MemberConverter = None):
         if member is None:
             member = ctx.author
@@ -19,10 +19,10 @@ class SocialCreditCog(ChairmanMaoCog):
         target_username = self.chairmanmao.member_to_username(member)
 
         credit = await self.chairmanmao.api.social_credit(member.id)
-        await ctx.send(f'{target_username} has a credit score of {credit}.')
+        await ctx.send(f"{target_username} has a credit score of {credit}.")
 
-    @commands.command(name='leaderboard', help='Show the DMT leaderboard.')
-    @commands.has_role('同志')
+    @commands.command(name="leaderboard", help="Show the DMT leaderboard.")
+    @commands.has_role("同志")
     @commands.cooldown(1, 5 * 60, commands.BucketType.guild)
     async def cmd_leaderboard(self, ctx, member: commands.MemberConverter = None):
         lines = [
@@ -30,15 +30,15 @@ class SocialCreditCog(ChairmanMaoCog):
         ]
 
         for entry in await self.chairmanmao.api.leaderboard():
-            line = f'{str(entry.credit).rjust(4)} ... {entry.display_name}'
+            line = f"{str(entry.credit).rjust(4)} ... {entry.display_name}"
             lines.append(discord.utils.remove_markdown(line))
 
         lines.append("```")
 
         embed = discord.Embed(
             title="Daily Mandarin Thread Leaderboard",
-            description='\n'.join(lines),
-            color=0xff0000,
+            description="\n".join(lines),
+            color=0xFF0000,
         )
 
         await ctx.send(embed=embed)
@@ -52,11 +52,15 @@ class SocialCreditCog(ChairmanMaoCog):
             if self.is_based_emoji(emoji):
                 credit = await self.chairmanmao.api.honor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
+                self.chairmanmao.logger.info(
+                    f"User reaction added to {user_to_credit}: {credit}"
+                )
             elif self.is_cringe_emoji(emoji):
                 credit = await self.chairmanmao.api.dishonor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
+                self.chairmanmao.logger.info(
+                    f"User reaction added to {user_to_credit}: {credit}"
+                )
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
@@ -67,11 +71,15 @@ class SocialCreditCog(ChairmanMaoCog):
             if self.is_based_emoji(emoji):
                 credit = await self.chairmanmao.api.dishonor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
+                self.chairmanmao.logger.info(
+                    f"User reaction added to {user_to_credit}: {credit}"
+                )
             elif self.is_cringe_emoji(emoji):
                 credit = await self.chairmanmao.api.honor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(f'User reaction added to {user_to_credit}: {credit}')
+                self.chairmanmao.logger.info(
+                    f"User reaction added to {user_to_credit}: {credit}"
+                )
 
     def is_based_emoji(self, emoji: t.Union[str, discord.Emoji]) -> bool:
         if isinstance(emoji, discord.Emoji):
@@ -94,5 +102,5 @@ class SocialCreditCog(ChairmanMaoCog):
             return emoji.id in [e.id for e in cringe_emojis]
 
         else:
-#            return emoji in ['❌']
+            #            return emoji in ['❌']
             return False

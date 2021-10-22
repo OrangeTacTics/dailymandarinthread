@@ -16,7 +16,9 @@ class DictEntry:
 
     @s.field
     def pinyin(self) -> str:
-        pinyin = ' '.join(numbered_syllable_to_accented(s) for s in self.pinyin_numbered.split(' '))
+        pinyin = " ".join(
+            numbered_syllable_to_accented(s) for s in self.pinyin_numbered.split(" ")
+        )
         return pinyin
 
     @s.field
@@ -90,19 +92,19 @@ class ServerSettings:
 class AdminQuery:
     @s.field
     async def all_profiles(self, info) -> t.List[Profile]:
-        assert info.context.is_admin, 'Must be admin'
+        assert info.context.is_admin, "Must be admin"
 
         profiles = []
         for profile in info.context.store.get_all_profiles():
-            profiles.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
+            profiles.append(
+                await info.context.dataloaders.profile.load(str(profile.user_id))
+            )
         return profiles
 
     @s.field
     async def server_settings(self, info) -> ServerSettings:
         server_settings = info.context.store.load_server_settings()
-        return ServerSettings(
-            last_bump=server_settings.last_bump
-        )
+        return ServerSettings(last_bump=server_settings.last_bump)
 
 
 @s.type
@@ -119,11 +121,17 @@ class Query:
         discord_username: t.Optional[str] = None,
     ) -> t.Optional[Profile]:
         if user_id is not None:
-            assert discord_username is None, 'user_id and discord_username are mutually exclusive.'
+            assert (
+                discord_username is None
+            ), "user_id and discord_username are mutually exclusive."
             return await info.context.dataloaders.profile.load(user_id)
         else:
-            assert discord_username is not None, 'One of user_id or discord_username must be provided.'
-            return await info.context.dataloaders.profile_by_discord_username.load(discord_username)
+            assert (
+                discord_username is not None
+            ), "One of user_id or discord_username must be provided."
+            return await info.context.dataloaders.profile_by_discord_username.load(
+                discord_username
+            )
 
     @s.field
     async def leaderboard(self, info) -> t.List[Profile]:
@@ -132,7 +140,9 @@ class Query:
         profiles.sort(reverse=True, key=lambda profile: profile.credit)
 
         for profile in profiles[:10]:
-            entries.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
+            entries.append(
+                await info.context.dataloaders.profile.load(str(profile.user_id))
+            )
         return entries
 
     @s.field
@@ -141,15 +151,15 @@ class Query:
 
     @s.field
     def admin(self, info) -> AdminQuery:
-        assert info.context.is_admin, 'Must be admin'
+        assert info.context.is_admin, "Must be admin"
         return AdminQuery()
 
     @s.field
     def dict(self, word: str) -> t.List[DictEntry]:
         results = []
-        with open('data/cedict_ts.u8') as infile:
+        with open("data/cedict_ts.u8") as infile:
             for line in infile:
-                if line.startswith('#'):
+                if line.startswith("#"):
                     continue
                 dictentry = parse_dictentry(line)
                 if dictentry.simplified == word or dictentry.traditional == word:
@@ -158,17 +168,17 @@ class Query:
 
 
 def parse_dictentry(line: str) -> DictEntry:
-    traditional, simplified, *_ = line.split(' ')
-    left_brace = line.index('[')
-    right_brace = line.index(']')
-    pinyin_numbered = line[left_brace + 1:right_brace]
+    traditional, simplified, *_ = line.split(" ")
+    left_brace = line.index("[")
+    right_brace = line.index("]")
+    pinyin_numbered = line[left_brace + 1 : right_brace]
 
-    slash = line.index('/')
+    slash = line.index("/")
     meanings = []
     try:
         while True:
-            line = line[slash + 1:]
-            slash = line.index('/')
+            line = line[slash + 1 :]
+            slash = line.index("/")
             meaning = line[:slash]
             meanings.append(meaning)
     except:
@@ -186,7 +196,7 @@ def parse_dictentry(line: str) -> DictEntry:
 class AdminMutation:
     @s.field
     async def register(self, info, user_id: str, discord_username: str) -> Profile:
-        assert info.context.is_admin, 'Must be admin'
+        assert info.context.is_admin, "Must be admin"
         info.context.store.create_profile(int(user_id), discord_username)
         return await info.context.dataloaders.profile.load(user_id)
 
@@ -218,11 +228,13 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def transfer(self, info, from_user_id: str, to_user_id: str, amount: int) -> bool:
+    async def transfer(
+        self, info, from_user_id: str, to_user_id: str, amount: int
+    ) -> bool:
         assert amount > 0
 
         with info.context.store.profile(int(from_user_id)) as from_profile:
-            assert amount <= from_profile.yuan, 'Insufficient funds'
+            assert amount <= from_profile.yuan, "Insufficient funds"
             from_profile.yuan -= amount
 
         with info.context.store.profile(int(to_user_id)) as to_profile:
@@ -248,7 +260,7 @@ class AdminMutation:
 
     @s.field
     async def set_name(self, info, user_id: str, name: str) -> Profile:
-        assert len(name) < 32, 'Name must be 32 characters or less.'
+        assert len(name) < 32, "Name must be 32 characters or less."
         with info.context.store.profile(int(user_id)) as profile:
             profile.display_name = name
 
@@ -282,7 +294,9 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def mine(self, info, user_id: str, words: t.List[str], remove: bool = False) -> Profile:
+    async def mine(
+        self, info, user_id: str, words: t.List[str], remove: bool = False
+    ) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
             new_words = set(profile.mined_words)
 
@@ -309,8 +323,7 @@ class AdminMutation:
                     valid_answers=q.valid_answers,
                     meaning=q.meaning,
                 )
-                for q
-                in exam.deck
+                for q in exam.deck
             ],
         )
         info.context.store.store_exam(exam_doc)
@@ -330,12 +343,12 @@ class AdminMutation:
 class Mutation:
     @s.field
     def admin(self, info) -> AdminMutation:
-        assert info.context.is_admin, 'Must be admin'
+        assert info.context.is_admin, "Must be admin"
         return AdminMutation()
 
     @s.field
     async def set_name(self, info, name: str) -> Profile:
-        assert len(name) < 32, 'Name must be 32 characters or less.'
+        assert len(name) < 32, "Name must be 32 characters or less."
         me = await get_me(info)
         with info.context.store.profile(int(me.user_id)) as profile:
             profile.display_name = name
@@ -346,13 +359,15 @@ class Mutation:
 
 async def get_me(info) -> Profile:
     discord_username = info.context.discord_username
-    return await info.context.dataloaders.profile_by_discord_username.load(discord_username)
+    return await info.context.dataloaders.profile_by_discord_username.load(
+        discord_username
+    )
 
 
 def add_role(profile: types.Profile, role: types.Role) -> bool:
-    '''
-        Returns whether the profile was changed.
-    '''
+    """
+    Returns whether the profile was changed.
+    """
     roles_set = set(profile.roles)
     if role not in roles_set:
         roles_set.add(role)
@@ -365,9 +380,9 @@ def add_role(profile: types.Profile, role: types.Role) -> bool:
 
 
 def remove_role(profile: types.Profile, role: types.Role) -> bool:
-    '''
-        Returns whether the profile was changed.
-    '''
+    """
+    Returns whether the profile was changed.
+    """
     roles_set = set(profile.roles)
     if role in roles_set:
         roles_set.remove(role)
