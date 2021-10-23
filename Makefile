@@ -1,4 +1,4 @@
 all:
 	poetry run mypy
 	poetry run flake8
-	poetry run black --diff chairmanmao
+	poetry run black --diff chairmanmao server
