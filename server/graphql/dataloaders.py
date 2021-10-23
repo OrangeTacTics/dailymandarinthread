@@ -5,9 +5,7 @@ from ..store import DocumentStore
 import server.store.types as types
 
 
-async def load_profiles(
-    store: DocumentStore, user_ids: t.List[str]
-) -> t.List[schema.Profile]:
+async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[schema.Profile]:
     results = []
     for user_id in user_ids:
         try:
@@ -33,9 +31,7 @@ async def load_profiles_by_discord_usernames(
     return results
 
 
-async def load_exams(
-    store: DocumentStore, exam_names: t.List[str]
-) -> t.List[schema.Exam]:
+async def load_exams(store: DocumentStore, exam_names: t.List[str]) -> t.List[schema.Exam]:
     results = []
     for exam_name in exam_names:
         exam = store.load_exam(exam_name)

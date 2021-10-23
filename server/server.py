@@ -44,9 +44,7 @@ async def add_graphql_context(request: Request, call_next):
         request.state.token = jwt.decode(token, JWT_KEY, algorithms=["HS256"])
 
     elif "token" in request.cookies:
-        request.state.token = jwt.decode(
-            request.cookies["token"], JWT_KEY, algorithms=["HS256"]
-        )
+        request.state.token = jwt.decode(request.cookies["token"], JWT_KEY, algorithms=["HS256"])
     else:
         request.state.token = None
 
@@ -70,9 +68,7 @@ async def query_graphql(
             "query": query,
             "variables": params,
         }
-        resp = await client.post(
-            SERVER_HOSTNAME + "/graphql", json=payload, headers=headers
-        )
+        resp = await client.post(SERVER_HOSTNAME + "/graphql", json=payload, headers=headers)
         print(json.dumps(json.loads(resp.text), indent=4))
         print()
         resp.raise_for_status()
@@ -210,9 +206,7 @@ async def get_discord_profile(access_token: str) -> Json:
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.get(
-            "https://discord.com/api/v9/users/@me", headers=headers
-        )
+        response = await client.get("https://discord.com/api/v9/users/@me", headers=headers)
     profile = response.json()
     return profile
 

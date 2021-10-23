@@ -17,9 +17,7 @@ class DictEntry:
 
     @s.field
     def pinyin(self) -> str:
-        pinyin = " ".join(
-            numbered_syllable_to_accented(s) for s in self.pinyin_numbered.split(" ")
-        )
+        pinyin = " ".join(numbered_syllable_to_accented(s) for s in self.pinyin_numbered.split(" "))
         return pinyin
 
     @s.field
@@ -97,9 +95,7 @@ class AdminQuery:
 
         profiles = []
         for profile in info.context.store.get_all_profiles():
-            profiles.append(
-                await info.context.dataloaders.profile.load(str(profile.user_id))
-            )
+            profiles.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
         return profiles
 
     @s.field
@@ -122,17 +118,11 @@ class Query:
         discord_username: t.Optional[str] = None,
     ) -> t.Optional[Profile]:
         if user_id is not None:
-            assert (
-                discord_username is None
-            ), "user_id and discord_username are mutually exclusive."
+            assert discord_username is None, "user_id and discord_username are mutually exclusive."
             return await info.context.dataloaders.profile.load(user_id)
         else:
-            assert (
-                discord_username is not None
-            ), "One of user_id or discord_username must be provided."
-            return await info.context.dataloaders.profile_by_discord_username.load(
-                discord_username
-            )
+            assert discord_username is not None, "One of user_id or discord_username must be provided."
+            return await info.context.dataloaders.profile_by_discord_username.load(discord_username)
 
     @s.field
     async def leaderboard(self, info) -> t.List[Profile]:
@@ -141,9 +131,7 @@ class Query:
         profiles.sort(reverse=True, key=lambda profile: profile.credit)
 
         for profile in profiles[:10]:
-            entries.append(
-                await info.context.dataloaders.profile.load(str(profile.user_id))
-            )
+            entries.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
         return entries
 
     @s.field
@@ -300,9 +288,7 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def transfer(
-        self, info, from_user_id: str, to_user_id: str, amount: int
-    ) -> bool:
+    async def transfer(self, info, from_user_id: str, to_user_id: str, amount: int) -> bool:
         assert amount > 0
 
         with info.context.store.profile(int(from_user_id)) as from_profile:
@@ -366,9 +352,7 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def mine(
-        self, info, user_id: str, words: t.List[str], remove: bool = False
-    ) -> Profile:
+    async def mine(self, info, user_id: str, words: t.List[str], remove: bool = False) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
             new_words = set(profile.mined_words)
 
@@ -441,9 +425,7 @@ class Mutation:
 
 async def get_me(info) -> Profile:
     discord_username = info.context.discord_username
-    return await info.context.dataloaders.profile_by_discord_username.load(
-        discord_username
-    )
+    return await info.context.dataloaders.profile_by_discord_username.load(discord_username)
 
 
 def add_role(profile: types.Profile, role: types.Role) -> bool:

@@ -89,9 +89,7 @@ def profile_to_json(profile: Profile) -> Json:
 
 
 def profile_from_json(profile_json: Json) -> Profile:
-    assert (
-        profile_json["schema_version"] == SCHEMA_VERSION
-    ), f"schema_version of {profile_json} is not {SCHEMA_VERSION}"
+    assert profile_json["schema_version"] == SCHEMA_VERSION, f"schema_version of {profile_json} is not {SCHEMA_VERSION}"
     roles = [Role.from_str(role) for role in profile_json["roles"]]
     return Profile(
         user_id=profile_json["user_id"],
