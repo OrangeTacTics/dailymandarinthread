@@ -26,14 +26,10 @@ class TiananmenCog(ChairmanMaoCog):
         now = datetime.now(timezone.utc)
         for member_id, joined in self.young_members.items():
             if now - joined >= timedelta(hours=24):
-                self.logger.info(
-                    f"Removing new member {member_id} from young users list."
-                )
+                self.logger.info(f"Removing new member {member_id} from young users list.")
 
         self.young_members = {
-            member_id: joined
-            for (member_id, joined) in self.young_members.items()
-            if now - joined < timedelta(hours=2)
+            member_id: joined for (member_id, joined) in self.young_members.items() if now - joined < timedelta(hours=2)
         }
 
     @commands.Cog.listener()

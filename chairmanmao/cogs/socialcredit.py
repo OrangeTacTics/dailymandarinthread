@@ -52,15 +52,11 @@ class SocialCreditCog(ChairmanMaoCog):
             if self.is_based_emoji(emoji):
                 credit = await self.chairmanmao.api.honor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(
-                    f"User reaction added to {user_to_credit}: {credit}"
-                )
+                self.chairmanmao.logger.info(f"User reaction added to {user_to_credit}: {credit}")
             elif self.is_cringe_emoji(emoji):
                 credit = await self.chairmanmao.api.dishonor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(
-                    f"User reaction added to {user_to_credit}: {credit}"
-                )
+                self.chairmanmao.logger.info(f"User reaction added to {user_to_credit}: {credit}")
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
@@ -71,15 +67,11 @@ class SocialCreditCog(ChairmanMaoCog):
             if self.is_based_emoji(emoji):
                 credit = await self.chairmanmao.api.dishonor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(
-                    f"User reaction added to {user_to_credit}: {credit}"
-                )
+                self.chairmanmao.logger.info(f"User reaction added to {user_to_credit}: {credit}")
             elif self.is_cringe_emoji(emoji):
                 credit = await self.chairmanmao.api.honor(user_to_credit.id, 1)
                 self.chairmanmao.queue_member_update(user_to_credit.id)
-                self.chairmanmao.logger.info(
-                    f"User reaction added to {user_to_credit}: {credit}"
-                )
+                self.chairmanmao.logger.info(f"User reaction added to {user_to_credit}: {credit}")
 
     def is_based_emoji(self, emoji: t.Union[str, discord.Emoji]) -> bool:
         if isinstance(emoji, discord.Emoji):

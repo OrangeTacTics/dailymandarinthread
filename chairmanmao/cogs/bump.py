@@ -29,10 +29,7 @@ class BumpCog(ChairmanMaoCog):
 
     @tasks.loop(minutes=1)
     async def loop_bump_timer(self):
-        if (
-            not self.has_notified
-            and self.seconds_since_last_bump() > TWO_HOURS_IN_SECONDS
-        ):
+        if not self.has_notified and self.seconds_since_last_bump() > TWO_HOURS_IN_SECONDS:
             channel = self.chairmanmao.constants().bump_channel
 
             bumpers = self.chairmanmao.constants().bumpers_role.mention

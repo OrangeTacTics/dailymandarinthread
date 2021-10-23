@@ -8,11 +8,11 @@ from .types import Exam, Question
 
 
 class TickResult(Enum):
-    nothing = 'nothing'
-    timeout = 'timeout'
-    next_question = 'next_question'
-    pause = 'pause'
-    finished = 'finished'
+    nothing = "nothing"
+    timeout = "timeout"
+    next_question = "next_question"
+    pause = "pause"
+    finished = "finished"
 
 
 @dataclass
@@ -41,7 +41,7 @@ class Examiner:
         questions = list(exam.deck)
 
         if not practice:
-            questions = questions[:exam.num_questions]
+            questions = questions[: exam.num_questions]
 
         if seed is None:
             seed = getrandbits(64)
@@ -88,11 +88,7 @@ class Examiner:
 
     def passed(self) -> bool:
         assert self.finished(), "Exam is not finished"
-        return (
-            not self._gave_up()
-            and self.max_wrong is not None
-            and self.number_wrong() <= self.max_wrong
-        )
+        return not self._gave_up() and self.max_wrong is not None and self.number_wrong() <= self.max_wrong
 
     def _gave_up(self) -> bool:
         return any(isinstance(a, Quit) for a in self.answers_given)
@@ -154,11 +150,11 @@ class Examiner:
     # TODO: Remove
     def summary(self) -> str:
         lines = []
-        lines.append(f'Current Question: {self.current_question()}')
-        lines.append(f'Answers: {self.answers_given}')
-        lines.append(f'Current question index: {self.current_question_index}')
-        lines.append(f'Time left: {self.current_question_time_left}')
-        return '\n'.join(lines)
+        lines.append(f"Current Question: {self.current_question()}")
+        lines.append(f"Answers: {self.answers_given}")
+        lines.append(f"Current question index: {self.current_question_index}")
+        lines.append(f"Time left: {self.current_question_time_left}")
+        return "\n".join(lines)
 
     ####################################################################
     # Actions
@@ -242,9 +238,7 @@ def make_hsk1_exam() -> Exam:
         reader = csv.DictReader(infile, fieldnames=fieldnames)
 
         for word in reader:
-            deck.append(
-                Question(word["question"], word["answers"].split(","), word["meaning"])
-            )
+            deck.append(Question(word["question"], word["answers"].split(","), word["meaning"]))
 
     return Exam(
         name="HSK 1",
@@ -258,6 +252,7 @@ def make_hsk1_exam() -> Exam:
 
 def _random_run(seed: int):
     import time
+
     r = Random(seed)
 
     exam = make_hsk1_exam()
@@ -270,12 +265,12 @@ def _random_run(seed: int):
             if result == TickResult.nothing:
                 pass
             elif result == TickResult.timeout:
-                print('Timeout')
+                print("Timeout")
             elif result == TickResult.next_question:
-                print('Next question')
+                print("Next question")
                 pass
             elif result == TickResult.finished:
-                print('Done!')
+                print("Done!")
                 done = True
 
             if not done:
@@ -283,7 +278,7 @@ def _random_run(seed: int):
                 if r.randint(1, 100) < 90:
                     answer = question.valid_answers[0]
                 else:
-                    answer = '.'
+                    answer = "."
 
                 active_exam.answer(answer)
                 print(active_exam.summary())

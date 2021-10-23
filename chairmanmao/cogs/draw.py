@@ -43,9 +43,7 @@ class DrawCog(ChairmanMaoCog):
     @commands.cooldown(1, 5 * 60, type)
     async def cmd_font_upload(self, ctx, font_name: str):
         if not font_name.isidentifier():
-            await ctx.send(
-                f"Please name the font with no spaces, ASCII-only, beginning with a letter"
-            )
+            await ctx.send(f"Please name the font with no spaces, ASCII-only, beginning with a letter")
             return
 
         if len(ctx.message.attachments) != 1:
@@ -58,18 +56,12 @@ class DrawCog(ChairmanMaoCog):
             return
 
         resp = requests.get(attachment.url)
-        self.chairmanmao.draw_manager.upload_font(
-            ctx.author.id, font_name, BytesIO(resp.content)
-        )
+        self.chairmanmao.draw_manager.upload_font(ctx.author.id, font_name, BytesIO(resp.content))
         await ctx.send(f"Uploaded font:")
         await self.demo_font(font_name, ctx.channel)
 
     async def demo_font(self, font_name: str, channel: discord.Messageable) -> None:
         text = "我爱中国"
         image_buffer = self.chairmanmao.draw_manager.draw(font_name, text)
-        filename = (
-            "hanzi_" + "_".join("u" + hex(ord(char))[2:] for char in text) + ".png"
-        )
-        await channel.send(
-            f"{font_name}:", file=discord.File(fp=image_buffer, filename=filename)
-        )
+        filename = "hanzi_" + "_".join("u" + hex(ord(char))[2:] for char in text) + ".png"
+        await channel.send(f"{font_name}:", file=discord.File(fp=image_buffer, filename=filename))

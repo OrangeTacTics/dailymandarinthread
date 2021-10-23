@@ -46,9 +46,7 @@ class OwnerCog(ChairmanMaoCog):
 
     @commands.command(name="setlearner")
     @commands.is_owner()
-    async def cmd_setlearner(
-        self, ctx, member: commands.MemberConverter, flag: bool = True
-    ):
+    async def cmd_setlearner(self, ctx, member: commands.MemberConverter, flag: bool = True):
         target_username = self.chairmanmao.member_to_username(member)
         await self.chairmanmao.api.set_learner(flag)
         self.chairmanmao.queue_member_update(member.id)
@@ -56,9 +54,7 @@ class OwnerCog(ChairmanMaoCog):
 
     @commands.command(name="sethsk")
     @commands.is_owner()
-    async def cmd_sethsk(
-        self, ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]
-    ):
+    async def cmd_sethsk(self, ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
         target_username = self.chairmanmao.member_to_username(member)
         await self.chairmanmao.api.set_hsk(member.id, hsk_level)
         self.chairmanmao.queue_member_update(member.id)

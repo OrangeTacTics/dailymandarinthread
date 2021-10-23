@@ -20,16 +20,12 @@ class PartyCog(ChairmanMaoCog):
 
     @commands.command(name="jail")
     @commands.has_role("共产党员")
-    async def cmd_jail(
-        self, ctx, member: commands.MemberConverter, *, reason: t.Optional[str] = None
-    ):
+    async def cmd_jail(self, ctx, member: commands.MemberConverter, *, reason: t.Optional[str] = None):
         await self.chairmanmao.api.jail(member.id)
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
-        self.chairmanmao.logger.info(
-            f"{ctx.author.display_name} has jailed Comrade {username}. Reason: {repr(reason)}"
-        )
+        self.chairmanmao.logger.info(f"{ctx.author.display_name} has jailed Comrade {username}. Reason: {repr(reason)}")
 
         embed = discord.Embed(
             title="Comrade has been jailed!",
@@ -58,9 +54,7 @@ class PartyCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
-        self.chairmanmao.logger.info(
-            f"{ctx.author.display_name} has unjailed Comrade {username}."
-        )
+        self.chairmanmao.logger.info(f"{ctx.author.display_name} has unjailed Comrade {username}.")
 
         embed = discord.Embed(
             title="Comrade has been unjailed!",
@@ -91,9 +85,7 @@ class PartyCog(ChairmanMaoCog):
 
         if ctx.author != constants.guild.owner:
             if credit > 25:
-                await ctx.send(
-                    "Party members can only honor 25 social credit at a time."
-                )
+                await ctx.send("Party members can only honor 25 social credit at a time.")
                 return
 
         #        target_username = self.chairmanmao.member_to_username(member)
@@ -138,9 +130,7 @@ class PartyCog(ChairmanMaoCog):
 
         if ctx.author != constants.guild.owner:
             if credit > 25:
-                await ctx.send(
-                    "Party members can only dishonor 25 social credit at a time."
-                )
+                await ctx.send("Party members can only dishonor 25 social credit at a time.")
                 return
 
         #        target_username = self.chairmanmao.member_to_username(member)

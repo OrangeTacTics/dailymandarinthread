@@ -20,13 +20,9 @@ class LearnersCog(ChairmanMaoCog):
         await self.chairmanmao.api.set_learner(ctx.author.id, flag)
         self.chairmanmao.queue_member_update(ctx.author.id)
         if flag:
-            await ctx.send(
-                f"{ctx.author.display_name} has been added to {learner_role.name}"
-            )
+            await ctx.send(f"{ctx.author.display_name} has been added to {learner_role.name}")
         else:
-            await ctx.send(
-                f"{ctx.author.display_name} has been removed from {learner_role.name}"
-            )
+            await ctx.send(f"{ctx.author.display_name} has been removed from {learner_role.name}")
 
     @commands.command(name="hsk", help="See your HSK rank.")
     @commands.has_role("同志")
@@ -44,9 +40,7 @@ class LearnersCog(ChairmanMaoCog):
         else:
             await ctx.send(f"{target_username} has reached HSK {hsk_level}.")
 
-    @commands.command(
-        name="readers", help="List how many words you know in various readers."
-    )
+    @commands.command(name="readers", help="List how many words you know in various readers.")
     @commands.has_role("同志")
     async def cmd_readers(self, ctx):
         mined_words = set(await self.chairmanmao.api.get_mined(ctx.author.id))

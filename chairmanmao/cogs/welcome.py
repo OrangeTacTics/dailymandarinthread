@@ -15,9 +15,7 @@ class WelcomeCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
 
         if await self.chairmanmao.api.is_registered(member.id):
-            self.chairmanmao.logger.info(
-                f"A former Comrade rejoined us: {username}. Member ID: {member.id}."
-            )
+            self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
 
             embed = discord.Embed(
                 title="A former Comrade has rejoined us!",
@@ -52,16 +50,12 @@ class WelcomeCog(ChairmanMaoCog):
         else:
             await self.chairmanmao.api.register(member.id, username)
 
-            self.chairmanmao.logger.info(
-                f"A new Comrade has joined us: {username}. Member ID: {member.id}."
-            )
+            self.chairmanmao.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
 
             try:
                 await self.welcome(member)
             except:
-                self.chairmanmao.logger.info(
-                    f"Could not send welcome message to {username}. Member ID: {member.id}."
-                )
+                self.chairmanmao.logger.info(f"Could not send welcome message to {username}. Member ID: {member.id}.")
 
             embed = discord.Embed(
                 title="A new Comrade has joined us!",

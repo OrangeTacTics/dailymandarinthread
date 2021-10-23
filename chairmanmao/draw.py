@@ -55,9 +55,7 @@ class DrawManager:
         filename = f"fonts/{user_id}_{font_name}.ttf"
         self.file_manager.upload(filename, fp)
 
-    def draw(
-        self, font_name: str, text: str, *, size: int = 128, color=(255, 0, 0)
-    ) -> BytesIO:
+    def draw(self, font_name: str, text: str, *, size: int = 128, color=(255, 0, 0)) -> BytesIO:
         font = self.load_font(font_name, size)
 
         image = Image.new("RGBA", (size * len(text), size))
@@ -79,7 +77,5 @@ class DrawManager:
         color=(255, 0, 0),
     ) -> None:
         image_buffer = self.draw(font_name, text, size=size, color=color)
-        filename = (
-            "hanzi_" + "_".join("u" + hex(ord(char))[2:] for char in text) + ".png"
-        )
+        filename = "hanzi_" + "_".join("u" + hex(ord(char))[2:] for char in text) + ".png"
         await channel.send(file=discord.File(fp=image_buffer, filename=filename))

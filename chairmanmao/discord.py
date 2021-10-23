@@ -72,9 +72,7 @@ class DiscordConstants:
             rightist_emoji=DiscordConstants._load_emoji(guild, "rightist"),
             refold_emoji=DiscordConstants._load_emoji(guild, "refold"),
             celx_emoji=DiscordConstants._load_emoji(guild, "celx"),
-            rchineselanguage_emoji=DiscordConstants._load_emoji(
-                guild, "rchineselanguage"
-            ),
+            rchineselanguage_emoji=DiscordConstants._load_emoji(guild, "rchineselanguage"),
         )
 
     @staticmethod

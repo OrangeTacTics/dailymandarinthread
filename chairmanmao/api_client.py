@@ -7,9 +7,7 @@ class GraphQLClient:
         self.endpoint = endpoint
         self.auth_token = auth_token
 
-    async def query(
-        self, query: str, variables: t.Optional[t.Dict[str, t.Any]] = None
-    ) -> t.Any:
+    async def query(self, query: str, variables: t.Optional[t.Dict[str, t.Any]] = None) -> t.Any:
         async with httpx.AsyncClient() as client:
             headers = {
                 "Content-Type": "application/json",

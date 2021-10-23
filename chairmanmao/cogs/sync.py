@@ -92,9 +92,7 @@ class SyncCog(ChairmanMaoCog):
 
         added_roles = sorted(r.name for r in roles_to_add)
         removed_roles = sorted(r.name for r in roles_to_remove)
-        self.chairmanmao.logger.info(
-            f"Updating roles: {member.nick}: add {added_roles}, remove {removed_roles}"
-        )
+        self.chairmanmao.logger.info(f"Updating roles: {member.nick}: add {added_roles}, remove {removed_roles}")
         return True
 
     def dmt_role_to_discord_role(self, dmt_role: Role) -> discord.Role:
@@ -120,9 +118,7 @@ class SyncCog(ChairmanMaoCog):
         if Role.Jailed in sync_info.roles:
             return {constants.jailed_role}
         else:
-            discord_roles = {
-                self.dmt_role_to_discord_role(dmt_role) for dmt_role in sync_info.roles
-            }
+            discord_roles = {self.dmt_role_to_discord_role(dmt_role) for dmt_role in sync_info.roles}
             if constants.comrade_role not in discord_roles:
                 discord_roles.add(constants.comrade_role)
             return discord_roles
