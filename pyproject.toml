@@ -34,3 +34,6 @@ black = "^21.9b0"
 chairmanmao = "chairmanmao:main"
 server = "server:main"
 list-members = "scripts.members:main"
+
+[tool.black]
+line-length = 120

@@ -44,20 +44,20 @@ class ExamCog(ChairmanMaoCog):
     async def loop(self):
         if self.active_exam is not None:
             tick_result = self.active_exam.examiner.tick()
-            match tick_result:
-                case TickResult.next_question:
-                    await self.send_next_question(self.active_exam)
-                case TickResult.finished:
-                    await self.show_results(self.active_exam)
-                    await self.mine_correct_answers(self.active_exam)
-                    await self.reward(self.active_exam)
-                    self.active_exam = None
-                case TickResult.timeout:
-                    await self.reply_to_answer(self.active_exam)
-                case TickResult.nothing:
-                    pass
-                case TickResult.pause:
-                    pass
+
+            if tick_result == TickResult.next_question:
+                await self.send_next_question(self.active_exam)
+            elif tick_result == TickResult.finished:
+                await self.show_results(self.active_exam)
+                await self.mine_correct_answers(self.active_exam)
+                await self.reward(self.active_exam)
+                self.active_exam = None
+            elif tick_result == TickResult.timeout:
+                await self.reply_to_answer(self.active_exam)
+            elif tick_result == TickResult.nothing:
+                pass
+            elif tick_result == TickResult.pause:
+                pass
 
     @commands.group()
     async def exam(self, ctx):
@@ -229,7 +229,7 @@ class ExamCog(ChairmanMaoCog):
 #        await self.reward(active_exam)
 
     async def receive_answer(self, active_exam: ActiveExam) -> Answer:
-        while not active_exam.ready_for_next_question():
+        while not active_exam.examiner.ready_for_next_question():
             await asyncio.sleep(0)
 
         return active_exam.examiner.previous_answer()

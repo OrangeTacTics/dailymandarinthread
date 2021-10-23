@@ -18,7 +18,7 @@ class TickResult(Enum):
 @dataclass
 class Examiner:
     # Constants
-    exam: exam
+    exam: Exam
     questions: t.List[Question]
     max_wrong: t.Optional[int]
     timelimit: int
@@ -267,17 +267,16 @@ def _random_run(seed: int):
         k = r.randint(1, 15)
         for n in range(k):
             result = active_exam.tick()
-            match result:
-                case TickResult.nothing:
-                    pass
-                case TickResult.timeout:
-                    print('Timeout')
-                case TickResult.next_question:
-                    print('Next question')
-                    pass
-                case TickResult.finished:
-                    print('Done!')
-                    done = True
+            if result == TickResult.nothing:
+                pass
+            elif result == TickResult.timeout:
+                print('Timeout')
+            elif result == TickResult.next_question:
+                print('Next question')
+                pass
+            elif result == TickResult.finished:
+                print('Done!')
+                done = True
 
             if not done:
                 question = active_exam.current_question()
