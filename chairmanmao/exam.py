@@ -147,15 +147,6 @@ class Examiner:
     def timed_out(self) -> bool:
         return self.current_question_time_left <= 0
 
-    # TODO: Remove
-    def summary(self) -> str:
-        lines = []
-        lines.append(f"Current Question: {self.current_question()}")
-        lines.append(f"Answers: {self.answers_given}")
-        lines.append(f"Current question index: {self.current_question_index}")
-        lines.append(f"Time left: {self.current_question_time_left}")
-        return "\n".join(lines)
-
     ####################################################################
     # Actions
     ####################################################################
@@ -281,7 +272,6 @@ def _random_run(seed: int):
                     answer = "."
 
                 active_exam.answer(answer)
-                print(active_exam.summary())
                 print()
                 time.sleep(0.1)
 
