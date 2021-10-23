@@ -203,7 +203,7 @@ class ExamCog(ChairmanMaoCog):
         elif isinstance(answer, Incorrect):
             emoji = "❌"
             color = 0xFF0000
-            correct_answer = f"{answer} → {question.valid_answers[0]}"
+            correct_answer = f"{question.valid_answers[0]}"
         elif isinstance(answer, Timeout):
             emoji = "⏲️"
             color = 0xD0DEEC
