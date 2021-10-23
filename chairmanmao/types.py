@@ -64,6 +64,9 @@ class Question:
     valid_answers: t.List[str]
     meaning: str
 
+    def is_correct(self, answer: str) -> bool:
+        return answer.lower() in self.valid_answers
+
 
 UserId = int
 Json = t.Any

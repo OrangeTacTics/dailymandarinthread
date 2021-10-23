@@ -174,7 +174,7 @@ class Examiner:
         assert self.ready_for_next_answer(), "Can't answer again until the next tick."
         current_question = self.current_question()
 
-        correct = answer.lower() in current_question.valid_answers
+        correct = current_question.is_correct(answer)
 
         if correct:
             self.answers_given.append(Correct(answer))
