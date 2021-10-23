@@ -15,7 +15,6 @@ from chairmanmao.exam import (
     Timeout,
     Correct,
     Incorrect,
-    Answer,
 )
 
 
@@ -79,7 +78,6 @@ class ExamCog(ChairmanMaoCog):
 
     @exam.command(name="list")
     async def cmd_exam_list(self, ctx):
-        #        exam_names = await self.chairmanmao().api.get_exam_names()
         await ctx.send("Available exams: " + " ".join(self.exam_names()))
 
     @exam.command(name="start")
@@ -119,7 +117,7 @@ class ExamCog(ChairmanMaoCog):
 
         active_exam = self.create_active_exam(ctx.author, ctx.channel, exam)
         self.active_exam = active_exam
-        await self.run_exam(active_exam)
+        await self.send_exam_start_embed(active_exam)
 
     @exam.command(name="practice")
     async def cmd_exam_practice(self, ctx, exam_name: t.Optional[str] = None):
@@ -165,8 +163,6 @@ class ExamCog(ChairmanMaoCog):
 
         self.active_exam.examiner.give_up()
 
-    #        await ctx.message.add_reaction(constants.dekinai_emoji)
-
     async def next_exam_for(self, member: discord.Member) -> t.Optional[str]:
         current_hsk = await self.chairmanmao.api.get_hsk(member.id)
         if current_hsk is None:
@@ -194,25 +190,6 @@ class ExamCog(ChairmanMaoCog):
             exam=exam,
             practice=practice,
         )
-
-    async def run_exam(self, active_exam: ActiveExam) -> None:
-        await self.send_exam_start_embed(active_exam)
-
-    #        while not active_exam.examiner.finished():
-    #            await self.send_next_question(active_exam)
-    #            answer = await self.receive_answer(active_exam)
-    #
-    #            await self.reply_to_answer(active_exam)
-    #
-    #        await self.show_results(active_exam)
-    #        await self.mine_correct_answers(active_exam)
-    #        await self.reward(active_exam)
-
-    async def receive_answer(self, active_exam: ActiveExam) -> Answer:
-        while not active_exam.examiner.ready_for_next_question():
-            await asyncio.sleep(0)
-
-        return active_exam.examiner.previous_answer()
 
     async def reply_to_answer(self, active_exam: ActiveExam) -> None:
         answer = active_exam.examiner.previous_answer()
@@ -250,11 +227,7 @@ class ExamCog(ChairmanMaoCog):
     async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
         exam = active_exam.exam
 
-        #        description = f'{exam.name}'
-
         embed = discord.Embed(
-            #            title='ActiveExam',
-            #            description=description,
             color=0xFFA500,
         )
 
