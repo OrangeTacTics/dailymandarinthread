@@ -1,7 +1,6 @@
 from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
-from datetime import datetime
 from random import Random, getrandbits
 from enum import Enum
 
@@ -297,59 +296,7 @@ def _random_run(seed: int):
     print()
 
 
-def random_run(seed: int):
-    rand = Random(seed)
-
-    exam = make_hsk1_exam()
-    active_exam = Examiner.make(exam, practice=False, seed=1)
-
-    print(active_exam.tick())
-
-    q = active_exam.current_question()
-    print(q)
-
-    k = rand.randint(1, 13)
-    for _ in range(k):
-        r = active_exam.tick()
-        print(r)
-        match r:
-            case TickResult.nothing:
-                pass
-            case TickResult.timeout:
-                break
-            case TickTresult.next_question:
-                raise Exception('uh oh')
-            case TickResult.finished:
-                print('Finished')
-                return
-
-        question = active_exam.current_question()
-        if r.randint(1, 100) < 90:
-            answer = question.valid_answers[0]
-        else:
-            answer = '.'
-
-
 def test_timeout():
-    rand = Random(1)
-
-    exam = make_hsk1_exam()
-    active_exam = Examiner.make(exam, practice=False, seed=1)
-
-    active_exam.tick()
-    active_exam.current_question()
-
-    for _ in range(active_exam.timelimit):
-        r = active_exam.tick()
-        assert r == TickResult.nothing
-
-    r = active_exam.tick()
-    assert r == TickResult.timeout
-
-
-def main():
-    rand = Random(1)
-
     exam = make_hsk1_exam()
     active_exam = Examiner.make(exam, practice=False, seed=1)
 
@@ -366,4 +313,3 @@ def main():
 
 if __name__ == "__main__":
     test_timeout()
-    main()

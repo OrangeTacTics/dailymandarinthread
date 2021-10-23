@@ -1,7 +1,6 @@
 from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
-from datetime import datetime, timezone
 import asyncio
 import random
 import csv
@@ -14,7 +13,6 @@ from chairmanmao.types import Exam, Question
 from chairmanmao.exam import Examiner, TickResult
 from chairmanmao.exam import (
     Timeout,
-    Quit,
     Correct,
     Incorrect,
     Answer,
@@ -318,7 +316,7 @@ class ExamCog(ChairmanMaoCog):
         message: discord.Message,
     ) -> None:
         answer = message.content.strip()
-        correct = active_exam.examiner.answer(answer)
+        active_exam.examiner.answer(answer)
         await self.reply_to_answer(active_exam)
 
     async def send_next_question(self, active_exam: ActiveExam) -> None:
