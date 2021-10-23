@@ -45,7 +45,7 @@ class MongoDbDocumentStore(DocumentStore):
         return [profile_from_json(p) for p in self.profiles.find({})]
 
     def get_exam_names(self) -> t.List[str]:
-        pass
+        return [exam['name'] for exam in self.exams.find({})]
 
     def load_exam(self, exam_name: str) -> t.Optional[Exam]:
         exam_json = self.exams.find_one({"name": exam_name})

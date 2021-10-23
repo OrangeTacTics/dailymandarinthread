@@ -151,6 +151,14 @@ class Query:
         return await info.context.dataloaders.exam.load(name)
 
     @s.field
+    async def exams(self, info) -> t.List[Exam]:
+        return [
+            info.context.dataloaders.exam.load(name)
+            for name in
+            info.context.store.get_exam_names()
+        ]
+
+    @s.field
     def admin(self, info) -> AdminQuery:
         assert info.context.is_admin, "Must be admin"
         return AdminQuery()
@@ -166,6 +174,7 @@ class Query:
                 if dictentry.simplified == word or dictentry.traditional == word:
                     results.append(dictentry)
         return results
+
 
 
 def parse_dictentry(line: str) -> DictEntry:
@@ -192,6 +201,37 @@ def parse_dictentry(line: str) -> DictEntry:
         meanings=meanings,
     )
 
+
+@s.type
+class ExamMutation:
+    name: str
+
+    @s.field
+    async def add_card(self, info, question: str, meaning: str, valid_answers: t.List[str]) -> Question:
+        exam = info.context.store.load_exam(self.name)
+        new_question = Question(
+            question=question,
+            meaning=meaning,
+            valid_answers=valid_answers,
+        )
+
+        assert question not in [q.question for q in exam.deck], 'Question already exists.'
+        exam.deck.append(new_question)
+        info.context.store.store_exam(exam)
+        return Question(
+            question=question,
+            valid_answers=valid_answers,
+            meaning=meaning,
+        )
+
+    @s.field
+    async def remove_card(self, info, question: str) -> bool:
+        exam = info.context.store.load_exam(self.name)
+        assert question in [q.question for q in exam.deck], "Question doesn't exists."
+
+        exam.deck = [q for q in exam.deck if q.question != question]
+        info.context.store.store_exam(exam)
+        return True
 
 @s.type
 class AdminMutation:
@@ -329,6 +369,16 @@ class AdminMutation:
         )
         info.context.store.store_exam(exam_doc)
         return await info.context.dataloaders.exam.load(exam.name)
+
+    @s.field
+    async def edit_exam(self, info, exam_name: str) -> t.Optional[ExamMutation]:
+        existing_exam = await info.context.dataloaders.exam.load(exam_name)
+        if existing_exam is None:
+            return None
+        else:
+            return ExamMutation(
+                name=exam_name,
+            )
 
     @s.field
     async def set_last_bump(self, info) -> datetime:

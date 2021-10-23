@@ -501,3 +501,54 @@ class Api:
             )
             for result in results["dict"]
         ]
+
+    async def get_exam_names(self) -> t.List[str]:
+        results = await self.client.query(
+            """
+            query q {
+                exams {
+                    name
+                }
+            }
+            """
+        )
+        return [exam['name'] for exam in results["exams"]]
+
+    async def exam(self, exam_name: str) -> t.Optional[Exam]:
+        results = await self.client.query(
+            """
+            query q($name: String!) {
+                exam(name: $name) {
+                    name
+                    numQuestions
+                    maxWrong
+                    timelimit
+                    hskLevel
+                    deck {
+                        question
+                        meaning
+                        validAnswers
+                    }
+                }
+            }
+
+            """,
+            {
+                "name": exam_name,
+            },
+        )
+        return types.Exam(
+            name=results['exam']['name'],
+            num_questions=results['exam']['numQuestions'],
+            max_wrong=results['exam']['maxWrong'],
+            timelimit=results['exam']['timelimit'],
+            hsk_level=results['exam']['hskLevel'],
+            deck=[
+                types.Question(
+                    question=card['question'],
+                    meaning=card['meaning'],
+                    valid_answers=card['validAnswers'],
+                )
+                for card in results['exam']['deck']
+            ]
+        )
