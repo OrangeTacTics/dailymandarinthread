@@ -1,7 +1,6 @@
 from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
-import asyncio
 import random
 
 import discord
@@ -97,7 +96,6 @@ class ExamCog(ChairmanMaoCog):
         exam = await self.chairmanmao.api.exam(exam_name)
         new_card = [q for q in exam.deck if q.question == question][0]
         await ctx.send(f'Card has been updated:\nOLD: {old_card}\nNEW: {new_card}')
-
 
     @exam.command(name="list")
     async def cmd_exam_list(self, ctx):

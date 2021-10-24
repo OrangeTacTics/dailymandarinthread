@@ -558,7 +558,7 @@ class Api:
         exam_name: str,
         question: str,
         *,
-        new_valid_answers: t.Optional[List[str]] = None,
+        new_valid_answers: t.Optional[t.List[str]] = None,
     ) -> None:
         results = await self.client.query(
             """
