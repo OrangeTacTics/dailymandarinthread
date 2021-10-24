@@ -8,26 +8,16 @@ from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse
 from .graphql.schema import schema
 from .graphql.context import ChairmanMaoGraphQL
 
-from dotenv import load_dotenv
-import pymongo
 import os
 
 
 def make_app() -> t.Any:
-    MONGODB_URL = os.getenv("MONGODB_URL")
-    MONGODB_DB = os.getenv("MONGODB_DB")
     CLIENT_ID = os.getenv("DISCORD_CLIENT_ID")
     CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET")
     JWT_KEY = t.cast(str, os.getenv("JWT_KEY"))
     SERVER_HOSTNAME = os.getenv("SERVER_HOSTNAME", "")
 
-
-    client = pymongo.MongoClient(MONGODB_URL)
-    db = client[MONGODB_DB]
-
     app = FastAPI()
-
-    Json = t.Any
 
     graphql_app = ChairmanMaoGraphQL(schema)
 
@@ -200,7 +190,7 @@ def make_app() -> t.Any:
         return access_token
 
 
-    async def get_discord_profile(access_token: str) -> Json:
+    async def get_discord_profile(access_token: str) -> t.Any:
         headers = {
             "Authorization": f"Bearer {access_token}",
         }

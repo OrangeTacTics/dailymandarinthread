@@ -1,3 +1,4 @@
+import subprocess
 import os
 import sys
 import asyncio
@@ -13,6 +14,13 @@ load_dotenv()
 
 MONGODB_TEST_URL = os.getenv('MONGODB_TEST_URL')
 MONGODB_TEST_DB = os.getenv('MONGODB_TEST_DB')
+
+
+proc = subprocess.Popen([
+    'poetry',
+    'run',
+    'server-testing',
+])
 
 
 @pytest.fixture
