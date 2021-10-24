@@ -49,15 +49,15 @@ class BumpCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.bot:
-            return
-
-        if self.seconds_since_last_bump() < TWO_HOURS_IN_SECONDS:
-            return
-
         constants = self.chairmanmao.constants()
         if message.channel == constants.bump_channel:
             if message.content.strip() == "!d bump":
+                if message.author.bot:
+                    return
+
+                if self.seconds_since_last_bump() < TWO_HOURS_IN_SECONDS:
+                    return
+
                 self.has_notified = False
                 self.last_bump = await self.chairmanmao.api.set_last_bump()
                 await self.chairmanmao.api.transfer(
