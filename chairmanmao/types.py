@@ -65,7 +65,13 @@ class Question:
     meaning: str
 
     def is_correct(self, answer: str) -> bool:
-        return answer.lower() in self.valid_answers
+        for valid_answer in self.valid_answers:
+            answer_fixed = answer.lower().replace(' ', '').replace('5', '')
+            valid_answer_fixed = valid_answer.lower().replace(' ', '').replace('5', '')
+            if  answer_fixed == valid_answer_fixed:
+                return True
+
+        return False
 
 
 UserId = int
