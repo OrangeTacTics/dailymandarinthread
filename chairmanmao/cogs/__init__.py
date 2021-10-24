@@ -6,6 +6,7 @@ class ChairmanMaoCog(commands.Cog):
         self.client = client
         self.chairmanmao = chairmanmao
         self.logger = chairmanmao.logger
+        self.api = chairmanmao.api
         self.init()
 
     async def cog_before_invoke(self, ctx: commands.Context):

@@ -7,15 +7,15 @@ from chairmanmao.cogs import ChairmanMaoCog
 class WelcomeCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("WelcomeCog")
+        self.logger.info("WelcomeCog")
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
         constants = self.chairmanmao.constants()
         username = self.chairmanmao.member_to_username(member)
 
-        if await self.chairmanmao.api.is_registered(member.id):
-            self.chairmanmao.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
+        if await self.api.is_registered(member.id):
+            self.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
 
             embed = discord.Embed(
                 title="A former Comrade has rejoined us!",
@@ -48,14 +48,14 @@ class WelcomeCog(ChairmanMaoCog):
             await constants.apologies_channel.send(embed=embed)
 
         else:
-            await self.chairmanmao.api.register(member.id, username)
+            await self.api.register(member.id, username)
 
-            self.chairmanmao.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
+            self.logger.info(f"A new Comrade has joined us: {username}. Member ID: {member.id}.")
 
             try:
                 await self.welcome(member)
             except:
-                self.chairmanmao.logger.info(f"Could not send welcome message to {username}. Member ID: {member.id}.")
+                self.logger.info(f"Could not send welcome message to {username}. Member ID: {member.id}.")
 
             embed = discord.Embed(
                 title="A new Comrade has joined us!",
@@ -74,9 +74,9 @@ class WelcomeCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         username = self.chairmanmao.member_to_username(member)
-        self.chairmanmao.logger.info(f"User left: {username}. Member ID: {member.id}.")
+        self.logger.info(f"User left: {username}. Member ID: {member.id}.")
         constants = self.chairmanmao.constants()
-        await self.chairmanmao.api.jail(member.id)
+        await self.api.jail(member.id)
 
         embed = discord.Embed(
             title="A Comrade has defected!",
@@ -138,7 +138,7 @@ class WelcomeCog(ChairmanMaoCog):
     @commands.is_owner()
     @commands.command(name="register")
     async def cmd_register(self, ctx, member: commands.MemberConverter):
-        assert not await self.chairmanmao.api.is_registered(member.id)
+        assert not await self.api.is_registered(member.id)
         username = self.chairmanmao.member_to_username(member)
-        await self.chairmanmao.api.register(member.id, username)
+        await self.api.register(member.id, username)
         self.chairmanmao.queue_member_update(member.id)

@@ -9,23 +9,23 @@ from chairmanmao.cogs import ChairmanMaoCog
 class PartyCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("PartyCog")
+        self.logger.info("PartyCog")
 
     @commands.command(name="stepdown", help="Remove 共产党员 role.")
     @commands.has_role("共产党员")
     async def cmd_stepdown(self, ctx):
-        await self.chairmanmao.api.demote(ctx.author.id)
+        await self.api.demote(ctx.author.id)
         self.chairmanmao.queue_member_update(ctx.author.id)
         await ctx.send(f"{ctx.author.display_name} has stepped down from the CCP.")
 
     @commands.command(name="jail")
     @commands.has_role("共产党员")
     async def cmd_jail(self, ctx, member: commands.MemberConverter, *, reason: t.Optional[str] = None):
-        await self.chairmanmao.api.jail(member.id)
+        await self.api.jail(member.id)
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
-        self.chairmanmao.logger.info(f"{ctx.author.display_name} has jailed Comrade {username}. Reason: {repr(reason)}")
+        self.logger.info(f"{ctx.author.display_name} has jailed Comrade {username}. Reason: {repr(reason)}")
 
         embed = discord.Embed(
             title="Comrade has been jailed!",
@@ -45,16 +45,16 @@ class PartyCog(ChairmanMaoCog):
             )
 
         await constants.apologies_channel.send(embed=embed)
-        await self.chairmanmao.api.dishonor(member.id, 25)
+        await self.api.dishonor(member.id, 25)
 
     @commands.command(name="unjail")
     @commands.has_role("共产党员")
     async def cmd_unjail(self, ctx, member: commands.MemberConverter):
-        await self.chairmanmao.api.unjail(member.id)
+        await self.api.unjail(member.id)
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
-        self.chairmanmao.logger.info(f"{ctx.author.display_name} has unjailed Comrade {username}.")
+        self.logger.info(f"{ctx.author.display_name} has unjailed Comrade {username}.")
 
         embed = discord.Embed(
             title="Comrade has been unjailed!",
@@ -89,7 +89,7 @@ class PartyCog(ChairmanMaoCog):
                 return
 
         #        target_username = self.chairmanmao.member_to_username(member)
-        #        new_credit = await self.chairmanmao.api.honor(member.id, credit)
+        #        new_credit = await self.api.honor(member.id, credit)
         #        old_credit = new_credit - credit
 
         self.chairmanmao.queue_member_update(member.id)
@@ -134,7 +134,7 @@ class PartyCog(ChairmanMaoCog):
                 return
 
         #        target_username = self.chairmanmao.member_to_username(member)
-        #        new_credit = await self.chairmanmao.api.dishonor(member.id, credit)
+        #        new_credit = await self.api.dishonor(member.id, credit)
         #        old_credit = new_credit + credit
 
         self.chairmanmao.queue_member_update(member.id)

@@ -7,7 +7,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class ActivityCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("ActivityCog")
+        self.logger.info("ActivityCog")
         self.activity_queue = set()
         self.loop.start()
 
@@ -15,7 +15,7 @@ class ActivityCog(ChairmanMaoCog):
     async def loop(self):
         user_ids = list(self.activity_queue)
         self.activity_queue = set()
-        await self.chairmanmao.api.alert_activity(user_ids)
+        await self.api.alert_activity(user_ids)
 
     @commands.Cog.listener()
     async def on_message(self, message):

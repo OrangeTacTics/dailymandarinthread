@@ -13,7 +13,7 @@ class TiananmenCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("TiananmenCog")
+        self.logger.info("TiananmenCog")
         self.loop.start()
 
     @commands.Cog.listener()
@@ -42,7 +42,7 @@ class TiananmenCog(ChairmanMaoCog):
             and message.channel != constants.apologies_channel
         ):
             if is_infraction(message):
-                self.chairmanmao.api.jail(message.author.id)
+                self.api.jail(message.author.id)
                 self.chairmanmao.queue_member_update(message.author.id)
                 self.logger.info("Jailed new user for infraction")
 

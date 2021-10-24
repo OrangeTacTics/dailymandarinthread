@@ -6,7 +6,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class InvitesCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("InvitesCog")
+        self.logger.info("InvitesCog")
 
 
 # INVITES = {}

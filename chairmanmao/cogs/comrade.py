@@ -7,7 +7,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class ComradeCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("ComradeCog")
+        self.logger.info("ComradeCog")
 
     @commands.command(name="name", help="Set your name.")
     @commands.has_role("同志")
@@ -16,7 +16,7 @@ class ComradeCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
 
         try:
-            await self.chairmanmao.api.set_name(member.id, name)
+            await self.api.set_name(member.id, name)
         except:  # noqa
             #        await ctx.send("Names are 32 character max.")
             #        return
@@ -31,28 +31,28 @@ class ComradeCog(ChairmanMaoCog):
         if member is None:
             member = ctx.author
 
-        yuan = await self.chairmanmao.api.yuan(member.id)
+        yuan = await self.api.yuan(member.id)
         username = self.chairmanmao.member_to_username(member)
         await ctx.send(f"{username} has {yuan} RMB.")
 
     @commands.command(name="give")
     @commands.has_role("同志")
     async def cmd_give(self, ctx, to_member: commands.MemberConverter, amount: int):
-        await self.chairmanmao.api.transfer(ctx.author.id, to_member.id, amount)
+        await self.api.transfer(ctx.author.id, to_member.id, amount)
         await ctx.send(f"{ctx.author.mention} has given {amount} RMB to {to_member.mention}")
 
     @commands.command(name="mine", help="Mine a word.")
     @commands.has_role("同志")
     async def cmd_mine(self, ctx, word: str):
         username = self.chairmanmao.member_to_username(ctx.author)
-        await self.chairmanmao.api.mine(ctx.author.id, word)
+        await self.api.mine(ctx.author.id, word)
 
         await ctx.send(f"{username} has mined: {word}")
 
     @commands.command(name="definition")
     @commands.has_role("同志")
     async def cmd_definition(self, ctx, word: str):
-        definitions = await self.chairmanmao.api.lookup_word(word)
+        definitions = await self.api.lookup_word(word)
 
         if len(definitions) == 0:
             await ctx.send("Word not found: " + word)

@@ -14,7 +14,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class DrawCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("DrawCog")
+        self.logger.info("DrawCog")
 
     @commands.command(name="draw", help="Draw a simplified hanzi character.")
     @commands.has_role("同志")

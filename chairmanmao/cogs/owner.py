@@ -9,7 +9,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 class OwnerCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("OwnersCog")
+        self.logger.info("OwnersCog")
 
     @commands.command(name="debug")
     @commands.is_owner()
@@ -19,14 +19,14 @@ class OwnerCog(ChairmanMaoCog):
     @commands.command(name="promote")
     @commands.is_owner()
     async def cmd_promote(self, ctx, member: commands.MemberConverter):
-        await self.chairmanmao.api.promote(member.id)
+        await self.api.promote(member.id)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{ctx.author.display_name} has been promoted to the CCP.")
 
     @commands.command(name="demote")
     @commands.is_owner()
     async def cmd_demote(self, ctx, member: commands.MemberConverter):
-        await self.chairmanmao.api.demote(member.id)
+        await self.api.demote(member.id)
         self.chairmanmao.queue_member_update(member.id)
 
     @commands.command(name="setname", help="Sets the name of another user.")
@@ -35,7 +35,7 @@ class OwnerCog(ChairmanMaoCog):
         target_username = self.chairmanmao.member_to_username(member)
 
         try:
-            await self.chairmanmao.api.set_name(member.id, name)
+            await self.api.set_name(member.id, name)
         except:  # noqa
             #        await ctx.send("Names are 32 character max.")
             #        return
@@ -48,7 +48,7 @@ class OwnerCog(ChairmanMaoCog):
     @commands.is_owner()
     async def cmd_setlearner(self, ctx, member: commands.MemberConverter, flag: bool = True):
         target_username = self.chairmanmao.member_to_username(member)
-        await self.chairmanmao.api.set_learner(flag)
+        await self.api.set_learner(flag)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
 
@@ -56,7 +56,7 @@ class OwnerCog(ChairmanMaoCog):
     @commands.is_owner()
     async def cmd_sethsk(self, ctx, member: commands.MemberConverter, hsk_level: t.Optional[int]):
         target_username = self.chairmanmao.member_to_username(member)
-        await self.chairmanmao.api.set_hsk(member.id, hsk_level)
+        await self.api.set_hsk(member.id, hsk_level)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{target_username}'s HSK level has been changed to {hsk_level}")
 

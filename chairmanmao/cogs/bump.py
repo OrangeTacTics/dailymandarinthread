@@ -18,8 +18,8 @@ class BumpCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.chairmanmao.logger.info("BumpCog")
-        self.last_bump = await self.chairmanmao.api.last_bump()
+        self.logger.info("BumpCog")
+        self.last_bump = await self.api.last_bump()
         self.loop_bump_timer.start()
 
     def seconds_since_last_bump(self) -> int:
@@ -45,7 +45,7 @@ class BumpCog(ChairmanMaoCog):
     @commands.command(name="last_bump")
     @commands.has_role("同志")
     async def cmd_a(self, ctx):
-        await ctx.send("Last Bump: " + str(await self.chairmanmao.api.last_bump()))
+        await ctx.send("Last Bump: " + str(await self.api.last_bump()))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -59,10 +59,10 @@ class BumpCog(ChairmanMaoCog):
                     return
 
                 self.has_notified = False
-                self.last_bump = await self.chairmanmao.api.set_last_bump()
-                await self.chairmanmao.api.transfer(
+                self.last_bump = await self.api.set_last_bump()
+                await self.api.transfer(
                     await self.chairmanmao.chairmanmao_user_id(),
                     message.author.id,
                     1,
                 )
-                self.chairmanmao.logger.info("Server has been bumped")
+                self.logger.info("Server has been bumped")
