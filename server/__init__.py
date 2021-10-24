@@ -1,8 +1,10 @@
+from .server import app
+
+
 def main():
     import os
     import uvicorn
     from dotenv import load_dotenv
-    from .server import app
 
     load_dotenv()
 
