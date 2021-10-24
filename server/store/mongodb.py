@@ -25,7 +25,7 @@ class MongoDbDocumentStore(DocumentStore):
 
         assert not self.profile_exists(user_id)
 
-        if discord_username == os.environ['BOT_USERNAME']:
+        if discord_username == os.environ["BOT_USERNAME"]:
             profile.yuan = 10000
 
         self.profiles.insert_one(profile_to_json(profile))
@@ -50,7 +50,7 @@ class MongoDbDocumentStore(DocumentStore):
         return [profile_from_json(p) for p in self.profiles.find({})]
 
     def get_exam_names(self) -> t.List[str]:
-        return [exam['name'] for exam in self.exams.find({})]
+        return [exam["name"] for exam in self.exams.find({})]
 
     def load_exam(self, exam_name: str) -> t.Optional[Exam]:
         exam_json = self.exams.find_one({"name": exam_name})

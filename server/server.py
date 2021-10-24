@@ -24,7 +24,6 @@ def make_app() -> t.Any:
     app.add_route("/graphql", graphql_app)
     app.add_websocket_route("/graphql", graphql_app)
 
-
     @app.middleware("http")
     async def add_graphql_context(request: Request, call_next):
         if "Authorization" in request.headers:
@@ -40,7 +39,6 @@ def make_app() -> t.Any:
 
         response = await call_next(request)
         return response
-
 
     async def query_graphql(
         query: str,
@@ -65,7 +63,6 @@ def make_app() -> t.Any:
 
         return resp.json()["data"]
 
-
     @app.get("/profile/{user_id}")
     async def route_profile_memberid(
         request: Request,
@@ -87,7 +84,6 @@ def make_app() -> t.Any:
         data = await query_graphql(query, auth_token, params)
 
         return PlainTextResponse(content=json.dumps(data, indent=4, ensure_ascii=False))
-
 
     @app.get("/profile/search/{query_string}")
     async def route_profile_search(
@@ -115,7 +111,6 @@ def make_app() -> t.Any:
             return RedirectResponse(f"/profile/{user_id}")
         else:
             return PlainTextResponse(content="User not found")
-
 
     @app.get("/profile")
     async def route_profile(
@@ -145,7 +140,6 @@ def make_app() -> t.Any:
             json_str = json.dumps(data, indent=4, ensure_ascii=False)
             return PlainTextResponse(content=json_str)
 
-
     @app.get("/leaderboard")
     async def route_leaderboard():
         query = """
@@ -161,12 +155,10 @@ def make_app() -> t.Any:
         json_str = json.dumps(data, indent=4, ensure_ascii=False)
         return PlainTextResponse(content=json_str)
 
-
     @app.get("/logout")
     async def route_logout(response: JSONResponse):
         response.delete_cookie(key="token")
         return "Bye"
-
 
     async def code_to_access_token(code: str) -> str:
         url = "https://discord.com/api/oauth2/token"
@@ -189,7 +181,6 @@ def make_app() -> t.Any:
         access_token = oauth_resp.json()["access_token"]
         return access_token
 
-
     async def get_discord_profile(access_token: str) -> t.Any:
         headers = {
             "Authorization": f"Bearer {access_token}",
@@ -199,7 +190,6 @@ def make_app() -> t.Any:
             response = await client.get("https://discord.com/api/v9/users/@me", headers=headers)
         profile = response.json()
         return profile
-
 
     @app.get("/login")
     async def route_login(request: Request, code: t.Optional[str] = None):

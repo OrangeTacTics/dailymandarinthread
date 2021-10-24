@@ -43,7 +43,7 @@ class Api:
 
     async def is_registered(self, user_id: UserId) -> bool:
         results = await self.client.named_query(
-            'isRegistered',
+            "isRegistered",
             {
                 "userId": str(user_id),
             },
@@ -52,7 +52,7 @@ class Api:
 
     async def register(self, user_id: UserId, discord_username: str) -> None:
         await self.client.named_query(
-            'register',
+            "register",
             {
                 "userId": str(user_id),
                 "discordUsername": discord_username,
@@ -61,7 +61,7 @@ class Api:
 
     async def get_sync_info(self, user_id: UserId) -> SyncInfo:
         results = await self.client.named_query(
-            'getSyncInfo',
+            "getSyncInfo",
             {
                 "userId": str(user_id),
             },
@@ -87,7 +87,7 @@ class Api:
 
     async def get_user_id(self, discord_username: str) -> UserId:
         results = await self.client.named_query(
-            'getUserId',
+            "getUserId",
             {
                 "discordUsername": discord_username,
             },
@@ -96,7 +96,7 @@ class Api:
 
     async def honor(self, user_id: UserId, credit: int) -> int:
         results = await self.client.named_query(
-            'honor',
+            "honor",
             {
                 "userId": str(user_id),
                 "credit": credit,
@@ -106,7 +106,7 @@ class Api:
 
     async def dishonor(self, user_id: UserId, credit: int) -> int:
         results = await self.client.named_query(
-            'dishonor',
+            "dishonor",
             {
                 "userId": str(user_id),
                 "credit": credit,
@@ -116,7 +116,7 @@ class Api:
 
     async def promote(self, user_id: UserId) -> None:
         await self.client.named_query(
-            'promote',
+            "promote",
             {
                 "userId": str(user_id),
             },
@@ -124,7 +124,7 @@ class Api:
 
     async def demote(self, user_id: UserId) -> None:
         await self.client.named_query(
-            'demote',
+            "demote",
             {
                 "userId": str(user_id),
             },
@@ -132,7 +132,7 @@ class Api:
 
     async def get_hsk(self, user_id: UserId) -> t.Optional[int]:
         results = await self.client.named_query(
-            'getHsk',
+            "getHsk",
             {
                 "userId": str(user_id),
             },
@@ -141,7 +141,7 @@ class Api:
 
     async def set_hsk(self, user_id: UserId, hsk_level: t.Optional[int]) -> None:
         await self.client.named_query(
-            'setHsk',
+            "setHsk",
             {
                 "userId": str(user_id),
                 "hsk": hsk_level,
@@ -150,7 +150,7 @@ class Api:
 
     async def last_seen(self, user_id: UserId) -> datetime:
         results = await self.client.named_query(
-            'lastSeen',
+            "lastSeen",
             {
                 "userId": str(user_id),
             },
@@ -159,7 +159,7 @@ class Api:
 
     async def jail(self, user_id: UserId) -> None:
         await self.client.named_query(
-            'jail',
+            "jail",
             {
                 "userId": str(user_id),
             },
@@ -167,7 +167,7 @@ class Api:
 
     async def unjail(self, user_id: UserId) -> None:
         await self.client.named_query(
-            'unjail',
+            "unjail",
             {
                 "userId": str(user_id),
             },
@@ -175,7 +175,7 @@ class Api:
 
     async def get_discord_username(self, user_id: UserId) -> str:
         results = await self.client.named_query(
-            'getDiscordUsername',
+            "getDiscordUsername",
             {
                 "userId": str(user_id),
             },
@@ -184,7 +184,7 @@ class Api:
 
     async def get_display_name(self, user_id: UserId) -> str:
         results = await self.client.named_query(
-            'getDisplayName',
+            "getDisplayName",
             {
                 "userId": str(user_id),
             },
@@ -193,7 +193,7 @@ class Api:
 
     async def social_credit(self, user_id: UserId) -> int:
         results = await self.client.named_query(
-            'socialCredit',
+            "socialCredit",
             {
                 "userId": str(user_id),
             },
@@ -202,7 +202,7 @@ class Api:
 
     async def set_learner(self, user_id: UserId, flag: bool) -> None:
         await self.client.named_query(
-            'setLearner',
+            "setLearner",
             {
                 "userId": str(user_id),
                 "flag": flag,
@@ -217,7 +217,7 @@ class Api:
 
     async def mine(self, user_id: UserId, word: str) -> None:
         await self.client.named_query(
-            'mine',
+            "mine",
             {
                 "userId": str(user_id),
                 "words": [word],
@@ -226,17 +226,17 @@ class Api:
 
     async def get_mined(self, user_id: UserId) -> t.List[str]:
         results = await self.client.named_query(
-            'getMined',
+            "getMined",
             {
                 "userId": str(user_id),
             },
         )
 
-        return results['profile']['minedWords']
+        return results["profile"]["minedWords"]
 
     async def yuan(self, user_id) -> int:
         results = await self.client.named_query(
-            'yuan',
+            "yuan",
             {
                 "userId": str(user_id),
             },
@@ -245,7 +245,7 @@ class Api:
 
     async def transfer(self, from_user_id: UserId, to_user_id: UserId, amount: int):
         await self.client.named_query(
-            'transfer',
+            "transfer",
             {
                 "fromUserId": str(from_user_id),
                 "toUserId": str(to_user_id),
@@ -255,7 +255,7 @@ class Api:
 
     async def leaderboard(self) -> t.List[LeaderboardEntry]:
         results = await self.client.named_query(
-            'leaderboard',
+            "leaderboard",
         )
 
         entries = []
@@ -271,7 +271,7 @@ class Api:
 
     async def set_name(self, user_id, name: str) -> None:
         await self.client.named_query(
-            'setName',
+            "setName",
             {
                 "userId": str(user_id),
                 "name": name,
@@ -283,7 +283,7 @@ class Api:
 
     async def alert_activity(self, user_id: UserId) -> None:
         await self.client.named_query(
-            'alertActivity',
+            "alertActivity",
             {
                 "userIds": [str(user_id)],
             },
@@ -291,19 +291,19 @@ class Api:
 
     async def last_bump(self) -> datetime:
         results = await self.client.named_query(
-            'lastBump',
+            "lastBump",
         )
         return datetime.fromisoformat(results["admin"]["serverSettings"]["lastBump"])
 
     async def set_last_bump(self) -> datetime:
         results = await self.client.named_query(
-            'setLastBump',
+            "setLastBump",
         )
         return datetime.fromisoformat(results["admin"]["setLastBump"])
 
     async def lookup_word(self, word: str) -> t.List[DictEntry]:
         results = await self.client.named_query(
-            'lookupWord',
+            "lookupWord",
             {
                 "word": word,
             },
@@ -321,31 +321,31 @@ class Api:
 
     async def get_exam_names(self) -> t.List[str]:
         results = await self.client.named_query(
-            'getExamNames',
+            "getExamNames",
         )
-        return [exam['name'] for exam in results["exams"]]
+        return [exam["name"] for exam in results["exams"]]
 
     async def exam(self, exam_name: str) -> t.Optional[types.Exam]:
         results = await self.client.named_query(
-            'exam',
+            "exam",
             {
                 "name": exam_name,
             },
         )
         return types.Exam(
-            name=results['exam']['name'],
-            num_questions=results['exam']['numQuestions'],
-            max_wrong=results['exam']['maxWrong'],
-            timelimit=results['exam']['timelimit'],
-            hsk_level=results['exam']['hskLevel'],
+            name=results["exam"]["name"],
+            num_questions=results["exam"]["numQuestions"],
+            max_wrong=results["exam"]["maxWrong"],
+            timelimit=results["exam"]["timelimit"],
+            hsk_level=results["exam"]["hskLevel"],
             deck=[
                 types.Question(
-                    question=card['question'],
-                    meaning=card['meaning'],
-                    valid_answers=card['validAnswers'],
+                    question=card["question"],
+                    meaning=card["meaning"],
+                    valid_answers=card["validAnswers"],
                 )
-                for card in results['exam']['deck']
-            ]
+                for card in results["exam"]["deck"]
+            ],
         )
 
     async def edit_exam_answers(
@@ -356,7 +356,7 @@ class Api:
         new_valid_answers: t.Optional[t.List[str]] = None,
     ) -> None:
         await self.client.named_query(
-            'editExamAnswers',
+            "editExamAnswers",
             {
                 "examName": exam_name,
                 "question": question,

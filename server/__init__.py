@@ -22,8 +22,8 @@ def main_test():
 
     load_dotenv()
 
-    os.environ['MONGODB_URL'] = os.environ['MONGODB_TEST_URL']
-    os.environ['MONGODB_DB'] = os.environ['MONGODB_TEST_DB']
+    os.environ["MONGODB_URL"] = os.environ["MONGODB_TEST_URL"]
+    os.environ["MONGODB_DB"] = os.environ["MONGODB_TEST_DB"]
 
     uvicorn.run(
         make_app(),

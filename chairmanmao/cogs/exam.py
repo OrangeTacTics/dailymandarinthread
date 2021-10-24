@@ -79,7 +79,7 @@ class ExamCog(ChairmanMaoCog):
     async def cmd_card(self, ctx, exam_name: str, question: str):
         exam = await self.chairmanmao.api.exam(exam_name)
         question = [q for q in exam.deck if q.question == question][0]
-        await ctx.send(f'Question: {question}')
+        await ctx.send(f"Question: {question}")
 
     @exam.command(name="edit")
     @commands.has_role("共产党员")
@@ -90,12 +90,12 @@ class ExamCog(ChairmanMaoCog):
         await self.chairmanmao.api.edit_exam_answers(
             exam_name,
             question,
-            new_valid_answers=[a.strip() for a in valid_answers_str.split(',')],
+            new_valid_answers=[a.strip() for a in valid_answers_str.split(",")],
         )
 
         exam = await self.chairmanmao.api.exam(exam_name)
         new_card = [q for q in exam.deck if q.question == question][0]
-        await ctx.send(f'Card has been updated:\nOLD: {old_card}\nNEW: {new_card}')
+        await ctx.send(f"Card has been updated:\nOLD: {old_card}\nNEW: {new_card}")
 
     @exam.command(name="list")
     async def cmd_exam_list(self, ctx):

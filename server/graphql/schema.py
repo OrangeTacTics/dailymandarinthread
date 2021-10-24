@@ -47,11 +47,7 @@ class Query:
 
     @s.field
     async def exams(self, info) -> t.List[Exam]:
-        return [
-            info.context.dataloaders.exam.load(name)
-            for name in
-            info.context.store.get_exam_names()
-        ]
+        return [info.context.dataloaders.exam.load(name) for name in info.context.store.get_exam_names()]
 
     @s.field
     def admin(self, info) -> AdminQuery:

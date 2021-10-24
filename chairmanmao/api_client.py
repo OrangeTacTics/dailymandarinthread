@@ -41,23 +41,23 @@ class GraphQLClient:
         return await self.query(query, variables)
 
     def _load_queries(self) -> None:
-        with open('data/queries.graphql') as infile:
+        with open("data/queries.graphql") as infile:
             query_lines = []
             for line in infile:
                 query_lines.append(line)
-                if line.rstrip() == '}':
-                    query = '\n'.join(query_lines).strip()
+                if line.rstrip() == "}":
+                    query = "\n".join(query_lines).strip()
                     query_name = self._query_name(query)
                     self.queries[query_name] = query
                     query_lines = []
 
     def _query_name(self, query: str) -> str:
-        assert query.startswith('mutation ') or query.startswith('query ')
-        start = query.index(' ') + 1
+        assert query.startswith("mutation ") or query.startswith("query ")
+        start = query.index(" ") + 1
         try:
-            end = query.index('(')
+            end = query.index("(")
         except:
-            end = query.index('{')
+            end = query.index("{")
 
         query_name = query[start:end]
         return query_name.strip()
