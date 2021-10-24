@@ -176,7 +176,6 @@ class Query:
         return results
 
 
-
 def parse_dictentry(line: str) -> DictEntry:
     traditional, simplified, *_ = line.split(" ")
     left_brace = line.index("[")
@@ -237,6 +236,33 @@ class ExamMutation:
         exam.deck = [q for q in exam.deck if q.question != question]
         info.context.store.store_exam(exam)
         return True
+
+    @s.field
+    async def edit_card(
+        self,
+        info,
+        question: str,
+        new_question: t.Optional[str] = None,
+        new_valid_answers: t.Optional[t.List[str]] = None,
+        new_meaning: t.Optional[str] = None,
+    ) -> bool:
+        exam = info.context.store.load_exam(self.name)
+        assert question in [q.question for q in exam.deck], "Question doesn't exists."
+        index = [q.question for q in exam.deck].index(question)
+        card = exam.deck[index]
+
+        if new_question is not None:
+            card.question = new_question
+
+        if new_valid_answers is not None:
+            card.valid_answers = new_valid_answers
+
+        if new_meaning is not None:
+            card.meaning = new_meaning
+
+        info.context.store.store_exam(exam)
+        return True
+
 
 @s.type
 class AdminMutation:
