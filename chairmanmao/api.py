@@ -560,7 +560,7 @@ class Api:
         *,
         new_valid_answers: t.Optional[t.List[str]] = None,
     ) -> None:
-        results = await self.client.query(
+        await self.client.query(
             """
             mutation m(
                 $examName: String!,
