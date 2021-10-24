@@ -1,0 +1,116 @@
+type AdminMutation {
+  register(userId: String!, discordUsername: String!): Profile!
+  alertActivity(userIds: [String!]!): DateTime!
+  honor(userId: String!, amount: Int!): Profile!
+  dishonor(userId: String!, amount: Int!): Profile!
+  transfer(fromUserId: String!, toUserId: String!, amount: Int!): Boolean!
+  jail(userId: String!): Profile!
+  unjail(userId: String!): Profile!
+  setName(userId: String!, name: String!): Profile!
+  setHsk(userId: String!, hsk: Int): Profile!
+  setParty(userId: String!, flag: Boolean! = true): Profile!
+  setLearner(userId: String!, flag: Boolean! = true): Profile!
+  mine(userId: String!, words: [String!]!, remove: Boolean! = false): Profile!
+  createExam(exam: NewExam!): Exam
+  editExam(examName: String!): ExamMutation
+  setLastBump: DateTime!
+}
+
+type AdminQuery {
+  allProfiles: [Profile!]!
+  serverSettings: ServerSettings!
+}
+
+"""Date with time (isoformat)"""
+scalar DateTime
+
+type DictEntry {
+  simplified: String!
+  traditional: String!
+  pinyinNumbered: String!
+  meanings: [String!]!
+  pinyin: String!
+  zhuyin: String!
+}
+
+type Exam {
+  name: String!
+  numQuestions: Int!
+  maxWrong: Int
+  timelimit: Int!
+  hskLevel: Int!
+  deck: [Question!]!
+}
+
+type ExamMutation {
+  name: String!
+  addCards(cards: [NewCard!]!): Boolean!
+  removeCard(question: String!): Boolean!
+  editCard(question: String!, newQuestion: String = null, newValidAnswers: [String!] = null, newMeaning: String = null): Boolean!
+}
+
+type Mutation {
+  admin: AdminMutation!
+  setName(name: String!): Profile!
+}
+
+input NewCard {
+  question: String!
+  meaning: String!
+  validAnswers: [String!]!
+}
+
+input NewExam {
+  name: String!
+  numQuestions: Int!
+  maxWrong: Int
+  timelimit: Int!
+  hskLevel: Int!
+  deck: [NewQuestion!]!
+}
+
+input NewQuestion {
+  question: String!
+  validAnswers: [String!]!
+  meaning: String!
+}
+
+type Profile {
+  userId: String!
+  discordUsername: String!
+  displayName: String!
+  credit: Int!
+  hanzi: [String!]!
+  minedWords: [String!]!
+  roles: [Role!]!
+  created: DateTime!
+  lastSeen: DateTime!
+  yuan: Int!
+  hsk: Int
+}
+
+type Query {
+  me: Profile
+  profile(userId: String = null, discordUsername: String = null): Profile
+  leaderboard: [Profile!]!
+  exam(name: String!): Exam
+  exams: [Exam!]!
+  admin: AdminQuery!
+  dict(word: String!): [DictEntry!]!
+}
+
+type Question {
+  question: String!
+  validAnswers: [String!]!
+  meaning: String!
+}
+
+enum Role {
+  Party
+  Learner
+  Jailed
+}
+
+type ServerSettings {
+  lastBump: DateTime!
+}
