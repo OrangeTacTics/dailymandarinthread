@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from chairmanmao.cogs import ChairmanMaoCog
 
@@ -8,13 +8,19 @@ class ActivityCog(ChairmanMaoCog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.chairmanmao.logger.info("ActivityCog")
+        self.activity_queue = set()
+        self.loop.start()
+
+    @tasks.loop(seconds=5)
+    async def loop(self):
+        user_ids = list(self.activity_queue)
+        self.activity_queue = set()
+        await self.chairmanmao.api.alert_activity(user_ids)
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        constants = self.chairmanmao.constants()
-        if message.author.bot:
-            return
-
         if isinstance(message.channel, discord.channel.TextChannel):
+            constants = self.chairmanmao.constants()
             if constants.comrade_role in message.author.roles:
-                await self.chairmanmao.api.alert_activity(message.author.id)
+                if not message.author.bot:
+                    self.activity_queue.add(message.author.id)

@@ -281,11 +281,11 @@ class Api:
     async def get_name(self, user_id: UserId) -> str:
         return await self.get_display_name(user_id)
 
-    async def alert_activity(self, user_id: UserId) -> None:
+    async def alert_activity(self, user_ids: t.List[UserId]) -> None:
         await self.client.named_query(
             "alertActivity",
             {
-                "userIds": [str(user_id)],
+                "userIds": [str(user_id) for user_id in user_ids],
             },
         )
 
