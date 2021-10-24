@@ -161,6 +161,7 @@ class ExamCog(ChairmanMaoCog):
             return
 
         self.active_exam.examiner.give_up()
+        await self.reply_to_answer(self.active_exam)
 
     async def next_exam_for(self, member: discord.Member) -> t.Optional[str]:
         current_hsk = await self.chairmanmao.api.get_hsk(member.id)
