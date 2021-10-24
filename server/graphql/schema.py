@@ -202,27 +202,32 @@ def parse_dictentry(line: str) -> DictEntry:
     )
 
 
+@s.input
+class NewCard:
+    question: str
+    meaning: str
+    valid_answers: t.List[str]
+
+
 @s.type
 class ExamMutation:
     name: str
 
     @s.field
-    async def add_card(self, info, question: str, meaning: str, valid_answers: t.List[str]) -> Question:
+    async def add_cards(self, info, cards: t.List[NewCard]) -> bool:
         exam = info.context.store.load_exam(self.name)
-        new_question = Question(
-            question=question,
-            meaning=meaning,
-            valid_answers=valid_answers,
-        )
+        for card in cards:
+            new_question = Question(
+                question=card.question,
+                meaning=card.meaning,
+                valid_answers=card.valid_answers,
+            )
 
-        assert question not in [q.question for q in exam.deck], 'Question already exists.'
-        exam.deck.append(new_question)
+            assert card.question not in [q.question for q in exam.deck], 'Question {card.question}already exists.'
+            exam.deck.append(new_question)
+
         info.context.store.store_exam(exam)
-        return Question(
-            question=question,
-            valid_answers=valid_answers,
-            meaning=meaning,
-        )
+        return True
 
     @s.field
     async def remove_card(self, info, question: str) -> bool:
