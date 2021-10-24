@@ -75,6 +75,24 @@ class ExamCog(ChairmanMaoCog):
             else:
                 await ctx.send(f"There are currently no exams ready for you.")
 
+    @exam.command(name="card")
+    @commands.has_role("共产党员")
+    async def cmd_card(self, ctx, exam_name: str, question: str):
+        exam = await self.chairmanmao.api.exam(exam_name)
+        question = [q for q in exam.deck if q.question == question][0]
+        await ctx.send(f'Question: {question}')
+
+    @exam.command(name="edit")
+    @commands.has_role("共产党员")
+    async def cmd_edit(self, ctx, exam_name: str, question: str, *, valid_answers_str: str):
+        await self.chairmanmao.api.edit_exam_answers(
+            exam_name,
+            question,
+            new_valid_answers=[a.strip() for a in valid_answers_str.split(' ')],
+        )
+        await ctx.send(f'Editing {exam_name}')
+
+
     @exam.command(name="list")
     async def cmd_exam_list(self, ctx):
         await ctx.send("Available exams: " + " ".join(await self.exam_names()))

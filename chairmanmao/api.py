@@ -552,3 +552,35 @@ class Api:
                 for card in results['exam']['deck']
             ]
         )
+
+    async def edit_exam_answers(
+        self,
+        exam_name: str,
+        question: str,
+        *,
+        new_valid_answers: t.Optional[List[str]] = None,
+    ) -> None:
+        results = await self.client.query(
+            """
+            mutation m(
+                $examName: String!,
+                $question: String!,
+                $validAnswers: [String!]!,
+            ) {
+                admin {
+                    editExam(examName: $examName) {
+                        editCard(
+                            question: $question,
+                            newValidAnswers: $validAnswers,
+                        )
+                    }
+                }
+            }
+
+            """,
+            {
+                "examName": exam_name,
+                "question": question,
+                "validAnswers": new_valid_answers,
+            },
+        )
