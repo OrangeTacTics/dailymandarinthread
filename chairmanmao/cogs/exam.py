@@ -85,12 +85,18 @@ class ExamCog(ChairmanMaoCog):
     @exam.command(name="edit")
     @commands.has_role("共产党员")
     async def cmd_edit(self, ctx, exam_name: str, question: str, *, valid_answers_str: str):
+        exam = await self.chairmanmao.api.exam(exam_name)
+        old_card = [q for q in exam.deck if q.question == question][0]
+
         await self.chairmanmao.api.edit_exam_answers(
             exam_name,
             question,
             new_valid_answers=[a.strip() for a in valid_answers_str.split(' ')],
         )
-        await ctx.send(f'Editing {exam_name}')
+
+        exam = await self.chairmanmao.api.exam(exam_name)
+        new_card = [q for q in exam.deck if q.question == question][0]
+        await ctx.send(f'Card has been updated:\nOLD: {old_card}\nNEW: {new_card}')
 
 
     @exam.command(name="list")
