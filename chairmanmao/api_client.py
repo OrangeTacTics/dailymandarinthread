@@ -60,4 +60,4 @@ class GraphQLClient:
             end = query.index('{')
 
         query_name = query[start:end]
-        return query_name
+        return query_name.strip()
