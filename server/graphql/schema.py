@@ -210,7 +210,7 @@ class ExamMutation:
                 valid_answers=card.valid_answers,
             )
 
-            assert card.question not in [q.question for q in exam.deck], 'Question {card.question}already exists.'
+            assert card.question not in [q.question for q in exam.deck], f'Question {card.question}already exists.'
             exam.deck.append(new_question)
 
         info.context.store.store_exam(exam)
