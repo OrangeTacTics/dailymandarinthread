@@ -29,11 +29,12 @@ flake8 = "^3.9.2"
 mypy = "^0.910"
 pytest = "^6.2.5"
 black = "^21.9b0"
+pytest_asyncio = "^0.16.0"
 
 [tool.poetry.scripts]
 chairmanmao = "chairmanmao:main"
 server = "server:main"
-list-members = "scripts.members:main"
+server-testing = "server:main_test"
 
 [tool.black]
 line-length = 120
