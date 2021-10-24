@@ -163,7 +163,7 @@ class Examiner:
             return TickResult.next_question
         elif self.timed_out():
             self.answers_given.append(Timeout())
-            self.pause_time = 2
+            self.pause_time = 1
             return TickResult.timeout
         else:
             self.current_question_time_left -= 1
