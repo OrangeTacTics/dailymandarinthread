@@ -42,14 +42,8 @@ class Api:
         self.client = GraphQLClient(endpoint, auth_token)
 
     async def is_registered(self, user_id: UserId) -> bool:
-        results = await self.client.query(
-            """
-            query q($userId: String!) {
-                profile(userId: $userId) {
-                    userId
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'isRegistered',
             {
                 "userId": str(user_id),
             },
@@ -57,16 +51,8 @@ class Api:
         return results["profile"] is not None
 
     async def register(self, user_id: UserId, discord_username: str) -> None:
-        await self.client.query(
-            """
-            mutation m($userId: String!, $discordUsername: String!) {
-                admin {
-                    register(userId: $userId, discordUsername: $discordUsername) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'register',
             {
                 "userId": str(user_id),
                 "discordUsername": discord_username,
@@ -74,18 +60,8 @@ class Api:
         )
 
     async def get_sync_info(self, user_id: UserId) -> SyncInfo:
-        results = await self.client.query(
-            """
-            query hsk($userId: String!) {
-                profile(userId: $userId) {
-                    userId
-                    displayName
-                    credit
-                    roles
-                    hsk
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'getSyncInfo',
             {
                 "userId": str(user_id),
             },
@@ -110,14 +86,8 @@ class Api:
         )
 
     async def get_user_id(self, discord_username: str) -> UserId:
-        results = await self.client.query(
-            """
-            query q($discordUsername: String!) {
-                profile(discordUsername: $discordUsername) {
-                    userId
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'getUserId',
             {
                 "discordUsername": discord_username,
             },
@@ -125,16 +95,8 @@ class Api:
         return results["profile"]["userId"]
 
     async def honor(self, user_id: UserId, credit: int) -> int:
-        results = await self.client.query(
-            """
-            mutation m($userId: String!, $credit: Int!) {
-                admin {
-                    honor(userId: $userId, amount: $credit) {
-                        credit
-                    }
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'honor',
             {
                 "userId": str(user_id),
                 "credit": credit,
@@ -143,16 +105,8 @@ class Api:
         return results["admin"]["honor"]["credit"]
 
     async def dishonor(self, user_id: UserId, credit: int) -> int:
-        results = await self.client.query(
-            """
-            mutation m($userId: String!, $credit: Int!) {
-                admin {
-                    dishonor(userId: $userId, amount: $credit) {
-                        credit
-                    }
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'dishonor',
             {
                 "userId": str(user_id),
                 "credit": credit,
@@ -161,46 +115,24 @@ class Api:
         return results["admin"]["dishonor"]["credit"]
 
     async def promote(self, user_id: UserId) -> None:
-        await self.client.query(
-            """
-            mutation m($userId: String!) {
-                admin {
-                    setParty(userId: $userId, flag: true) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'promote',
             {
                 "userId": str(user_id),
             },
         )
 
     async def demote(self, user_id: UserId) -> None:
-        await self.client.query(
-            """
-            mutation m($userId: String!) {
-                admin {
-                    setParty(userId: $userId, flag: false) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'demote',
             {
                 "userId": str(user_id),
             },
         )
 
     async def get_hsk(self, user_id: UserId) -> t.Optional[int]:
-        results = await self.client.query(
-            """
-            query hsk($userId: String!) {
-                profile(userId: $userId) {
-                    hsk
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'getHsk',
             {
                 "userId": str(user_id),
             },
@@ -208,16 +140,8 @@ class Api:
         return results["profile"]["hsk"]
 
     async def set_hsk(self, user_id: UserId, hsk_level: t.Optional[int]) -> None:
-        await self.client.query(
-            """
-            mutation m($userId: String!, $hsk: Int) {
-                admin {
-                    setHsk(userId: $userId, hsk: $hsk) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'setHsk',
             {
                 "userId": str(user_id),
                 "hsk": hsk_level,
@@ -225,14 +149,8 @@ class Api:
         )
 
     async def last_seen(self, user_id: UserId) -> datetime:
-        results = await self.client.query(
-            """
-            query q($userId: String!) {
-                profile(userId: $userId) {
-                    lastSeen
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'lastSeen',
             {
                 "userId": str(user_id),
             },
@@ -240,46 +158,24 @@ class Api:
         return datetime.fromisoformat(results["profile"]["lastSeen"])
 
     async def jail(self, user_id: UserId) -> None:
-        await self.client.query(
-            """
-            mutation m($userId: String!) {
-                admin {
-                    jail(userId: $userId) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'jail',
             {
                 "userId": str(user_id),
             },
         )
 
     async def unjail(self, user_id: UserId) -> None:
-        await self.client.query(
-            """
-            mutation m($userId: String!) {
-                admin {
-                    unjail(userId: $userId) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'unjail',
             {
                 "userId": str(user_id),
             },
         )
 
     async def get_discord_username(self, user_id: UserId) -> str:
-        results = await self.client.query(
-            """
-            query q($userId: String!) {
-                profile(userId: $userId) {
-                    discordUsername
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'getDiscordUsername',
             {
                 "userId": str(user_id),
             },
@@ -287,14 +183,8 @@ class Api:
         return results["profile"]["discordUsername"]
 
     async def get_display_name(self, user_id: UserId) -> str:
-        results = await self.client.query(
-            """
-            query q($userId: String!) {
-                profile(userId: $userId) {
-                    displayName
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'getDisplayName',
             {
                 "userId": str(user_id),
             },
@@ -302,14 +192,8 @@ class Api:
         return results["profile"]["displayName"]
 
     async def social_credit(self, user_id: UserId) -> int:
-        results = await self.client.query(
-            """
-            query q($userId: String!) {
-                profile(userId: $userId) {
-                    credit
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'socialCredit',
             {
                 "userId": str(user_id),
             },
@@ -317,16 +201,8 @@ class Api:
         return results["profile"]["credit"]
 
     async def set_learner(self, user_id: UserId, flag: bool) -> None:
-        await self.client.query(
-            """
-            mutation m($userId: String!, $flag: Boolean!) {
-                admin {
-                    setLearner(userId: $userId, flag: $flag) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'setLearner',
             {
                 "userId": str(user_id),
                 "flag": flag,
@@ -340,16 +216,8 @@ class Api:
         ...
 
     async def mine(self, user_id: UserId, word: str) -> None:
-        await self.client.query(
-            """
-            mutation alert($userId: String!, $words: [String!]!) {
-                admin {
-                    mine(userId: $userId, words: $words) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'mine',
             {
                 "userId": str(user_id),
                 "words": [word],
@@ -357,14 +225,8 @@ class Api:
         )
 
     async def yuan(self, user_id) -> int:
-        results = await self.client.query(
-            """
-            query q($userId: String!) {
-                profile(userId: $userId) {
-                    yuan
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'yuan',
             {
                 "userId": str(user_id),
             },
@@ -372,18 +234,8 @@ class Api:
         return results["profile"]["yuan"]
 
     async def transfer(self, from_user_id: UserId, to_user_id: UserId, amount: int):
-        await self.client.query(
-            """
-            mutation m($fromUserId: String!, $toUserId: String!, $amount: Int!) {
-                admin {
-                    transfer(
-                        fromUserId: $fromUserId,
-                        toUserId: $toUserId,
-                        amount: $amount,
-                    )
-                }
-            }
-            """,
+        await self.client.named_query(
+            'transfer',
             {
                 "fromUserId": str(from_user_id),
                 "toUserId": str(to_user_id),
@@ -392,15 +244,8 @@ class Api:
         )
 
     async def leaderboard(self) -> t.List[LeaderboardEntry]:
-        results = await self.client.query(
-            """
-            query q {
-                leaderboard {
-                    displayName
-                    credit
-                }
-            }
-            """
+        results = await self.client.named_query(
+            'leaderboard',
         )
 
         entries = []
@@ -415,16 +260,8 @@ class Api:
         return entries
 
     async def set_name(self, user_id, name: str) -> None:
-        await self.client.query(
-            """
-            mutation alert($userId: String!, $name: String!) {
-                admin {
-                    setName(userId: $userId, name: $name) {
-                        userId
-                    }
-                }
-            }
-            """,
+        await self.client.named_query(
+            'setName',
             {
                 "userId": str(user_id),
                 "name": name,
@@ -435,58 +272,28 @@ class Api:
         return await self.get_display_name(user_id)
 
     async def alert_activity(self, user_id: UserId) -> None:
-        await self.client.query(
-            """
-            mutation alert($userIds: [String!]!) {
-                admin {
-                    alertActivity(userIds: $userIds)
-                }
-            }
-            """,
+        await self.client.named_query(
+            'alertActivity',
             {
                 "userIds": [str(user_id)],
             },
         )
 
     async def last_bump(self) -> datetime:
-        results = await self.client.query(
-            """
-            query q {
-                admin {
-                    serverSettings {
-                        lastBump
-                    }
-                }
-            }
-            """
+        results = await self.client.named_query(
+            'lastBump',
         )
         return datetime.fromisoformat(results["admin"]["serverSettings"]["lastBump"])
 
     async def set_last_bump(self) -> datetime:
-        results = await self.client.query(
-            """
-            mutation q {
-                admin {
-                    setLastBump
-                }
-            }
-            """
+        results = await self.client.named_query(
+            'setLastBump',
         )
         return datetime.fromisoformat(results["admin"]["setLastBump"])
 
     async def lookup_word(self, word: str) -> t.List[DictEntry]:
-        results = await self.client.query(
-            """
-            query q($word: String!) {
-                dict(word: $word) {
-                    simplified
-                    meanings
-                    traditional
-                    pinyin
-                    zhuyin
-                }
-            }
-            """,
+        results = await self.client.named_query(
+            'lookupWord',
             {
                 "word": word,
             },
@@ -503,36 +310,14 @@ class Api:
         ]
 
     async def get_exam_names(self) -> t.List[str]:
-        results = await self.client.query(
-            """
-            query q {
-                exams {
-                    name
-                }
-            }
-            """
+        results = await self.client.named_query(
+            'getExamNames',
         )
         return [exam['name'] for exam in results["exams"]]
 
     async def exam(self, exam_name: str) -> t.Optional[types.Exam]:
-        results = await self.client.query(
-            """
-            query q($name: String!) {
-                exam(name: $name) {
-                    name
-                    numQuestions
-                    maxWrong
-                    timelimit
-                    hskLevel
-                    deck {
-                        question
-                        meaning
-                        validAnswers
-                    }
-                }
-            }
-
-            """,
+        results = await self.client.named_query(
+            'exam',
             {
                 "name": exam_name,
             },
@@ -560,24 +345,8 @@ class Api:
         *,
         new_valid_answers: t.Optional[t.List[str]] = None,
     ) -> None:
-        await self.client.query(
-            """
-            mutation m(
-                $examName: String!,
-                $question: String!,
-                $validAnswers: [String!]!,
-            ) {
-                admin {
-                    editExam(examName: $examName) {
-                        editCard(
-                            question: $question,
-                            newValidAnswers: $validAnswers,
-                        )
-                    }
-                }
-            }
-
-            """,
+        await self.client.named_query(
+            'editExamAnswers',
             {
                 "examName": exam_name,
                 "question": question,

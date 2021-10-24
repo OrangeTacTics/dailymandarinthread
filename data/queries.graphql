@@ -1,0 +1,228 @@
+query isRegistered($userId: String!) {
+    profile(userId: $userId) {
+        userId
+    }
+}
+
+mutation register($userId: String!, $discordUsername: String!) {
+    admin {
+        register(userId: $userId, discordUsername: $discordUsername) {
+            userId
+        }
+    }
+}
+
+query getSyncInfo($userId: String!) {
+    profile(userId: $userId) {
+        userId
+        displayName
+        credit
+        roles
+        hsk
+    }
+}
+
+query getUserId($discordUsername: String!) {
+    profile(discordUsername: $discordUsername) {
+        userId
+    }
+}
+
+mutation honor($userId: String!, $credit: Int!) {
+    admin {
+        honor(userId: $userId, amount: $credit) {
+            credit
+        }
+    }
+}
+
+mutation dishonor($userId: String!, $credit: Int!) {
+    admin {
+        dishonor(userId: $userId, amount: $credit) {
+            credit
+        }
+    }
+}
+
+mutation promote($userId: String!) {
+    admin {
+        setParty(userId: $userId, flag: true) {
+            userId
+        }
+    }
+}
+
+mutation demote($userId: String!) {
+    admin {
+        setParty(userId: $userId, flag: false) {
+            userId
+        }
+    }
+}
+
+query getHsk($userId: String!) {
+    profile(userId: $userId) {
+        hsk
+    }
+}
+
+mutation setHsk($userId: String!, $hsk: Int) {
+    admin {
+        setHsk(userId: $userId, hsk: $hsk) {
+            userId
+        }
+    }
+}
+
+query lastSeen($userId: String!) {
+    profile(userId: $userId) {
+        lastSeen
+    }
+}
+
+mutation jail($userId: String!) {
+    admin {
+        jail(userId: $userId) {
+            userId
+        }
+    }
+}
+
+mutation unjail($userId: String!) {
+    admin {
+        unjail(userId: $userId) {
+            userId
+        }
+    }
+}
+
+query getDiscordUsername($userId: String!) {
+    profile(userId: $userId) {
+        discordUsername
+    }
+}
+
+query getDisplayName($userId: String!) {
+    profile(userId: $userId) {
+        displayName
+    }
+}
+
+query socialCredit($userId: String!) {
+    profile(userId: $userId) {
+        credit
+    }
+}
+
+mutation setLearner($userId: String!, $flag: Boolean!) {
+    admin {
+        setLearner(userId: $userId, flag: $flag) {
+            userId
+        }
+    }
+}
+
+mutation mine($userId: String!, $words: [String!]!) {
+    admin {
+        mine(userId: $userId, words: $words) {
+            userId
+        }
+    }
+}
+
+query yuan($userId: String!) {
+    profile(userId: $userId) {
+        yuan
+    }
+}
+
+mutation transfer($fromUserId: String!, $toUserId: String!, $amount: Int!) {
+    admin {
+        transfer(
+            fromUserId: $fromUserId,
+            toUserId: $toUserId,
+            amount: $amount,
+        )
+    }
+}
+
+query leaderboard {
+    leaderboard {
+        displayName
+        credit
+    }
+}
+
+mutation setName($userId: String!, $name: String!) {
+    admin {
+        setName(userId: $userId, name: $name) {
+            userId
+        }
+    }
+}
+
+mutation alertActivity($userIds: [String!]!) {
+    admin {
+        alertActivity(userIds: $userIds)
+    }
+}
+
+query lastBump {
+    admin {
+        serverSettings {
+            lastBump
+        }
+    }
+}
+
+mutation setLastBump {
+    admin {
+        setLastBump
+    }
+}
+
+query lookupWord($word: String!) {
+    dict(word: $word) {
+        simplified
+        meanings
+        traditional
+        pinyin
+        zhuyin
+    }
+}
+
+query getExamNames {
+    exams {
+        name
+    }
+}
+
+query exam($name: String!) {
+    exam(name: $name) {
+        name
+        numQuestions
+        maxWrong
+        timelimit
+        hskLevel
+        deck {
+            question
+            meaning
+            validAnswers
+        }
+    }
+}
+
+mutation editExamAnswers(
+    $examName: String!,
+    $question: String!,
+    $validAnswers: [String!]!,
+) {
+    admin {
+        editExam(examName: $examName) {
+            editCard(
+                question: $question,
+                newValidAnswers: $validAnswers,
+            )
+        }
+    }
+}
