@@ -514,7 +514,7 @@ class Api:
         )
         return [exam['name'] for exam in results["exams"]]
 
-    async def exam(self, exam_name: str) -> t.Optional[Exam]:
+    async def exam(self, exam_name: str) -> t.Optional[types.Exam]:
         results = await self.client.query(
             """
             query q($name: String!) {
