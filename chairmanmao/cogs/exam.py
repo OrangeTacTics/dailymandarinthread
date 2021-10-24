@@ -91,7 +91,7 @@ class ExamCog(ChairmanMaoCog):
         await self.chairmanmao.api.edit_exam_answers(
             exam_name,
             question,
-            new_valid_answers=[a.strip() for a in valid_answers_str.split(' ')],
+            new_valid_answers=[a.strip() for a in valid_answers_str.split(',')],
         )
 
         exam = await self.chairmanmao.api.exam(exam_name)
