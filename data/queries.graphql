@@ -130,6 +130,12 @@ mutation mine($userId: String!, $words: [String!]!) {
     }
 }
 
+query getMined($userId: String!) {
+     profile(userId: $userId) {
+        minedWords
+    }
+}
+
 query yuan($userId: String!) {
     profile(userId: $userId) {
         yuan

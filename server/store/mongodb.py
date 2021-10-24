@@ -1,5 +1,6 @@
 from __future__ import annotations
 import typing as t
+import os
 from datetime import timezone
 
 import pymongo
@@ -23,6 +24,10 @@ class MongoDbDocumentStore(DocumentStore):
         profile = Profile.make(user_id, discord_username)
 
         assert not self.profile_exists(user_id)
+
+        if discord_username == os.environ['BOT_USERNAME']:
+            profile.yuan = 10000
+
         self.profiles.insert_one(profile_to_json(profile))
         return profile
 

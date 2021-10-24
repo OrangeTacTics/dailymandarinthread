@@ -224,6 +224,16 @@ class Api:
             },
         )
 
+    async def get_mined(self, user_id: UserId) -> t.List[str]:
+        results = await self.client.named_query(
+            'getMined',
+            {
+                "userId": str(user_id),
+            },
+        )
+
+        return results['profile']['minedWords']
+
     async def yuan(self, user_id) -> int:
         results = await self.client.named_query(
             'yuan',
