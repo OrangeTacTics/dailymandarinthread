@@ -238,9 +238,6 @@ class ExamCog(ChairmanMaoCog):
         )
         await active_exam.channel.send(embed=embed)
 
-        if isinstance(answer, Timeout) and not active_exam.examiner.finished():
-            await asyncio.sleep(1.5)
-
     async def send_exam_start_embed(self, active_exam: ActiveExam) -> None:
         exam = active_exam.exam
 
