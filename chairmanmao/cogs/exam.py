@@ -3,13 +3,12 @@ import typing as t
 from dataclasses import dataclass
 import asyncio
 import random
-import csv
 
 import discord
 from discord.ext import commands, tasks
 
 from chairmanmao.cogs import ChairmanMaoCog
-from chairmanmao.types import Exam, Question
+from chairmanmao.types import Exam
 from chairmanmao.exam import Examiner, TickResult
 from chairmanmao.exam import (
     Timeout,
@@ -58,7 +57,7 @@ class ExamCog(ChairmanMaoCog):
         if ctx.invoked_subcommand is None:
             exam_name = await self.next_exam_for(ctx.author)
             if exam_name is None:
-                await ctx.send("Available exams: " + " ".join(self.exam_names()))
+                await ctx.send("Available exams: " + " ".join(await self.exam_names()))
                 return
 
             if exam_name is not None:
@@ -78,7 +77,7 @@ class ExamCog(ChairmanMaoCog):
 
     @exam.command(name="list")
     async def cmd_exam_list(self, ctx):
-        await ctx.send("Available exams: " + " ".join(self.exam_names()))
+        await ctx.send("Available exams: " + " ".join(await self.exam_names()))
 
     @exam.command(name="start")
     async def cmd_exam_start(self, ctx, _exam_name: t.Optional[str] = None):
@@ -98,7 +97,7 @@ class ExamCog(ChairmanMaoCog):
 
         exam_name = await self.next_exam_for(ctx.author)
         if exam_name is not None:
-            exam: t.Optional[Exam] = EXAMS.get(exam_name)
+            exam: t.Optional[Exam] = await self.chairmanmao.api.exam(exam_name)
         else:
             exam = None
 
@@ -124,13 +123,13 @@ class ExamCog(ChairmanMaoCog):
         if exam_name is None:
             exam_name = await self.next_exam_for(ctx.author)
             if exam_name is None:
-                await ctx.send("Available exams: " + " ".join(self.exam_names()))
+                await ctx.send("Available exams: " + " ".join(await self.exam_names()))
                 return
 
-        exam: t.Optional[Exam] = EXAMS.get(exam_name)
+        exam: t.Optional[Exam] = await self.chairmanmao.api.exam(exam_name)
 
         if exam is None:
-            await ctx.send("Available exams: " + " ".join(self.exam_names()))
+            await ctx.send("Available exams: " + " ".join(await self.exam_names()))
             return
 
         constants = self.chairmanmao.constants()
@@ -168,14 +167,13 @@ class ExamCog(ChairmanMaoCog):
         if current_hsk is None:
             return "hsk1"
         else:
-            exam_name = f"hsk{current_hsk+1}"
-            if exam_name in EXAMS:
-                return exam_name
+            if current_hsk < 6:
+                return f"hsk{current_hsk+1}"
             else:
                 return None
 
-    def exam_names(self) -> t.List[str]:
-        return sorted(EXAMS.keys())
+    async def exam_names(self) -> t.List[str]:
+        return sorted(await self.chairmanmao.api.get_exam_names())
 
     def create_active_exam(
         self,
@@ -384,136 +382,6 @@ class ExamCog(ChairmanMaoCog):
             self.chairmanmao.logger.info(f"User {username} passed HSK {active_exam.exam.hsk_level}.")
             constants = self.chairmanmao.constants()
             await constants.commentators_channel.send(f"{username} passed the HSK {active_exam.exam.hsk_level} exam.")
-
-
-def make_hsk1_exam() -> Exam:
-    deck = []
-
-    with open("data/decks/hsk1.csv") as infile:
-        fieldnames = ["question", "answers", "meaning", "unused"]
-        reader = csv.DictReader(infile, fieldnames=fieldnames)
-
-        for word in reader:
-            deck.append(Question(word["question"], word["answers"].split(","), word["meaning"]))
-
-    return Exam(
-        name="HSK 1",
-        deck=deck,
-        num_questions=10,
-        max_wrong=2,
-        timelimit=10,
-        hsk_level=1,
-    )
-
-
-def make_hsk2_exam() -> Exam:
-    deck = []
-
-    with open("data/decks/hsk2.csv") as infile:
-        fieldnames = ["question", "answers", "meaning", "unused"]
-        reader = csv.DictReader(infile, fieldnames=fieldnames)
-
-        for word in reader:
-            deck.append(Question(word["question"], word["answers"].split(","), word["meaning"]))
-
-    return Exam(
-        name="HSK 2",
-        deck=deck,
-        num_questions=15,
-        max_wrong=2,
-        timelimit=8,
-        hsk_level=2,
-    )
-
-
-def make_hsk3_exam() -> Exam:
-    deck = []
-
-    with open("data/decks/hsk3.csv") as infile:
-        fieldnames = ["question", "answers", "meaning", "unused"]
-        reader = csv.DictReader(infile, fieldnames=fieldnames)
-
-        for word in reader:
-            deck.append(Question(word["question"], word["answers"].split(","), word["meaning"]))
-
-    return Exam(
-        name="HSK 3",
-        deck=deck,
-        num_questions=20,
-        max_wrong=2,
-        timelimit=7,
-        hsk_level=3,
-    )
-
-
-def make_hsk4_exam() -> Exam:
-    deck = []
-
-    with open("data/decks/hsk4.csv") as infile:
-        fieldnames = ["question", "answers", "meaning", "unused"]
-        reader = csv.DictReader(infile, fieldnames=fieldnames)
-
-        for word in reader:
-            deck.append(Question(word["question"], word["answers"].split(","), word["meaning"]))
-
-    return Exam(
-        name="HSK 4",
-        deck=deck,
-        num_questions=20,
-        max_wrong=2,
-        timelimit=7,
-        hsk_level=4,
-    )
-
-
-def make_hsk5_exam() -> Exam:
-    deck = []
-
-    with open("data/decks/hsk5.csv") as infile:
-        fieldnames = ["question", "answers", "meaning", "unused"]
-        reader = csv.DictReader(infile, fieldnames=fieldnames)
-
-        for word in reader:
-            deck.append(Question(word["question"], word["answers"].split(","), word["meaning"]))
-
-    return Exam(
-        name="HSK 5",
-        deck=deck,
-        num_questions=20,
-        max_wrong=2,
-        timelimit=7,
-        hsk_level=5,
-    )
-
-
-def make_hsk6_exam() -> Exam:
-    deck = []
-
-    with open("data/decks/hsk6.csv") as infile:
-        fieldnames = ["question", "answers", "meaning", "unused"]
-        reader = csv.DictReader(infile, fieldnames=fieldnames)
-
-        for word in reader:
-            deck.append(Question(word["question"], word["answers"].split(","), word["meaning"]))
-
-    return Exam(
-        name="HSK 6",
-        deck=deck,
-        num_questions=20,
-        max_wrong=2,
-        timelimit=7,
-        hsk_level=6,
-    )
-
-
-EXAMS: t.Dict[str, Exam] = {
-    "hsk1": make_hsk1_exam(),
-    "hsk2": make_hsk2_exam(),
-    "hsk3": make_hsk3_exam(),
-    "hsk4": make_hsk4_exam(),
-    "hsk5": make_hsk5_exam(),
-    "hsk6": make_hsk6_exam(),
-}
 
 
 @dataclass
