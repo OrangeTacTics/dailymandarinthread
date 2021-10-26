@@ -14,8 +14,9 @@ class ActivityCog(ChairmanMaoCog):
     @tasks.loop(seconds=5)
     async def loop(self):
         user_ids = list(self.activity_queue)
-        self.activity_queue = set()
-        await self.api.alert_activity(user_ids)
+        if len(user_ids) > 0:
+            self.activity_queue = set()
+            await self.api.alert_activity(user_ids)
 
     @commands.Cog.listener()
     async def on_message(self, message):
