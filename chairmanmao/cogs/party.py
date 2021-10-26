@@ -88,9 +88,7 @@ class PartyCog(ChairmanMaoCog):
                 await ctx.send("Party members can only honor 25 social credit at a time.")
                 return
 
-        #        target_username = self.chairmanmao.member_to_username(member)
-        #        new_credit = await self.api.honor(member.id, credit)
-        #        old_credit = new_credit - credit
+        await self.api.honor(member.id, credit)
 
         self.chairmanmao.queue_member_update(member.id)
 
@@ -133,9 +131,7 @@ class PartyCog(ChairmanMaoCog):
                 await ctx.send("Party members can only dishonor 25 social credit at a time.")
                 return
 
-        #        target_username = self.chairmanmao.member_to_username(member)
-        #        new_credit = await self.api.dishonor(member.id, credit)
-        #        old_credit = new_credit + credit
+        await self.api.dishonor(member.id, credit)
 
         self.chairmanmao.queue_member_update(member.id)
 
