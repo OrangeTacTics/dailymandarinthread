@@ -4,3 +4,4 @@ db/backups/**
 fonts
 *.egg-info
 dist
+ca-certificate.crt
