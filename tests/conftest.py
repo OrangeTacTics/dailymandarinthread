@@ -1,3 +1,5 @@
+import requests
+import time
 import subprocess
 import os
 import sys
@@ -21,6 +23,17 @@ proc = subprocess.Popen([
     'run',
     'server-testing',
 ])
+
+resp = requests.get('http://localhost:9666/graphql')
+attempts = 1
+while resp.status_code != 200 and attempts < 10:
+    time.sleep(0.25)
+    resp = requests.get('http://localhost:9666/graphql')
+    attempts += 1
+
+
+if attempts == 10:
+    raise Exception('Could not connect to development server.')
 
 
 @pytest.fixture
