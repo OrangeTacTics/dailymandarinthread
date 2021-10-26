@@ -39,9 +39,7 @@ class ExamCog(ChairmanMaoCog):
             if tick_result == TickResult.next_question:
                 await self.send_next_question(self.active_exam)
             elif tick_result == TickResult.finished:
-                await self.show_results(self.active_exam)
-                await self.mine_correct_answers(self.active_exam)
-                await self.reward(self.active_exam)
+                await self.finish(self.active_exam)
                 self.active_exam = None
             elif tick_result == TickResult.timeout:
                 await self.reply_to_answer(self.active_exam)
@@ -305,6 +303,12 @@ class ExamCog(ChairmanMaoCog):
         await active_exam.channel.send(file=file)
         self.logger.info(f"{question.question}　　{question.valid_answers[0]}")
 
+    async def finish(self, active_exam: ActiveExam) -> None:
+        print('Seed:', active_exam.seed)
+        await self.show_results(active_exam)
+        await self.mine_correct_answers(active_exam)
+        await self.reward(active_exam)
+
     async def show_results(self, active_exam: ActiveExam) -> None:
         lines = []
 
@@ -410,6 +414,7 @@ class ActiveExam:
     exam: Exam
     channel: discord.Channel
     member: discord.Member
+    seed: int
 
     @staticmethod
     def make(
@@ -418,9 +423,12 @@ class ActiveExam:
         exam: Exam,
         practice: bool = False,
     ) -> ActiveExam:
+        seed = random.getrandbits(64)
+
         examiner = Examiner.make(
             exam=exam,
             practice=practice,
+            seed=seed,
         )
 
         return ActiveExam(
@@ -428,4 +436,5 @@ class ActiveExam:
             exam=exam,
             member=member,
             channel=channel,
+            seed=seed,
         )

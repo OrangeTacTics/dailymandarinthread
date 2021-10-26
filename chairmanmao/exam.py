@@ -1,7 +1,7 @@
 from __future__ import annotations
 import typing as t
 from dataclasses import dataclass
-from random import Random, getrandbits
+from random import Random
 from enum import Enum
 
 from .types import Exam, Question
@@ -35,16 +35,13 @@ class Examiner:
     def make(
         exam: Exam,
         *,
+        seed: int,
         practice: bool = False,
-        seed: t.Optional[int] = None,
     ) -> Examiner:
         questions = list(exam.deck)
 
         if not practice:
             questions = questions[: exam.num_questions]
-
-        if seed is None:
-            seed = getrandbits(64)
 
         random_generator = Random(seed)
         random_generator.shuffle(questions)
