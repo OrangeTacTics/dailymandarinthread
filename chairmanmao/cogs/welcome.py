@@ -5,6 +5,10 @@ from chairmanmao.cogs import ChairmanMaoCog
 
 
 class WelcomeCog(ChairmanMaoCog):
+    def init(self) -> None:
+        with open('data/welcome.md') as infile:
+            self.welcome_message = infile.read()
+
     @commands.Cog.listener()
     async def on_ready(self):
         self.logger.info("WelcomeCog")
@@ -92,44 +96,8 @@ class WelcomeCog(ChairmanMaoCog):
         await constants.commentators_channel.send(embed=embed)
 
     async def welcome(self, member) -> None:
-        welcome_lines = [
-            "Welcome to the Daily Mandarin Thread",
-            "https://dailymandarinthread.info",
-            "",
-            "Our general chat channel is called #🐉网络评论员.",
-            "",
-            "The numbers in our members' usernames are their social credit score. Be a good citizen, "
-            "and you will see your social credit increase.",
-            "",
-            "You may use the `!learner` command to give yourself the @中文学习者 (Chinese learner) role. "
-            "This will give you access to our learning resources and to take exams.",
-            "",
-            "For more information about the various channels: https://dailymandarinthread.info/discord/channels/",
-            "",
-            "For more information about the various roles: https://dailymandarinthread.info/discord/roles/",
-            "",
-            "Some good commands to know about:",
-            "```",
-            "    !name",
-            "        Change your nickname.",
-            "",
-            "    !draw 猫",
-            "        Draws a character.",
-            "",
-            "    !learner",
-            "        Grants yourself the @中文学习者 role.",
-            "",
-            "    !exam",
-            "        Test your Chinese abilities. @中文学习者 only.",
-            "",
-            "    !leaderboard",
-            "        Shows the social credit leaderboard.",
-            "```",
-        ]
-        welcome_message = "\n".join(welcome_lines)
-
         channel = await member.create_dm()
-        await channel.send(welcome_message)
+        await channel.send(self.welcome_message)
 
     @commands.command(name="welcomeme")
     async def cmd_welcomeme(self, ctx):
