@@ -6,7 +6,7 @@ from chairmanmao.cogs import ChairmanMaoCog
 
 class WelcomeCog(ChairmanMaoCog):
     def init(self) -> None:
-        with open('data/welcome.md') as infile:
+        with open("data/welcome.md") as infile:
             self.welcome_message = infile.read()
 
     @commands.Cog.listener()
