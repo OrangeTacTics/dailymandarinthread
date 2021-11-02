@@ -1,11 +1,11 @@
 import typing as t
 
 import server.graphql.schema as schema
-from ..store import DocumentStore
+from ..store import MongoDbDocumentStore
 import server.store.types as types
 
 
-async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[schema.Profile]:
+async def load_profiles(store: MongoDbDocumentStore, user_ids: t.List[str]) -> t.List[schema.Profile]:
     results = []
     for user_id in user_ids:
         try:
@@ -18,7 +18,7 @@ async def load_profiles(store: DocumentStore, user_ids: t.List[str]) -> t.List[s
 
 
 async def load_profiles_by_discord_usernames(
-    store: DocumentStore, discord_usernames: t.List[str]
+    store: MongoDbDocumentStore, discord_usernames: t.List[str]
 ) -> t.List[schema.Profile]:
     results = []
     for discord_username in discord_usernames:
@@ -31,7 +31,7 @@ async def load_profiles_by_discord_usernames(
     return results
 
 
-async def load_exams(store: DocumentStore, exam_names: t.List[str]) -> t.List[schema.Exam]:
+async def load_exams(store: MongoDbDocumentStore, exam_names: t.List[str]) -> t.List[schema.Exam]:
     results = []
     for exam_name in exam_names:
         exam = store.load_exam(exam_name)

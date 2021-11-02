@@ -1,3 +1,3 @@
-from .document_store import DocumentStore
+from .mongodb import MongoDbDocumentStore
 
-_ = DocumentStore
+_ = MongoDbDocumentStore

@@ -6,19 +6,21 @@ from datetime import timezone
 import pymongo
 
 from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question
-from .document_store import DocumentStore
 
 
 SCHEMA_VERSION = 5
 
 
-class MongoDbDocumentStore(DocumentStore):
+class MongoDbDocumentStore:
     def __init__(self, mongo_url: str, mongo_db: str) -> None:
         self.mongo_client = pymongo.MongoClient(mongo_url)
         self.db = self.mongo_client[mongo_db]
         self.profiles = self.db["Profiles"]
         self.server_settings = self.db["ServerSettings"]
         self.exams = self.db["Exams"]
+
+    def profile(self, user_id: UserId) -> "OpenProfileContextManager":
+        return OpenProfileContextManager(self, user_id)
 
     def create_profile(self, user_id: UserId, discord_username: str) -> Profile:
         profile = Profile.make(user_id, discord_username)
@@ -50,7 +52,11 @@ class MongoDbDocumentStore(DocumentStore):
         return [profile_from_json(p) for p in self.profiles.find({})]
 
     def get_exam_names(self) -> t.List[str]:
-        return [exam["name"] for exam in self.exams.find({})]
+        return [exam["name"] for exam in self.exams.aggregate(
+            [
+                {"$project": {"name": 1, "_id": 0}},
+            ]
+        )]
 
     def load_exam(self, exam_name: str) -> t.Optional[Exam]:
         exam_json = self.exams.find_one({"name": exam_name})
@@ -146,3 +152,19 @@ def question_from_json(question_json: Json) -> Question:
         valid_answers=question_json["valid_answers"],
         meaning=question_json["meaning"],
     )
+
+
+class OpenProfileContextManager:
+    def __init__(self, store: MongoDbDocumentStore, user_id: UserId) -> None:
+        self.store = store
+        self.user_id = user_id
+        self.profile: t.Optional[Profile] = None
+
+    def __enter__(self) -> Profile:
+        self.profile = self.store.load_profile(self.user_id)
+        return self.profile
+
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
+        assert self.profile is not None
+        assert self.profile.user_id == self.user_id
+        self.store.store_profile(self.profile)
