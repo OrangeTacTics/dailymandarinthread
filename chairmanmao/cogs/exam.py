@@ -398,14 +398,28 @@ class ExamCog(ChairmanMaoCog):
             return
 
         if active_exam.examiner.passed():
+            constants = self.chairmanmao.constants()
             username = self.chairmanmao.member_to_username(active_exam.member)
 
             await self.api.set_learner(active_exam.member.id, True)
             await self.api.set_hsk(active_exam.member.id, active_exam.exam.hsk_level)
             self.chairmanmao.queue_member_update(active_exam.member.id)
+
             self.logger.info(f"User {username} passed HSK {active_exam.exam.hsk_level}.")
-            constants = self.chairmanmao.constants()
-            await constants.commentators_channel.send(f"{username} passed the HSK {active_exam.exam.hsk_level} exam.")
+
+            embed = discord.Embed(
+                title=f'{username} has passed an exam!',
+                description=f"{active_exam.member.mention} passed the HSK {active_exam.exam.hsk_level} exam.",
+                color=0x00ff00,
+            )
+            embed.set_author(
+                name=active_exam.member.display_name,
+                icon_url=active_exam.member.avatar_url,
+            )
+            score = active_exam.examiner.score() * 100
+            embed.add_field(name="Score", value=f"{score:2.1f}%", inline=True)
+
+            await constants.commentators_channel.send(embed=embed)
 
 
 @dataclass
