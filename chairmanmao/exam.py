@@ -40,11 +40,11 @@ class Examiner:
     ) -> Examiner:
         questions = list(exam.deck)
 
-        if not practice:
-            questions = questions[: exam.num_questions]
-
         random_generator = Random(seed)
         random_generator.shuffle(questions)
+
+        if not practice:
+            questions = questions[: exam.num_questions]
 
         timelimit = exam.timelimit if not practice else 30
 
