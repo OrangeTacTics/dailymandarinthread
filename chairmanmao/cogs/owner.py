@@ -21,7 +21,7 @@ class OwnerCog(ChairmanMaoCog):
     async def cmd_promote(self, ctx, member: commands.MemberConverter):
         await self.api.promote(member.id)
         self.chairmanmao.queue_member_update(member.id)
-        await ctx.send(f"{ctx.author.display_name} has been promoted to the CCP.")
+        await ctx.send(f"{member.display_name} has been promoted to the CCP.")
 
     @commands.command(name="demote")
     @commands.is_owner()

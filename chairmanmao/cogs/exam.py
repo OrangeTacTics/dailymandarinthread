@@ -304,7 +304,7 @@ class ExamCog(ChairmanMaoCog):
         self.logger.info(f"{question.question}　　{question.valid_answers[0]}")
 
     async def finish(self, active_exam: ActiveExam) -> None:
-        print('Seed:', active_exam.seed)
+        print("Seed:", active_exam.seed)
         await self.show_results(active_exam)
         await self.mine_correct_answers(active_exam)
         await self.reward(active_exam)
