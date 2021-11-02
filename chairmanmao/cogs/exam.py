@@ -408,9 +408,9 @@ class ExamCog(ChairmanMaoCog):
             self.logger.info(f"User {username} passed HSK {active_exam.exam.hsk_level}.")
 
             embed = discord.Embed(
-                title=f'{username} has passed an exam!',
+                title=f"{username} has passed an exam!",
                 description=f"{active_exam.member.mention} passed the HSK {active_exam.exam.hsk_level} exam.",
-                color=0x00ff00,
+                color=0x00FF00,
             )
             embed.set_author(
                 name=active_exam.member.display_name,
