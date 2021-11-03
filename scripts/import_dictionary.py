@@ -21,7 +21,7 @@ def parse_dictentry(line: str) -> DictEntry:
     traditional, simplified, *_ = line.split(" ")
     left_brace = line.index("[")
     right_brace = line.index("]")
-    pinyin_numbered = line[left_brace + 1 : right_brace]
+    pinyin_numbered = line[left_brace + 1 : right_brace].replace('u:', 'v')
 
     slash = line.index("/")
     meanings = []

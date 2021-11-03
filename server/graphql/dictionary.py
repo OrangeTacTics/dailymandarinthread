@@ -19,5 +19,6 @@ class DictEntry:
 
     @s.field
     def zhuyin(self) -> str:
-        zhuyin = pinyin_to_zhuyin(self.pinyin_numbered)
+        pinyin = " ".join(numbered_syllable_to_accented(s) for s in self.pinyin_numbered.split(" "))
+        zhuyin = pinyin_to_zhuyin(pinyin)
         return zhuyin
