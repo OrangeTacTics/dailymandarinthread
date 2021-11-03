@@ -78,11 +78,13 @@ class MongoDbDocumentStore:
         json_data = self.server_settings.find_one({})
         return ServerSettings(
             last_bump=json_data["last_bump"].replace(tzinfo=timezone.utc),
+            exams_disabled=json_data.get("exams_disabled", False),
         )
 
     def store_server_settings(self, server_settings: ServerSettings) -> None:
         doc = {
             "last_bump": server_settings.last_bump,
+            "exams_disabled": server_settings.exams_disabled,
         }
         self.server_settings.replace_one({}, doc)
 

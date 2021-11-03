@@ -23,7 +23,10 @@ class AdminQuery:
     @s.field
     async def server_settings(self, info) -> ServerSettings:
         server_settings = info.context.store.load_server_settings()
-        return ServerSettings(last_bump=server_settings.last_bump)
+        return ServerSettings(
+            last_bump=server_settings.last_bump,
+            exams_disabled=server_settings.exams_disabled,
+        )
 
 
 @s.type
@@ -177,3 +180,10 @@ class AdminMutation:
         server_settings.last_bump = now
         info.context.store.store_server_settings(server_settings)
         return now
+
+    @s.field
+    async def disable_exams(self, info, flag: bool = True) -> bool:
+        server_settings = info.context.store.load_server_settings()
+        server_settings.exams_disabled = flag
+        info.context.store.store_server_settings(server_settings)
+        return flag

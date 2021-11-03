@@ -14,6 +14,7 @@ type AdminMutation {
   createExam(exam: NewExam!): Exam
   editExam(examName: String!): ExamMutation
   setLastBump: DateTime!
+  disableExams(flag: Boolean! = true): Boolean!
 }
 
 type AdminQuery {
@@ -114,4 +115,5 @@ enum Role {
 
 type ServerSettings {
   lastBump: DateTime!
+  examsDisabled: Boolean!
 }

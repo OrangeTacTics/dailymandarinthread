@@ -70,6 +70,7 @@ class Role(Enum):
 @dataclass
 class ServerSettings:
     last_bump: datetime
+    exams_disabled: bool
 
 
 @dataclass

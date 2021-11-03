@@ -319,6 +319,20 @@ class Api:
             for result in results["dict"]
         ]
 
+    async def exams_disabled(self) -> bool:
+        results = await self.client.named_query(
+            "examsDisabled",
+        )
+        return results["admin"]["serverSettings"]["examsDisabled"]
+
+    async def disable_exams(self, flag: bool) -> None:
+        await self.client.named_query(
+            "disableExams",
+            {
+                "flag": flag,
+            },
+        )
+
     async def get_exam_names(self) -> t.List[str]:
         results = await self.client.named_query(
             "getExamNames",

@@ -203,6 +203,21 @@ query getExamNames {
     }
 }
 
+query examsDisabled {
+    admin {
+        serverSettings {
+            examsDisabled
+        }
+    }
+}
+
+
+mutation disableExams($flag: Boolean) {
+    admin {
+        disableExams(flag: $flag)
+    }
+}
+
 query exam($name: String!) {
     exam(name: $name) {
         name
