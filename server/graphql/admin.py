@@ -43,8 +43,25 @@ class AdminMutation:
         for user_id in user_ids:
             with info.context.store.profile(int(user_id)) as profile:
                 profile.last_seen = now
+                profile.defected = False
 
         return now
+
+    @s.field
+    async def set_defected(self, info, user_id: str, flag: bool = True) -> datetime:
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+        with info.context.store.profile(int(user_id)) as profile:
+            profile.defected = flag
+
+        return now
+
+    @s.field
+    async def sync_users(self, info, user_ids: t.List[str]) -> bool:
+        for profile in info.context.store.get_all_profiles():
+            with info.context.store.profile(int(profile.user_id)) as p:
+                p.defected = str(profile.user_id) not in user_ids
+
+        return True
 
     @s.field
     async def honor(self, info, user_id: str, amount: int) -> Profile:

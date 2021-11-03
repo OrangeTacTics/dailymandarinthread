@@ -1,6 +1,8 @@
 type AdminMutation {
   register(userId: String!, discordUsername: String!): Profile!
   alertActivity(userIds: [String!]!): DateTime!
+  setDefected(userId: String!, flag: Boolean! = true): DateTime!
+  syncUsers(userIds: [String!]!): Boolean!
   honor(userId: String!, amount: Int!): Profile!
   dishonor(userId: String!, amount: Int!): Profile!
   transfer(fromUserId: String!, toUserId: String!, amount: Int!): Boolean!

@@ -85,6 +85,14 @@ class Api:
             hsk_level=profile["hsk"],
         )
 
+    async def sync_users(self, user_ids: t.List[UserId]) -> None:
+        await self.client.named_query(
+            "syncUsers",
+            {
+                "userIds": user_ids,
+            },
+        )
+
     async def get_user_id(self, discord_username: str) -> UserId:
         results = await self.client.named_query(
             "getUserId",
@@ -145,6 +153,15 @@ class Api:
             {
                 "userId": str(user_id),
                 "hsk": hsk_level,
+            },
+        )
+
+    async def set_defected(self, user_id: UserId, flag: bool) -> None:
+        await self.client.named_query(
+            "setDefected",
+            {
+                "userId": str(user_id),
+                "flag": flag,
             },
         )
 

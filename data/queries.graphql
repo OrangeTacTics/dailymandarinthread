@@ -80,6 +80,18 @@ query lastSeen($userId: String!) {
     }
 }
 
+mutation syncUsers($userIds: [String!]!) {
+    admin {
+        syncUsers(userIds: $userIds)
+    }
+}
+
+mutation setDefected($userId: String!, $flag: Boolean!) {
+    admin {
+        setDefected(userId: $userId, flag: $flag)
+    }
+}
+
 mutation jail($userId: String!) {
     admin {
         jail(userId: $userId) {
