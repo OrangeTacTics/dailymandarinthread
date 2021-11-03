@@ -8,6 +8,7 @@
         {
             "question": "得",
             "valid_answers": [
+                "de5",
                 "de2"
             ],
             "meaning": "obtain | must | (complement particle)"
@@ -50,16 +51,14 @@
         {
             "question": "所有",
             "valid_answers": [
-                "suo3 you3",
-                "suo3you3"
+                "suo3 you3"
             ],
             "meaning": "to have; all"
         },
         {
             "question": "也许",
             "valid_answers": [
-                "ye3 xu3",
-                "ye3xu3"
+                "ye3 xu3"
             ],
             "meaning": "perhaps"
         },
@@ -73,15 +72,13 @@
         {
             "question": "不过",
             "valid_answers": [
-                "bu2 guo4",
-                "bu2guo4"
+                "bu2 guo4"
             ],
             "meaning": "only; merely; but; however ???"
         },
         {
             "question": "发生",
             "valid_answers": [
-                "fa1sheng1",
                 "fa1 sheng1"
             ],
             "meaning": "to take place, occur"
@@ -89,7 +86,6 @@
         {
             "question": "一切",
             "valid_answers": [
-                "yi2qie4",
                 "yi2 qie4"
             ],
             "meaning": "all, every"
@@ -104,7 +100,6 @@
         {
             "question": "抱歉",
             "valid_answers": [
-                "bao4qian4",
                 "bao4 qian4"
             ],
             "meaning": "be sorry; feel apologetic; to regret"
@@ -112,16 +107,14 @@
         {
             "question": "感觉",
             "valid_answers": [
-                "gan3 jue2",
-                "gan3jue2"
+                "gan3 jue2"
             ],
             "meaning": "to feel; become aware of; feeling"
         },
         {
             "question": "肯定",
             "valid_answers": [
-                "ken3 ding4",
-                "ken3ding4"
+                "ken3 ding4"
             ],
             "meaning": "sure; definite; affirm; approve"
         },
@@ -142,8 +135,7 @@
         {
             "question": "以为",
             "valid_answers": [
-                "yi3 wei2",
-                "yi3wei2"
+                "yi3 wei2"
             ],
             "meaning": "think (mistakenly); consider (that); believe"
         },
@@ -157,8 +149,7 @@
         {
             "question": "生活",
             "valid_answers": [
-                "sheng1 huo2",
-                "sheng1huo2"
+                "sheng1 huo2"
             ],
             "meaning": "life; livelihood; to live"
         },
@@ -172,8 +163,7 @@
         {
             "question": "任何",
             "valid_answers": [
-                "ren4 he2",
-                "ren4he2"
+                "ren4 he2"
             ],
             "meaning": "any; whatever; whichever"
         },
@@ -201,8 +191,7 @@
         {
             "question": "继续",
             "valid_answers": [
-                "ji4 xu4",
-                "ji4xu4"
+                "ji4 xu4"
             ],
             "meaning": "to continue; to go on; to proceed"
         },
@@ -216,15 +205,13 @@
         {
             "question": "父亲",
             "valid_answers": [
-                "fu4 qin5",
-                "fu4qin5"
+                "fu4 qin5"
             ],
             "meaning": "father"
         },
         {
             "question": "完全",
             "valid_answers": [
-                "wan2quan2",
                 "wan2 quan2"
             ],
             "meaning": "complete; whole; totally"
@@ -232,7 +219,6 @@
         {
             "question": "可是",
             "valid_answers": [
-                "ke3shi4",
                 "ke3 shi4"
             ],
             "meaning": "but; however"
@@ -247,16 +233,14 @@
         {
             "question": "好像",
             "valid_answers": [
-                "hao3 xiang4",
-                "hao3xiang4"
+                "hao3 xiang4"
             ],
             "meaning": "as if; seem to be"
         },
         {
             "question": "警察",
             "valid_answers": [
-                "jing3 cha2",
-                "jing3cha2"
+                "jing3 cha2"
             ],
             "meaning": "police"
         },
@@ -284,7 +268,6 @@
         {
             "question": "情况",
             "valid_answers": [
-                "qing2kuang4",
                 "qing2 kuang4"
             ],
             "meaning": "circumstance; state of affairs; situation"
@@ -292,7 +275,6 @@
         {
             "question": "只要",
             "valid_answers": [
-                "zhi3yao4",
                 "zhi3 yao4"
             ],
             "meaning": "so long as; if only; provided that"
@@ -314,23 +296,20 @@
         {
             "question": "到底",
             "valid_answers": [
-                "dao4  di3",
-                "dao4di3"
+                "dao4 di3"
             ],
             "meaning": "after all; in the end (used in a question)"
         },
         {
             "question": "成为",
             "valid_answers": [
-                "cheng2 wei2",
-                "cheng2wei2"
+                "cheng2 wei2"
             ],
             "meaning": "become; turn into"
         },
         {
             "question": "永远",
             "valid_answers": [
-                "yong3yuan3",
                 "yong3 yuan3"
             ],
             "meaning": "forever; eternal; always"
@@ -338,8 +317,7 @@
         {
             "question": "安全",
             "valid_answers": [
-                "an1 quan2",
-                "an1quan2"
+                "an1 quan2"
             ],
             "meaning": "safe; safety; secure; security"
         },
@@ -353,8 +331,7 @@
         {
             "question": "计划",
             "valid_answers": [
-                "ji4 hua4",
-                "ji4hua4"
+                "ji4 hua4"
             ],
             "meaning": "plan; project"
         },
@@ -375,8 +352,7 @@
         {
             "question": "感谢",
             "valid_answers": [
-                "gan3 xie4",
-                "gan3xie4"
+                "gan3 xie4"
             ],
             "meaning": "thank; be grateful"
         },
@@ -390,7 +366,6 @@
         {
             "question": "从来",
             "valid_answers": [
-                "cong2lai2",
                 "cong2 lai2"
             ],
             "meaning": "have always (from the beginning); never (with negative)"
@@ -405,7 +380,6 @@
         {
             "question": "消息",
             "valid_answers": [
-                "xiao1xi5",
                 "xiao1 xi5"
             ],
             "meaning": "news; information"
@@ -420,8 +394,7 @@
         {
             "question": "原因",
             "valid_answers": [
-                "yuan2 yin1",
-                "yuan2yin1"
+                "yuan2 yin1"
             ],
             "meaning": "cause; reason"
         },
@@ -435,7 +408,6 @@
         {
             "question": "确实",
             "valid_answers": [
-                "que4shi2",
                 "que4 shi2"
             ],
             "meaning": "indeed; in truth; reliable"
@@ -450,7 +422,6 @@
         {
             "question": "保证",
             "valid_answers": [
-                "bao3zheng4",
                 "bao3 zheng4"
             ],
             "meaning": "to guarantee; ensure"
@@ -458,15 +429,13 @@
         {
             "question": "接受",
             "valid_answers": [
-                "jie1 shou4",
-                "jie1shou4"
+                "jie1 shou4"
             ],
             "meaning": "accept; receive (honors, etc.)"
         },
         {
             "question": "改变",
             "valid_answers": [
-                "gai3bian4",
                 "gai3 bian4"
             ],
             "meaning": "to change; alter; to transform"
@@ -474,7 +443,6 @@
         {
             "question": "麻烦",
             "valid_answers": [
-                "ma2fan5",
                 "ma2 fan5"
             ],
             "meaning": "trouble (someone); troubling; bothersome"
@@ -482,23 +450,20 @@
         {
             "question": "出现",
             "valid_answers": [
-                "chu1 xian4",
-                "chu1xian4"
+                "chu1 xian4"
             ],
             "meaning": "appear; arise; emerge"
         },
         {
             "question": "不管",
             "valid_answers": [
-                "bu4 guan3",
-                "bu4guan3"
+                "bu4 guan3"
             ],
             "meaning": "no matter (what, how, etc.); regardless of"
         },
         {
             "question": "甚至",
             "valid_answers": [
-                "shen4zhi4",
                 "shen4 zhi4"
             ],
             "meaning": "even (to the point of); so much so that"
@@ -506,7 +471,6 @@
         {
             "question": "保护",
             "valid_answers": [
-                "bao3hu4",
                 "bao3 hu4"
             ],
             "meaning": "to protect; to defend"
@@ -514,7 +478,6 @@
         {
             "question": "真正",
             "valid_answers": [
-                "zhen1zheng4",
                 "zhen1 zheng4"
             ],
             "meaning": "genuine; real; true"
@@ -522,7 +485,6 @@
         {
             "question": "结果",
             "valid_answers": [
-                "jie2guo3",
                 "jie2 guo3"
             ],
             "meaning": "result; outcome; finally"
@@ -530,23 +492,20 @@
         {
             "question": "当时",
             "valid_answers": [
-                "dang1 shi2",
-                "dang1shi2"
+                "dang1 shi2"
             ],
             "meaning": "then; at that time; while"
         },
         {
             "question": "至少",
             "valid_answers": [
-                "zhi4 shao3",
-                "zhi4shao3"
+                "zhi4 shao3"
             ],
             "meaning": "at least; (to say the) least"
         },
         {
             "question": "律师",
             "valid_answers": [
-                "lv4shi1",
                 "lv4 shi1"
             ],
             "meaning": "lawyer"
@@ -554,7 +513,6 @@
         {
             "question": "表演",
             "valid_answers": [
-                "biao3yan3",
                 "biao3 yan3"
             ],
             "meaning": "perform; to play"
@@ -576,16 +534,14 @@
         {
             "question": "咱们",
             "valid_answers": [
-                "zan2 men5",
-                "zan2men5"
+                "zan2 men5"
             ],
             "meaning": "we (including the listener); us; our"
         },
         {
             "question": "进行",
             "valid_answers": [
-                "jin4 xing2",
-                "jin4xing2"
+                "jin4 xing2"
             ],
             "meaning": "carry on; carry out; undertake"
         },
@@ -599,15 +555,13 @@
         {
             "question": "是否",
             "valid_answers": [
-                "shi4 fou3",
-                "shi4fou3"
+                "shi4 fou3"
             ],
             "meaning": "whether (or not); if"
         },
         {
             "question": "调查",
             "valid_answers": [
-                "diao4cha2",
                 "diao4 cha2"
             ],
             "meaning": "investigate; survey; inquiry"
@@ -615,7 +569,6 @@
         {
             "question": "成功",
             "valid_answers": [
-                "cheng2gong1",
                 "cheng2 gong1"
             ],
             "meaning": "success; to succeed"
@@ -623,7 +576,6 @@
         {
             "question": "考虑",
             "valid_answers": [
-                "kao3lv4",
                 "kao3 lv4"
             ],
             "meaning": "think over; consider"
@@ -631,31 +583,27 @@
         {
             "question": "约会",
             "valid_answers": [
-                "yue1 hui4",
-                "yue1hui4"
+                "yue1 hui4"
             ],
             "meaning": "appointment; engagement; date"
         },
         {
             "question": "通过",
             "valid_answers": [
-                "tong1 guo4",
-                "tong1guo4"
+                "tong1 guo4"
             ],
             "meaning": "by means of; through (a method); pass through; via"
         },
         {
             "question": "开心",
             "valid_answers": [
-                "kai1 xin1",
-                "kai1xin1"
+                "kai1 xin1"
             ],
             "meaning": "feel happy; have a great time; make fun of somebody"
         },
         {
             "question": "母亲",
             "valid_answers": [
-                "mu3qin5",
                 "mu3 qin5"
             ],
             "meaning": "mother"
@@ -663,7 +611,6 @@
         {
             "question": "主意",
             "valid_answers": [
-                "zhu3yi5",
                 "zhu3 yi5"
             ],
             "meaning": "plan; idea; decision"
@@ -678,40 +625,35 @@
         {
             "question": "解释",
             "valid_answers": [
-                "jie3 shi4",
-                "jie3shi4"
+                "jie3 shi4"
             ],
             "meaning": "to explain"
         },
         {
             "question": "联系",
             "valid_answers": [
-                "lian2 xi4",
-                "lian2xi4"
+                "lian2 xi4"
             ],
             "meaning": "integrate; link; connection; contact"
         },
         {
             "question": "证明",
             "valid_answers": [
-                "zheng4 ming2",
-                "zheng4ming2"
+                "zheng4 ming2"
             ],
             "meaning": "proof; testify; confirm; certificate"
         },
         {
             "question": "生命",
             "valid_answers": [
-                "sheng1 ming4",
-                "sheng1ming4"
+                "sheng1 ming4"
             ],
             "meaning": "life"
         },
         {
             "question": "难道",
             "valid_answers": [
-                "nan2 dao4",
-                "nan2dao4"
+                "nan2 dao4"
             ],
             "meaning": "could it be that ...?; don't tell me ..."
         },
@@ -732,7 +674,6 @@
         {
             "question": "危险",
             "valid_answers": [
-                "wei1xian3",
                 "wei1 xian3"
             ],
             "meaning": "danger; dangerous; perilous"
@@ -740,8 +681,7 @@
         {
             "question": "讨厌",
             "valid_answers": [
-                "tao3 yan4",
-                "tao3yan4"
+                "tao3 yan4"
             ],
             "meaning": "to hate; loathe; disgusting; troublesome"
         },
@@ -755,16 +695,14 @@
         {
             "question": "样子",
             "valid_answers": [
-                "yang4 zi5",
-                "yang4zi5"
+                "yang4 zi5"
             ],
             "meaning": "manner; air; appearance; looks"
         },
         {
             "question": "有趣",
             "valid_answers": [
-                "you3 qu4",
-                "you3qu4"
+                "you3 qu4"
             ],
             "meaning": "interesting; fascinating; amusing"
         },
@@ -778,15 +716,13 @@
         {
             "question": "部分",
             "valid_answers": [
-                "bu4 fen5",
-                "bu4fen5"
+                "bu4 fen5"
             ],
             "meaning": "part; share; section"
         },
         {
             "question": "理解",
             "valid_answers": [
-                "li3jie3",
                 "li3 jie3"
             ],
             "meaning": "comprehend; understand"
@@ -801,8 +737,7 @@
         {
             "question": "任务",
             "valid_answers": [
-                "ren4 wu5",
-                "ren4wu5"
+                "ren4 wu5"
             ],
             "meaning": "a mission; an assignment; a task"
         },
@@ -823,7 +758,6 @@
         {
             "question": "博士",
             "valid_answers": [
-                "bo2shi4",
                 "bo2 shi4"
             ],
             "meaning": "doctor; PhD"
@@ -831,23 +765,20 @@
         {
             "question": "紧张",
             "valid_answers": [
-                "jin3 zhang1",
-                "jin3zhang1"
+                "jin3 zhang1"
             ],
             "meaning": "nervous; tension; strain"
         },
         {
             "question": "放弃",
             "valid_answers": [
-                "fang4 qi4",
-                "fang4qi4"
+                "fang4 qi4"
             ],
             "meaning": "abandon; renounce; give up"
         },
         {
             "question": "大概",
             "valid_answers": [
-                "da4gai4",
                 "da4 gai4"
             ],
             "meaning": "probably; roughly; approximate"
@@ -855,7 +786,6 @@
         {
             "question": "重新",
             "valid_answers": [
-                "chong2xin1",
                 "chong2 xin1"
             ],
             "meaning": "again; anew; once more"
@@ -863,23 +793,20 @@
         {
             "question": "其中",
             "valid_answers": [
-                "qi2 zhong1",
-                "qi2zhong1"
+                "qi2 zhong1"
             ],
             "meaning": "among; in; included among these"
         },
         {
             "question": "来自",
             "valid_answers": [
-                "lai2 zi4",
-                "lai2zi4"
+                "lai2 zi4"
             ],
             "meaning": "come from (a place)"
         },
         {
             "question": "本来",
             "valid_answers": [
-                "ben3lai2",
                 "ben3 lai2"
             ],
             "meaning": "originally; at first"
@@ -887,15 +814,13 @@
         {
             "question": "并且",
             "valid_answers": [
-                "bing4 qie3",
-                "bing4qie3"
+                "bing4 qie3"
             ],
             "meaning": "and; besides; moreover"
         },
         {
             "question": "直接",
             "valid_answers": [
-                "zhi2jie1",
                 "zhi2 jie1"
             ],
             "meaning": "direct; immediate"
@@ -903,7 +828,6 @@
         {
             "question": "对于",
             "valid_answers": [
-                "dui4yu2",
                 "dui4 yu2"
             ],
             "meaning": "regarding; as far as sth. is concerned; with regards to; for"
@@ -911,8 +835,7 @@
         {
             "question": "正常",
             "valid_answers": [
-                "zheng4 chang2",
-                "zheng4chang2"
+                "zheng4 chang2"
             ],
             "meaning": "normal; regular; ordinary"
         },
@@ -926,15 +849,13 @@
         {
             "question": "冷静",
             "valid_answers": [
-                "leng3 jing4",
-                "leng3jing4"
+                "leng3 jing4"
             ],
             "meaning": "calm; cool-headed; sober"
         },
         {
             "question": "方法",
             "valid_answers": [
-                "fang1fa3",
                 "fang1 fa3"
             ],
             "meaning": "method; way; means"
@@ -949,7 +870,6 @@
         {
             "question": "能力",
             "valid_answers": [
-                "neng2li4",
                 "neng2 li4"
             ],
             "meaning": "capability; capable; ability"
@@ -957,15 +877,13 @@
         {
             "question": "另外",
             "valid_answers": [
-                "ling4 wai4",
-                "ling4wai4"
+                "ling4 wai4"
             ],
             "meaning": "another; in addition; besides"
         },
         {
             "question": "放松",
             "valid_answers": [
-                "fang4song1",
                 "fang4 song1"
             ],
             "meaning": "relax; loosen; slacken"
@@ -980,8 +898,7 @@
         {
             "question": "负责",
             "valid_answers": [
-                "fu4 ze2",
-                "fu4ze2"
+                "fu4 ze2"
             ],
             "meaning": "responsible for (something); in charge of"
         },
@@ -1002,47 +919,41 @@
         {
             "question": "错误",
             "valid_answers": [
-                "cuo4 wu4",
-                "cuo4wu4"
+                "cuo4 wu4"
             ],
             "meaning": "error; mistake; mistaken"
         },
         {
             "question": "随便",
             "valid_answers": [
-                "sui2 bian4",
-                "sui2bian4"
+                "sui2 bian4"
             ],
             "meaning": "as one pleases; informal; random; casual"
         },
         {
             "question": "经历",
             "valid_answers": [
-                "jing1 li4",
-                "jing1li4"
+                "jing1 li4"
             ],
             "meaning": "undergo; to experience"
         },
         {
             "question": "支持",
             "valid_answers": [
-                "zhi1 chi2",
-                "zhi1chi2"
+                "zhi1 chi2"
             ],
             "meaning": "sustain; hold out; | support; stand by (e.g. international support)"
         },
         {
             "question": "建议",
             "valid_answers": [
-                "jian4 yi4",
-                "jian4yi4"
+                "jian4 yi4"
             ],
             "meaning": "to propose; to suggest; recommend"
         },
         {
             "question": "否则",
             "valid_answers": [
-                "fou3ze2",
                 "fou3 ze2"
             ],
             "meaning": "if not; otherwise; or else"
@@ -1057,15 +968,13 @@
         {
             "question": "安排",
             "valid_answers": [
-                "an1 pai2",
-                "an1pai2"
+                "an1 pai2"
             ],
             "meaning": "arrange; to plan"
         },
         {
             "question": "钥匙",
             "valid_answers": [
-                "yao4shi5",
                 "yao4 shi5"
             ],
             "meaning": "key"
@@ -1073,7 +982,6 @@
         {
             "question": "信息",
             "valid_answers": [
-                "xin4xi1",
                 "xin4 xi1"
             ],
             "meaning": "information; news; message"
@@ -1081,7 +989,6 @@
         {
             "question": "全部",
             "valid_answers": [
-                "quan2bu4",
                 "quan2 bu4"
             ],
             "meaning": "whole; entire; complete"
@@ -1089,7 +996,6 @@
         {
             "question": "首先",
             "valid_answers": [
-                "shou3xian1",
                 "shou3 xian1"
             ],
             "meaning": "first (of all); in the first place; firstly"
@@ -1118,7 +1024,6 @@
         {
             "question": "坚持",
             "valid_answers": [
-                "jian1chi2",
                 "jian1 chi2"
             ],
             "meaning": "persist in; persevere"
@@ -1126,7 +1031,6 @@
         {
             "question": "生意",
             "valid_answers": [
-                "sheng1yi5",
                 "sheng1 yi5"
             ],
             "meaning": "business; trade"
@@ -1141,16 +1045,14 @@
         {
             "question": "即使",
             "valid_answers": [
-                "ji2 shi3",
-                "ji2shi3"
+                "ji2 shi3"
             ],
             "meaning": "even if; even though"
         },
         {
             "question": "到处",
             "valid_answers": [
-                "dao4 chu4",
-                "dao4chu4"
+                "dao4 chu4"
             ],
             "meaning": "everywhere; in all places; all over"
         },
@@ -1164,7 +1066,6 @@
         {
             "question": "道歉",
             "valid_answers": [
-                "dao4qian4",
                 "dao4 qian4"
             ],
             "meaning": "apologize; make an apology"
@@ -1172,15 +1073,13 @@
         {
             "question": "可怜",
             "valid_answers": [
-                "ke3 lian2",
-                "ke3lian2"
+                "ke3 lian2"
             ],
             "meaning": "pitiful; poor; pathetic"
         },
         {
             "question": "实在",
             "valid_answers": [
-                "shi2zai4",
                 "shi2 zai4"
             ],
             "meaning": "honest; in reality; honestly; indeed; certainly"
@@ -1195,8 +1094,7 @@
         {
             "question": "原谅",
             "valid_answers": [
-                "yuan2 liang4",
-                "yuan2liang4"
+                "yuan2 liang4"
             ],
             "meaning": "to excuse; forgive; to pardon"
         },
@@ -1210,7 +1108,6 @@
         {
             "question": "差不多",
             "valid_answers": [
-                "cha4bu5duo1",
                 "cha4 bu5 duo1"
             ],
             "meaning": "almost; about the same"
@@ -1232,24 +1129,21 @@
         {
             "question": "研究",
             "valid_answers": [
-                "yan2 jiu1",
-                "yan2jiu1"
+                "yan2 jiu1"
             ],
             "meaning": "to study; to research"
         },
         {
             "question": "打扰",
             "valid_answers": [
-                "da3 rao3",
-                "da3rao3"
+                "da3 rao3"
             ],
             "meaning": "disturb"
         },
         {
             "question": "正确",
             "valid_answers": [
-                "zheng4 que4",
-                "zheng4que4"
+                "zheng4 que4"
             ],
             "meaning": "correct; proper"
         },
@@ -1270,15 +1164,13 @@
         {
             "question": "同时",
             "valid_answers": [
-                "tong2 shi2",
-                "tong2shi2"
+                "tong2 shi2"
             ],
             "meaning": "at the same time; simultaneously"
         },
         {
             "question": "提供",
             "valid_answers": [
-                "ti2gong1",
                 "ti2 gong1"
             ],
             "meaning": "to supply; provide; furnish"
@@ -1293,8 +1185,7 @@
         {
             "question": "号码",
             "valid_answers": [
-                "hao4 ma3",
-                "hao4ma3"
+                "hao4 ma3"
             ],
             "meaning": "number"
         },
@@ -1308,7 +1199,6 @@
         {
             "question": "比如",
             "valid_answers": [
-                "bi3ru2",
                 "bi3 ru2"
             ],
             "meaning": "for example; for instance; such as"
@@ -1316,8 +1206,7 @@
         {
             "question": "严重",
             "valid_answers": [
-                "yan2 zhong4",
-                "yan2zhong4"
+                "yan2 zhong4"
             ],
             "meaning": "grave; serious; critical"
         },
@@ -1338,15 +1227,13 @@
         {
             "question": "法律",
             "valid_answers": [
-                "fa3 lv4",
-                "fa3lv4"
+                "fa3 lv4"
             ],
             "meaning": "law; statute"
         },
         {
             "question": "值得",
             "valid_answers": [
-                "zhi2de5",
                 "zhi2 de5"
             ],
             "meaning": "be worth; deserve"
@@ -1354,15 +1241,13 @@
         {
             "question": "使用",
             "valid_answers": [
-                "shi3 yong4",
-                "shi3yong4"
+                "shi3 yong4"
             ],
             "meaning": "to use; employ; apply; administer; manipulate"
         },
         {
             "question": "方面",
             "valid_answers": [
-                "fang1mian4",
                 "fang1 mian4"
             ],
             "meaning": "aspect; field; side"
@@ -1370,7 +1255,6 @@
         {
             "question": "原来",
             "valid_answers": [
-                "yuan2lai2",
                 "yuan2 lai2"
             ],
             "meaning": "original; former; as it turns out"
@@ -1378,7 +1262,6 @@
         {
             "question": "讨论",
             "valid_answers": [
-                "tao3lun4",
                 "tao3 lun4"
             ],
             "meaning": "to discuss; discussion; to talk over"
@@ -1386,15 +1269,13 @@
         {
             "question": "说明",
             "valid_answers": [
-                "shuo1 ming2",
-                "shuo1ming2"
+                "shuo1 ming2"
             ],
             "meaning": "explain; explanation; illustrate; to show"
         },
         {
             "question": "仍然",
             "valid_answers": [
-                "reng2ran2",
                 "reng2 ran2"
             ],
             "meaning": "still; yet"
@@ -1402,7 +1283,6 @@
         {
             "question": "动作",
             "valid_answers": [
-                "dong4zuo4",
                 "dong4 zuo4"
             ],
             "meaning": "movement; motion; action"
@@ -1410,7 +1290,6 @@
         {
             "question": "受到",
             "valid_answers": [
-                "shou4dao4",
                 "shou4 dao4"
             ],
             "meaning": "receive (influence, restriction, etc.); be subjected to"
@@ -1425,7 +1304,6 @@
         {
             "question": "怀疑",
             "valid_answers": [
-                "huai2yi2",
                 "huai2 yi2"
             ],
             "meaning": "doubt; to suspect; be skeptical"
@@ -1433,15 +1311,13 @@
         {
             "question": "拒绝",
             "valid_answers": [
-                "ju4 jue2",
-                "ju4jue2"
+                "ju4 jue2"
             ],
             "meaning": "to refuse; to decline; to reject"
         },
         {
             "question": "演员",
             "valid_answers": [
-                "yan3yuan2",
                 "yan3 yuan2"
             ],
             "meaning": "actor or actress; performer"
@@ -1456,7 +1332,6 @@
         {
             "question": "因此",
             "valid_answers": [
-                "yin1ci3",
                 "yin1 ci3"
             ],
             "meaning": "therefore; thus; that is why; because of this"
@@ -1464,14 +1339,13 @@
         {
             "question": "答案",
             "valid_answers": [
-                "da2an4"
+                "da2 an4"
             ],
             "meaning": "answer; solution"
         },
         {
             "question": "活动",
             "valid_answers": [
-                "huo2dong4",
                 "huo2 dong4"
             ],
             "meaning": "activity; exercise; move about"
@@ -1479,15 +1353,13 @@
         {
             "question": "既然",
             "valid_answers": [
-                "ji4 ran2",
-                "ji4ran2"
+                "ji4 ran2"
             ],
             "meaning": "since; given that; now that"
         },
         {
             "question": "通知",
             "valid_answers": [
-                "tong1zhi1",
                 "tong1 zhi1"
             ],
             "meaning": "notify; to inform; notice"
@@ -1495,16 +1367,14 @@
         {
             "question": "不得不",
             "valid_answers": [
-                "bu4de2bu4",
-                "bu4  de2  bu4"
+                "bu4 de2 bu4"
             ],
             "meaning": "have to; have no choice but to; cannot but"
         },
         {
             "question": "无论",
             "valid_answers": [
-                "wu2 lun4",
-                "wu2lun4"
+                "wu2 lun4"
             ],
             "meaning": "no matter what; regardless of whether..."
         },
@@ -1518,31 +1388,27 @@
         {
             "question": "适合",
             "valid_answers": [
-                "shi4 he2",
-                "shi4he2"
+                "shi4 he2"
             ],
             "meaning": "to suit; to fit"
         },
         {
             "question": "失望",
             "valid_answers": [
-                "shi1 wang4",
-                "shi1wang4"
+                "shi1 wang4"
             ],
             "meaning": "disappointed; lose hope"
         },
         {
             "question": "允许",
             "valid_answers": [
-                "yun3 xu3",
-                "yun3xu3"
+                "yun3 xu3"
             ],
             "meaning": "to permit; allow"
         },
         {
             "question": "意见",
             "valid_answers": [
-                "yi4jian4",
                 "yi4 jian4"
             ],
             "meaning": "opinion; view; suggestion; complaint"
@@ -1550,15 +1416,13 @@
         {
             "question": "获得",
             "valid_answers": [
-                "huo4 de2",
-                "huo4de2"
+                "huo4 de2"
             ],
             "meaning": "obtain; acquire; to gain"
         },
         {
             "question": "要是",
             "valid_answers": [
-                "yao4shi5",
                 "yao4 shi5"
             ],
             "meaning": "if; suppose; in case"
@@ -1566,15 +1430,13 @@
         {
             "question": "邀请",
             "valid_answers": [
-                "yao1 qing3",
-                "yao1qing3"
+                "yao1 qing3"
             ],
             "meaning": "to invite"
         },
         {
             "question": "尽管",
             "valid_answers": [
-                "jin3guan3",
                 "jin3 guan3"
             ],
             "meaning": "despite; although; even though | freely; without hesitation"
@@ -1582,7 +1444,6 @@
         {
             "question": "浪费",
             "valid_answers": [
-                "lang4fei4",
                 "lang4 fei4"
             ],
             "meaning": "to waste; squander"
@@ -1590,7 +1451,6 @@
         {
             "question": "失败",
             "valid_answers": [
-                "shi1bai4",
                 "shi1 bai4"
             ],
             "meaning": "be defeated; fail; lose"
@@ -1598,7 +1458,6 @@
         {
             "question": "责任",
             "valid_answers": [
-                "ze2ren4",
                 "ze2 ren4"
             ],
             "meaning": "responsibility; blame; duty"
@@ -1606,15 +1465,13 @@
         {
             "question": "美丽",
             "valid_answers": [
-                "mei3 li4",
-                "mei3li4"
+                "mei3 li4"
             ],
             "meaning": "beautiful"
         },
         {
             "question": "压力",
             "valid_answers": [
-                "ya1li4",
                 "ya1 li4"
             ],
             "meaning": "pressure; stress"
@@ -1622,7 +1479,6 @@
         {
             "question": "味道",
             "valid_answers": [
-                "wei4dao5",
                 "wei4 dao5"
             ],
             "meaning": "flavor; taste"
@@ -1630,7 +1486,6 @@
         {
             "question": "厉害",
             "valid_answers": [
-                "li4hai5",
                 "li4 hai5"
             ],
             "meaning": "terrible; formidable; fierce; cool; awesome"
@@ -1638,31 +1493,27 @@
         {
             "question": "出发",
             "valid_answers": [
-                "chu1 fa1",
-                "chu1fa1"
+                "chu1 fa1"
             ],
             "meaning": "start out; set off"
         },
         {
             "question": "兴奋",
             "valid_answers": [
-                "xing1 fen4",
-                "xing1fen4"
+                "xing1 fen4"
             ],
             "meaning": "excitement; be excited"
         },
         {
             "question": "观众",
             "valid_answers": [
-                "guan1 zhong4",
-                "guan1zhong4"
+                "guan1 zhong4"
             ],
             "meaning": "spectator; audience"
         },
         {
             "question": "反对",
             "valid_answers": [
-                "fan3dui4",
                 "fan3 dui4"
             ],
             "meaning": "oppose; fight against"
@@ -1670,7 +1521,6 @@
         {
             "question": "精彩",
             "valid_answers": [
-                "jing1cai3",
                 "jing1 cai3"
             ],
             "meaning": "brilliant; spectacular; wonderful"
@@ -1678,7 +1528,6 @@
         {
             "question": "感情",
             "valid_answers": [
-                "gan3qing2",
                 "gan3 qing2"
             ],
             "meaning": "feeling; emotion; sensation"
@@ -1686,7 +1535,6 @@
         {
             "question": "演出",
             "valid_answers": [
-                "yan3chu1",
                 "yan3 chu1"
             ],
             "meaning": "to act (in a play); to perform; to put on a show; performance"
@@ -1694,7 +1542,6 @@
         {
             "question": "愉快",
             "valid_answers": [
-                "yu2kuai4",
                 "yu2 kuai4"
             ],
             "meaning": "happy; cheerful; delightful"
@@ -1702,15 +1549,13 @@
         {
             "question": "开玩笑",
             "valid_answers": [
-                "kai1wan2xiao4",
-                "kai1  wan2 xiao4"
+                "kai1 wan2 xiao4"
             ],
             "meaning": "joke; play a joke; make fun of"
         },
         {
             "question": "杂志",
             "valid_answers": [
-                "za2zhi4",
                 "za2 zhi4"
             ],
             "meaning": "magazine"
@@ -1718,23 +1563,20 @@
         {
             "question": "合适",
             "valid_answers": [
-                "he2 shi4",
-                "he2shi4"
+                "he2 shi4"
             ],
             "meaning": "suitable; proper; appropriate"
         },
         {
             "question": "广告",
             "valid_answers": [
-                "guang3 gao4",
-                "guang3gao4"
+                "guang3 gao4"
             ],
             "meaning": "advertisement; a commercial"
         },
         {
             "question": "自然",
             "valid_answers": [
-                "zi4ran2",
                 "zi4 ran2"
             ],
             "meaning": "nature; natural"
@@ -1756,7 +1598,6 @@
         {
             "question": "短信",
             "valid_answers": [
-                "duan3xin4",
                 "duan3 xin4"
             ],
             "meaning": "text message; SMS"
@@ -1764,8 +1605,7 @@
         {
             "question": "地球",
             "valid_answers": [
-                "di4 qiu2",
-                "di4qiu2"
+                "di4 qiu2"
             ],
             "meaning": "the Earth; planet"
         },
@@ -1786,7 +1626,6 @@
         {
             "question": "关键",
             "valid_answers": [
-                "guan1jian4",
                 "guan1 jian4"
             ],
             "meaning": "crucial; key; pivotal"
@@ -1801,16 +1640,14 @@
         {
             "question": "究竟",
             "valid_answers": [
-                "jiu1 jing4",
-                "jiu1jing4"
+                "jiu1 jing4"
             ],
             "meaning": "after all; when all is said and done; actually"
         },
         {
             "question": "恐怕",
             "valid_answers": [
-                "kong3 pa4",
-                "kong3pa4"
+                "kong3 pa4"
             ],
             "meaning": "be afraid; to fear; I'm afraid that..."
         },
@@ -1824,7 +1661,6 @@
         {
             "question": "聚会",
             "valid_answers": [
-                "ju4hui4",
                 "ju4 hui4"
             ],
             "meaning": "hold a meeting; get together; a party"
@@ -1832,15 +1668,13 @@
         {
             "question": "方向",
             "valid_answers": [
-                "fang1 xiang4",
-                "fang1xiang4"
+                "fang1 xiang4"
             ],
             "meaning": "direction; orientation"
         },
         {
             "question": "幸福",
             "valid_answers": [
-                "xing4fu2",
                 "xing4 fu2"
             ],
             "meaning": "happy; blessed; fortunate"
@@ -1848,7 +1682,6 @@
         {
             "question": "接着",
             "valid_answers": [
-                "jie1zhe5",
                 "jie1 zhe5"
             ],
             "meaning": "continue; carry on; to catch; follow"
@@ -1856,7 +1689,6 @@
         {
             "question": "技术",
             "valid_answers": [
-                "ji4shu4",
                 "ji4 shu4"
             ],
             "meaning": "technology; technique; skill"
@@ -1871,31 +1703,27 @@
         {
             "question": "困难",
             "valid_answers": [
-                "kun4 nan5",
-                "kun4nan5"
+                "kun4 nan5"
             ],
             "meaning": "difficulty; difficult; problem"
         },
         {
             "question": "正好",
             "valid_answers": [
-                "zheng4 hao3",
-                "zheng4hao3"
+                "zheng4 hao3"
             ],
             "meaning": "just (in time); just right; just enough; happen to; by chance"
         },
         {
             "question": "提醒",
             "valid_answers": [
-                "ti2 xing3",
-                "ti2xing3"
+                "ti2 xing3"
             ],
             "meaning": "remind; call attention to; warn of"
         },
         {
             "question": "旅行",
             "valid_answers": [
-                "lv3xing2",
                 "lv3 xing2"
             ],
             "meaning": "travel"
@@ -1903,16 +1731,14 @@
         {
             "question": "激动",
             "valid_answers": [
-                "ji1 dong4",
-                "ji1dong4"
+                "ji1 dong4"
             ],
             "meaning": "excite; agitate"
         },
         {
             "question": "骄傲",
             "valid_answers": [
-                "jiao1 'ao4",
-                "jiao1'ao4"
+                "jiao1 ao4"
             ],
             "meaning": "proud; arrogant; conceited; take pride in"
         },
@@ -1933,15 +1759,13 @@
         {
             "question": "许多",
             "valid_answers": [
-                "xu3 duo1",
-                "xu3duo1"
+                "xu3 duo1"
             ],
             "meaning": "many; a lot; much"
         },
         {
             "question": "顺利",
             "valid_answers": [
-                "shun4li4",
                 "shun4 li4"
             ],
             "meaning": "go smoothly; without a hitch; successful"
@@ -1949,8 +1773,7 @@
         {
             "question": "职业",
             "valid_answers": [
-                "zhi2 ye4",
-                "zhi2ye4"
+                "zhi2 ye4"
             ],
             "meaning": "profession; occupation"
         },
@@ -1964,7 +1787,6 @@
         {
             "question": "地址",
             "valid_answers": [
-                "di4zhi3",
                 "di4 zhi3"
             ],
             "meaning": "address"
@@ -1972,7 +1794,6 @@
         {
             "question": "于是",
             "valid_answers": [
-                "yu2shi4",
                 "yu2 shi4"
             ],
             "meaning": "as a result; thus; therefore"
@@ -1980,7 +1801,6 @@
         {
             "question": "收拾",
             "valid_answers": [
-                "shou1shi5",
                 "shou1 shi5"
             ],
             "meaning": "to tidy; put in order; to repair; to settle with; punish"
@@ -1988,23 +1808,20 @@
         {
             "question": "周围",
             "valid_answers": [
-                "zhou1 wei2",
-                "zhou1wei2"
+                "zhou1 wei2"
             ],
             "meaning": "surroundings; vicinity; environment"
         },
         {
             "question": "爱情",
             "valid_answers": [
-                "ai4 qing2",
-                "ai4qing2"
+                "ai4 qing2"
             ],
             "meaning": "(romantic) love"
         },
         {
             "question": "尊重",
             "valid_answers": [
-                "zun1zhong4",
                 "zun1 zhong4"
             ],
             "meaning": "esteem; to respect; to value; to honor"
@@ -2012,15 +1829,13 @@
         {
             "question": "十分",
             "valid_answers": [
-                "shi2 fen1",
-                "shi2fen1"
+                "shi2 fen1"
             ],
             "meaning": "very; fully; 100%"
         },
         {
             "question": "教授",
             "valid_answers": [
-                "jiao4shou4",
                 "jiao4 shou4"
             ],
             "meaning": "professor; instruct; to lecture"
@@ -2028,8 +1843,7 @@
         {
             "question": "超过",
             "valid_answers": [
-                "chao1 guo4",
-                "chao1guo4"
+                "chao1 guo4"
             ],
             "meaning": "surpass; exceed; outstrip"
         },
@@ -2043,7 +1857,6 @@
         {
             "question": "顺便",
             "valid_answers": [
-                "shun4bian4",
                 "shun4 bian4"
             ],
             "meaning": "conveniently; in passing; on the way"
@@ -2051,7 +1864,6 @@
         {
             "question": "无聊",
             "valid_answers": [
-                "wu2liao2",
                 "wu2 liao2"
             ],
             "meaning": "nonsense; bored; silly; stupid"
@@ -2059,7 +1871,6 @@
         {
             "question": "目的",
             "valid_answers": [
-                "mu4di4",
                 "mu4 di4"
             ],
             "meaning": "purpose; aim; goal"
@@ -2081,7 +1892,6 @@
         {
             "question": "复杂",
             "valid_answers": [
-                "fu4za2",
                 "fu4 za2"
             ],
             "meaning": "complicated; complex"
@@ -2089,23 +1899,20 @@
         {
             "question": "社会",
             "valid_answers": [
-                "she4 hui4",
-                "she4hui4"
+                "she4 hui4"
             ],
             "meaning": "society"
         },
         {
             "question": "故意",
             "valid_answers": [
-                "gu4 yi4",
-                "gu4yi4"
+                "gu4 yi4"
             ],
             "meaning": "deliberately; intentional; on purpose"
         },
         {
             "question": "好处",
             "valid_answers": [
-                "hao3chu5",
                 "hao3 chu5"
             ],
             "meaning": "benefit; advantage"
@@ -2113,7 +1920,6 @@
         {
             "question": "竟然",
             "valid_answers": [
-                "jing4ran2",
                 "jing4 ran2"
             ],
             "meaning": "unexpectedly; to one's surprise; go so far as to"
@@ -2121,15 +1927,13 @@
         {
             "question": "表示",
             "valid_answers": [
-                "biao3 shi4",
-                "biao3shi4"
+                "biao3 shi4"
             ],
             "meaning": "express; show; indicate"
         },
         {
             "question": "印象",
             "valid_answers": [
-                "yin4xiang4",
                 "yin4 xiang4"
             ],
             "meaning": "impression"
@@ -2137,15 +1941,13 @@
         {
             "question": "出生",
             "valid_answers": [
-                "chu1 sheng1",
-                "chu1sheng1"
+                "chu1 sheng1"
             ],
             "meaning": "be born"
         },
         {
             "question": "估计",
             "valid_answers": [
-                "gu1ji4",
                 "gu1 ji4"
             ],
             "meaning": "appraise; estimate"
@@ -2153,8 +1955,7 @@
         {
             "question": "地点",
             "valid_answers": [
-                "di4 dian3",
-                "di4dian3"
+                "di4 dian3"
             ],
             "meaning": "place; site; location"
         },
@@ -2168,16 +1969,14 @@
         {
             "question": "轻松",
             "valid_answers": [
-                "qing1 song1",
-                "qing1song1"
+                "qing1 song1"
             ],
             "meaning": "relaxed; gentle; easygoing"
         },
         {
             "question": "作用",
             "valid_answers": [
-                "zuo4 yong4",
-                "zuo4yong4"
+                "zuo4 yong4"
             ],
             "meaning": "action; activity; effect"
         },
@@ -2191,15 +1990,13 @@
         {
             "question": "小伙子",
             "valid_answers": [
-                "xiao3 huo3 zi5",
-                "xiao3huo3zi5"
+                "xiao3 huo3 zi5"
             ],
             "meaning": "young man; lad; youngster"
         },
         {
             "question": "著名",
             "valid_answers": [
-                "zhu4ming2",
                 "zhu4 ming2"
             ],
             "meaning": "famous; well-known; celebration"
@@ -2207,23 +2004,20 @@
         {
             "question": "免费",
             "valid_answers": [
-                "mian3fei4",
-                "mian3  fei4"
+                "mian3 fei4"
             ],
             "meaning": "free (of charge); no cost"
         },
         {
             "question": "伤心",
             "valid_answers": [
-                "shang1 xin1",
-                "shang1xin1"
+                "shang1 xin1"
             ],
             "meaning": "sad; grieve; brokenhearted"
         },
         {
             "question": "记者",
             "valid_answers": [
-                "ji4zhe3",
                 "ji4 zhe3"
             ],
             "meaning": "reporter; journalist"
@@ -2231,7 +2025,6 @@
         {
             "question": "仔细",
             "valid_answers": [
-                "zi3xi4",
                 "zi3 xi4"
             ],
             "meaning": "careful; attentive; cautious"
@@ -2239,7 +2032,6 @@
         {
             "question": "巧克力",
             "valid_answers": [
-                "qiao3ke4li4",
                 "qiao3 ke4 li4"
             ],
             "meaning": "chocolate"
@@ -2254,7 +2046,6 @@
         {
             "question": "互相",
             "valid_answers": [
-                "hu4xiang1",
                 "hu4 xiang1"
             ],
             "meaning": "mutually; with each other"
@@ -2262,15 +2053,13 @@
         {
             "question": "厕所",
             "valid_answers": [
-                "ce4 suo3",
-                "ce4suo3"
+                "ce4 suo3"
             ],
             "meaning": "bathroom; toilet; lavatory"
         },
         {
             "question": "过程",
             "valid_answers": [
-                "guo4cheng2",
                 "guo4 cheng2"
             ],
             "meaning": "course of events; process"
@@ -2278,7 +2067,6 @@
         {
             "question": "申请",
             "valid_answers": [
-                "shen1qing3",
                 "shen1 qing3"
             ],
             "meaning": "apply for; application"
@@ -2286,15 +2074,13 @@
         {
             "question": "引起",
             "valid_answers": [
-                "yin3 qi3",
-                "yin3qi3"
+                "yin3 qi3"
             ],
             "meaning": "give rise to; lead to; to cause; arouse"
         },
         {
             "question": "发展",
             "valid_answers": [
-                "fa1zhan3",
                 "fa1 zhan3"
             ],
             "meaning": "develop; development; growth"
@@ -2302,23 +2088,20 @@
         {
             "question": "毕业",
             "valid_answers": [
-                "bi4  ye4",
-                "bi4ye4"
+                "bi4 ye4"
             ],
             "meaning": "to graduate; to finish school"
         },
         {
             "question": "正式",
             "valid_answers": [
-                "zheng4 shi4",
-                "zheng4shi4"
+                "zheng4 shi4"
             ],
             "meaning": "formal; official"
         },
         {
             "question": "厨房",
             "valid_answers": [
-                "chu2fang2",
                 "chu2 fang2"
             ],
             "meaning": "kitchen"
@@ -2326,39 +2109,34 @@
         {
             "question": "专业",
             "valid_answers": [
-                "zhuan1 ye4",
-                "zhuan1ye4"
+                "zhuan1 ye4"
             ],
             "meaning": "profession; specialized field of study; major"
         },
         {
             "question": "吸引",
             "valid_answers": [
-                "xi1 yin3",
-                "xi1yin3"
+                "xi1 yin3"
             ],
             "meaning": "attract (interest, investment, etc.)"
         },
         {
             "question": "心情",
             "valid_answers": [
-                "xin1 qing2",
-                "xin1qing2"
+                "xin1 qing2"
             ],
             "meaning": "mood; state of mind"
         },
         {
             "question": "祝贺",
             "valid_answers": [
-                "zhu4 he4",
-                "zhu4he4"
+                "zhu4 he4"
             ],
             "meaning": "congratulate"
         },
         {
             "question": "条件",
             "valid_answers": [
-                "tiao2jian4",
                 "tiao2 jian4"
             ],
             "meaning": "condition; circumstances; prerequisite"
@@ -2366,7 +2144,6 @@
         {
             "question": "千万",
             "valid_answers": [
-                "qian1wan4",
                 "qian1 wan4"
             ],
             "meaning": "ten million; be sure to; must"
@@ -2388,7 +2165,6 @@
         {
             "question": "由于",
             "valid_answers": [
-                "you2yu2",
                 "you2 yu2"
             ],
             "meaning": "due to; owing to; as a result of; thanks to"
@@ -2396,8 +2172,7 @@
         {
             "question": "密码",
             "valid_answers": [
-                "mi4 ma3",
-                "mi4ma3"
+                "mi4 ma3"
             ],
             "meaning": "password; secret code"
         },
@@ -2418,40 +2193,35 @@
         {
             "question": "尤其",
             "valid_answers": [
-                "you2 qi2",
-                "you2qi2"
+                "you2 qi2"
             ],
             "meaning": "especially; particularly"
         },
         {
             "question": "经验",
             "valid_answers": [
-                "jing1 yan4",
-                "jing1yan4"
+                "jing1 yan4"
             ],
             "meaning": "experience"
         },
         {
             "question": "盒子",
             "valid_answers": [
-                "he2 zi5",
-                "he2zi5"
+                "he2 zi5"
             ],
             "meaning": "box"
         },
         {
             "question": "干杯",
             "valid_answers": [
-                "gan1bei1",
-                "gan1  bei1"
+                "gan1 bei1"
             ],
             "meaning": "to drink a toast; cheers!; bottoms up!"
         },
         {
             "question": "看法",
             "valid_answers": [
-                "kan4 fa3",
-                "kan4fa3"
+                "kan4 fa3"
             ],
             "meaning": "point of view; opinion"
         },
@@ -2465,7 +2235,6 @@
         {
             "question": "艺术",
             "valid_answers": [
-                "yi4shu4",
                 "yi4 shu4"
             ],
             "meaning": "art"
@@ -2473,7 +2242,6 @@
         {
             "question": "速度",
             "valid_answers": [
-                "su4du4",
                 "su4 du4"
             ],
             "meaning": "speed; rate; velocity"
@@ -2481,7 +2249,6 @@
         {
             "question": "勇敢",
             "valid_answers": [
-                "yong3gan3",
                 "yong3 gan3"
             ],
             "meaning": "brave; courageous"
@@ -2489,31 +2256,27 @@
         {
             "question": "数字",
             "valid_answers": [
-                "shu4 zi4",
-                "shu4zi4"
+                "shu4 zi4"
             ],
             "meaning": "number; numeral; figure; digit"
         },
         {
             "question": "暂时",
             "valid_answers": [
-                "zan4 shi2",
-                "zan4shi2"
+                "zan4 shi2"
             ],
             "meaning": "temporary; transient; for the moment"
         },
         {
             "question": "优秀",
             "valid_answers": [
-                "you1 xiu4",
-                "you1xiu4"
+                "you1 xiu4"
             ],
             "meaning": "outstanding; excellent"
         },
         {
             "question": "笑话",
             "valid_answers": [
-                "xiao4hua5",
                 "xiao4 hua5"
             ],
             "meaning": "joke; laugh at"
@@ -2521,7 +2284,6 @@
         {
             "question": "可惜",
             "valid_answers": [
-                "ke3xi1",
                 "ke3 xi1"
             ],
             "meaning": "it's a pity; regrettable; too bad"
@@ -2550,15 +2312,13 @@
         {
             "question": "科学",
             "valid_answers": [
-                "ke1 xue2",
-                "ke1xue2"
+                "ke1 xue2"
             ],
             "meaning": "science; scientific knowledge"
         },
         {
             "question": "餐厅",
             "valid_answers": [
-                "can1ting1",
                 "can1 ting1"
             ],
             "meaning": "dining hall; cafeteria; restaurant"
@@ -2573,23 +2333,20 @@
         {
             "question": "距离",
             "valid_answers": [
-                "ju4 li2",
-                "ju4li2"
+                "ju4 li2"
             ],
             "meaning": "distance; be apart; away from"
         },
         {
             "question": "窗户",
             "valid_answers": [
-                "chuang1 hu5",
-                "chuang1hu5"
+                "chuang1 hu5"
             ],
             "meaning": "window"
         },
         {
             "question": "空气",
             "valid_answers": [
-                "kong1qi4",
                 "kong1 qi4"
             ],
             "meaning": "air"
@@ -2597,23 +2354,20 @@
         {
             "question": "护士",
             "valid_answers": [
-                "hu4 shi5",
-                "hu4shi5"
+                "hu4 shi5"
             ],
             "meaning": "nurse"
         },
         {
             "question": "后悔",
             "valid_answers": [
-                "hou4 hui3",
-                "hou4hui3"
+                "hou4 hui3"
             ],
             "meaning": "to regret; repent"
         },
         {
             "question": "大约",
             "valid_answers": [
-                "da4yue1",
                 "da4 yue1"
             ],
             "meaning": "approximately; about"
@@ -2621,40 +2375,35 @@
         {
             "question": "内容",
             "valid_answers": [
-                "nei4 rong2",
-                "nei4rong2"
+                "nei4 rong2"
             ],
             "meaning": "content; substance; details"
         },
         {
             "question": "规定",
             "valid_answers": [
-                "gui1 ding4",
-                "gui1ding4"
+                "gui1 ding4"
             ],
             "meaning": "regulation; stipulate; fix; set"
         },
         {
             "question": "效果",
             "valid_answers": [
-                "xiao4 guo3",
-                "xiao4guo3"
+                "xiao4 guo3"
             ],
             "meaning": "effect; result"
         },
         {
             "question": "现金",
             "valid_answers": [
-                "xian4 jin1",
-                "xian4jin1"
+                "xian4 jin1"
             ],
             "meaning": "cash"
         },
         {
             "question": "儿童",
             "valid_answers": [
-                "er2 tong2",
-                "er2tong2"
+                "er2 tong2"
             ],
             "meaning": "child; children"
         },
@@ -2675,23 +2424,20 @@
         {
             "question": "浪漫",
             "valid_answers": [
-                "lang4 man4",
-                "lang4man4"
+                "lang4 man4"
             ],
             "meaning": "romantic"
         },
         {
             "question": "态度",
             "valid_answers": [
-                "tai4 du5",
-                "tai4du5"
+                "tai4 du5"
             ],
             "meaning": "manner; bearing; attitude"
         },
         {
             "question": "自信",
             "valid_answers": [
-                "zi4xin4",
                 "zi4 xin4"
             ],
             "meaning": "self-confidence"
@@ -2699,23 +2445,20 @@
         {
             "question": "吃惊",
             "valid_answers": [
-                "chi1  jing1",
-                "chi1jing1"
+                "chi1 jing1"
             ],
             "meaning": "be startled; be shocked; be amazed"
         },
         {
             "question": "熟悉",
             "valid_answers": [
-                "shu2 xi1",
-                "shu2xi1"
+                "shu2 xi1"
             ],
             "meaning": "familiar with; know well"
         },
         {
             "question": "按照",
             "valid_answers": [
-                "an4zhao4",
                 "an4 zhao4"
             ],
             "meaning": "according to; in accordance with; in light of"
@@ -2723,7 +2466,6 @@
         {
             "question": "世纪",
             "valid_answers": [
-                "shi4ji4",
                 "shi4 ji4"
             ],
             "meaning": "century"
@@ -2731,15 +2473,13 @@
         {
             "question": "回忆",
             "valid_answers": [
-                "hui2 yi4",
-                "hui2yi4"
+                "hui2 yi4"
             ],
             "meaning": "to recall; recollect"
         },
         {
             "question": "相同",
             "valid_answers": [
-                "xiang1tong2",
                 "xiang1 tong2"
             ],
             "meaning": "identical; same; alike"
@@ -2747,7 +2487,6 @@
         {
             "question": "重点",
             "valid_answers": [
-                "zhong4dian3",
                 "zhong4 dian3"
             ],
             "meaning": "emphasis; main point"
@@ -2755,7 +2494,6 @@
         {
             "question": "教育",
             "valid_answers": [
-                "jiao4yu4",
                 "jiao4 yu4"
             ],
             "meaning": "education"
@@ -2763,39 +2501,34 @@
         {
             "question": "受不了",
             "valid_answers": [
-                "shou4  bu5  liao3",
-                "shou4bu5liao3"
+                "shou4 bu5 liao3"
             ],
             "meaning": "cannot endure; unbearable; can't stand"
         },
         {
             "question": "皮肤",
             "valid_answers": [
-                "pi2 fu1",
-                "pi2fu1"
+                "pi2 fu1"
             ],
             "meaning": "skin"
         },
         {
             "question": "区别",
             "valid_answers": [
-                "qu1 bie2",
-                "qu1bie2"
+                "qu1 bie2"
             ],
             "meaning": "difference; distinguish"
         },
         {
             "question": "左右",
             "valid_answers": [
-                "zuo3 you4",
-                "zuo3you4"
+                "zuo3 you4"
             ],
             "meaning": "about; approximate; around | left and right"
         },
         {
             "question": "阳光",
             "valid_answers": [
-                "yang2guang1",
                 "yang2 guang1"
             ],
             "meaning": "sunshine; sunlight"
@@ -2810,7 +2543,6 @@
         {
             "question": "文章",
             "valid_answers": [
-                "wen2zhang1",
                 "wen2 zhang1"
             ],
             "meaning": "article; essay"
@@ -2818,7 +2550,6 @@
         {
             "question": "语言",
             "valid_answers": [
-                "yu3yan2",
                 "yu3 yan2"
             ],
             "meaning": "language"
@@ -2826,15 +2557,13 @@
         {
             "question": "标准",
             "valid_answers": [
-                "biao1 zhun3",
-                "biao1zhun3"
+                "biao1 zhun3"
             ],
             "meaning": "(an official) standard; norm; criterion"
         },
         {
             "question": "管理",
             "valid_answers": [
-                "guan3li3",
                 "guan3 li3"
             ],
             "meaning": "supervise; manage"
@@ -2842,8 +2571,7 @@
         {
             "question": "误会",
             "valid_answers": [
-                "wu4 hui4",
-                "wu4hui4"
+                "wu4 hui4"
             ],
             "meaning": "to misunderstand; to mistake"
         },
@@ -2857,23 +2585,20 @@
         {
             "question": "举行",
             "valid_answers": [
-                "ju3 xing2",
-                "ju3xing2"
+                "ju3 xing2"
             ],
             "meaning": "convene; to hold (a meeting, ceremony, etc.)"
         },
         {
             "question": "肚子",
             "valid_answers": [
-                "du4 zi5",
-                "du4zi5"
+                "du4 zi5"
             ],
             "meaning": "belly; abdomen; stomach"
         },
         {
             "question": "不仅",
             "valid_answers": [
-                "bu4jin3",
                 "bu4 jin3"
             ],
             "meaning": "not only; not just"
@@ -2881,15 +2606,13 @@
         {
             "question": "饼干",
             "valid_answers": [
-                "bing3 gan1",
-                "bing3gan1"
+                "bing3 gan1"
             ],
             "meaning": "biscuit; cracker; cookie"
         },
         {
             "question": "国际",
             "valid_answers": [
-                "guo2ji4",
                 "guo2 ji4"
             ],
             "meaning": "international"
@@ -2897,8 +2620,7 @@
         {
             "question": "信心",
             "valid_answers": [
-                "xin4 xin1",
-                "xin4xin1"
+                "xin4 xin1"
             ],
             "meaning": "confidence; faith (in sb. or sth.)"
         },
@@ -2912,7 +2634,6 @@
         {
             "question": "竞争",
             "valid_answers": [
-                "jing4zheng1",
                 "jing4 zheng1"
             ],
             "meaning": "compete"
@@ -2927,7 +2648,6 @@
         {
             "question": "作家",
             "valid_answers": [
-                "zuo4jia1",
                 "zuo4 jia1"
             ],
             "meaning": "author; writer"
@@ -2935,7 +2655,6 @@
         {
             "question": "诚实",
             "valid_answers": [
-                "cheng2shi2",
                 "cheng2 shi2"
             ],
             "meaning": "honest; honorable"
@@ -2943,7 +2662,6 @@
         {
             "question": "顾客",
             "valid_answers": [
-                "gu4ke4",
                 "gu4 ke4"
             ],
             "meaning": "customer; client"
@@ -2965,7 +2683,6 @@
         {
             "question": "打扮",
             "valid_answers": [
-                "da3ban5",
                 "da3 ban5"
             ],
             "meaning": "dress up; put on make up"
@@ -2973,31 +2690,27 @@
         {
             "question": "交流",
             "valid_answers": [
-                "jiao1 liu2",
-                "jiao1liu2"
+                "jiao1 liu2"
             ],
             "meaning": "communicate; exchange; give and take; interaction; to alternate"
         },
         {
             "question": "年龄",
             "valid_answers": [
-                "nian2 ling2",
-                "nian2ling2"
+                "nian2 ling2"
             ],
             "meaning": "(a person's) age"
         },
         {
             "question": "小说",
             "valid_answers": [
-                "xiao3 shuo1",
-                "xiao3shuo1"
+                "xiao3 shuo1"
             ],
             "meaning": "novel; fiction"
         },
         {
             "question": "符合",
             "valid_answers": [
-                "fu2he2",
                 "fu2 he2"
             ],
             "meaning": "in keeping with; in accordance with; conform"
@@ -3005,15 +2718,13 @@
         {
             "question": "交通",
             "valid_answers": [
-                "jiao1 tong1",
-                "jiao1tong1"
+                "jiao1 tong1"
             ],
             "meaning": "traffic; transportation"
         },
         {
             "question": "共同",
             "valid_answers": [
-                "gong4tong2",
                 "gong4 tong2"
             ],
             "meaning": "together; common; joint"
@@ -3021,7 +2732,6 @@
         {
             "question": "稍微",
             "valid_answers": [
-                "shao1wei1",
                 "shao1 wei1"
             ],
             "meaning": "a little bit; slightly"
@@ -3029,7 +2739,6 @@
         {
             "question": "增加",
             "valid_answers": [
-                "zeng1jia1",
                 "zeng1 jia1"
             ],
             "meaning": "to increase; to raise; add"
@@ -3044,8 +2753,7 @@
         {
             "question": "适应",
             "valid_answers": [
-                "shi4 ying4",
-                "shi4ying4"
+                "shi4 ying4"
             ],
             "meaning": "to suit; to fit; adapt"
         },
@@ -3059,63 +2767,55 @@
         {
             "question": "辛苦",
             "valid_answers": [
-                "xin1 ku3",
-                "xin1ku3"
+                "xin1 ku3"
             ],
             "meaning": "hard; exhausting; toilsome; laborious"
         },
         {
             "question": "然而",
             "valid_answers": [
-                "ran2'er2",
-                "ran2 'er2"
+                "ran2 er2"
             ],
             "meaning": "however; yet; but"
         },
         {
             "question": "耐心",
             "valid_answers": [
-                "nai4 xin1",
-                "nai4xin1"
+                "nai4 xin1"
             ],
             "meaning": "to be patient"
         },
         {
             "question": "将来",
             "valid_answers": [
-                "jiang1 lai2",
-                "jiang1lai2"
+                "jiang1 lai2"
             ],
             "meaning": "the future"
         },
         {
             "question": "沙发",
             "valid_answers": [
-                "sha1 fa1",
-                "sha1fa1"
+                "sha1 fa1"
             ],
             "meaning": "sofa"
         },
         {
             "question": "最好",
             "valid_answers": [
-                "zui4 hao3",
-                "zui4hao3"
+                "zui4 hao3"
             ],
             "meaning": "the best; had better ...; it would be best"
         },
         {
             "question": "禁止",
             "valid_answers": [
-                "jin4 zhi3",
-                "jin4zhi3"
+                "jin4 zhi3"
             ],
             "meaning": "to ban; prohibit"
         },
         {
             "question": "经济",
             "valid_answers": [
-                "jing1ji4",
                 "jing1 ji4"
             ],
             "meaning": "economy; economic"
@@ -3123,7 +2823,6 @@
         {
             "question": "座位",
             "valid_answers": [
-                "zuo4wei4",
                 "zuo4 wei4"
             ],
             "meaning": "seat; place"
@@ -3131,55 +2830,48 @@
         {
             "question": "购物",
             "valid_answers": [
-                "gou4 wu4",
-                "gou4wu4"
+                "gou4 wu4"
             ],
             "meaning": "go shopping; buy goods"
         },
         {
             "question": "抽烟",
             "valid_answers": [
-                "chou1 yan1",
-                "chou1yan1"
+                "chou1 yan1"
             ],
             "meaning": "to smoke (a cigarette, pipe, etc.)"
         },
         {
             "question": "航班",
             "valid_answers": [
-                "hang2 ban1",
-                "hang2ban1"
+                "hang2 ban1"
             ],
             "meaning": "scheduled flight; flight number"
         },
         {
             "question": "礼貌",
             "valid_answers": [
-                "li3 mao4",
-                "li3mao4"
+                "li3 mao4"
             ],
             "meaning": "courtesy; politeness; manners"
         },
         {
             "question": "提前",
             "valid_answers": [
-                "ti2 qian2",
-                "ti2qian2"
+                "ti2 qian2"
             ],
             "meaning": "shift to an earlier date; bring forward; to advance"
         },
         {
             "question": "判断",
             "valid_answers": [
-                "pan4 duan4",
-                "pan4duan4"
+                "pan4 duan4"
             ],
             "meaning": "to judge; judgment; to decide"
         },
         {
             "question": "胳膊",
             "valid_answers": [
-                "ge1bo5",
                 "ge1 bo5"
             ],
             "meaning": "arm"
@@ -3187,7 +2879,6 @@
         {
             "question": "整理",
             "valid_answers": [
-                "zheng3li3",
                 "zheng3 li3"
             ],
             "meaning": "put in order; arrange; straighten up; to tidy; to pack (luggage)"
@@ -3195,31 +2886,27 @@
         {
             "question": "森林",
             "valid_answers": [
-                "sen1 lin2",
-                "sen1lin2"
+                "sen1 lin2"
             ],
             "meaning": "forest"
         },
         {
             "question": "同情",
             "valid_answers": [
-                "tong2 qing2",
-                "tong2qing2"
+                "tong2 qing2"
             ],
             "meaning": "compassion; sympathy"
         },
         {
             "question": "网站",
             "valid_answers": [
-                "wang3 zhan4",
-                "wang3zhan4"
+                "wang3 zhan4"
             ],
             "meaning": "website"
         },
         {
             "question": "商量",
             "valid_answers": [
-                "shang1liang5",
                 "shang1 liang5"
             ],
             "meaning": "consult; talk over; discuss"
@@ -3227,7 +2914,6 @@
         {
             "question": "眼镜",
             "valid_answers": [
-                "yan3jing4",
                 "yan3 jing4"
             ],
             "meaning": "glasses; spectacles"
@@ -3235,15 +2921,13 @@
         {
             "question": "镜子",
             "valid_answers": [
-                "jing4 zi5",
-                "jing4zi5"
+                "jing4 zi5"
             ],
             "meaning": "mirror"
         },
         {
             "question": "广播",
             "valid_answers": [
-                "guang3bo1",
                 "guang3 bo1"
             ],
             "meaning": "broadcast; on the air"
@@ -3251,16 +2935,14 @@
         {
             "question": "专门",
             "valid_answers": [
-                "zhuan1 men2",
-                "zhuan1men2"
+                "zhuan1 men2"
             ],
             "meaning": "specialized"
         },
         {
             "question": "弹钢琴",
             "valid_answers": [
-                "tan2  gang1 qin2",
-                "tan2gang1qin2"
+                "tan2 gang1 qin2"
             ],
             "meaning": "play the piano"
         },
@@ -3274,7 +2956,6 @@
         {
             "question": "流行",
             "valid_answers": [
-                "liu2xing2",
                 "liu2 xing2"
             ],
             "meaning": "spread; prevalent; be popular"
@@ -3282,7 +2963,6 @@
         {
             "question": "材料",
             "valid_answers": [
-                "cai2liao4",
                 "cai2 liao4"
             ],
             "meaning": "material"
@@ -3290,15 +2970,13 @@
         {
             "question": "对话",
             "valid_answers": [
-                "dui4 hua4",
-                "dui4hua4"
+                "dui4 hua4"
             ],
             "meaning": "dialogue; conversation"
         },
         {
             "question": "详细",
             "valid_answers": [
-                "xiang2xi4",
                 "xiang2 xi4"
             ],
             "meaning": "detailed; in detail; minute"
@@ -3306,15 +2984,13 @@
         {
             "question": "随着",
             "valid_answers": [
-                "sui2 zhe5",
-                "sui2zhe5"
+                "sui2 zhe5"
             ],
             "meaning": "along with; in the wake of"
         },
         {
             "question": "降落",
             "valid_answers": [
-                "jiang4luo4",
                 "jiang4 luo4"
             ],
             "meaning": "descend; to land; put down"
@@ -3322,55 +2998,48 @@
         {
             "question": "功夫",
             "valid_answers": [
-                "gong1 fu5",
-                "gong1fu5"
+                "gong1 fu5"
             ],
             "meaning": "kung fu; skill; art; labor"
         },
         {
             "question": "严格",
             "valid_answers": [
-                "yan2 ge2",
-                "yan2ge2"
+                "yan2 ge2"
             ],
             "meaning": "strict; stringent; tight"
         },
         {
             "question": "日记",
             "valid_answers": [
-                "ri4 ji4",
-                "ri4ji4"
+                "ri4 ji4"
             ],
             "meaning": "diary"
         },
         {
             "question": "偶尔",
             "valid_answers": [
-                "ou3 'er3",
-                "ou3'er3"
+                "ou3 er3"
             ],
             "meaning": "occasionally; once in a while; sometimes"
         },
         {
             "question": "实际",
             "valid_answers": [
-                "shi2 ji4",
-                "shi2ji4"
+                "shi2 ji4"
             ],
             "meaning": "actual; reality; practice"
         },
         {
             "question": "友好",
             "valid_answers": [
-                "you3 hao3",
-                "you3hao3"
+                "you3 hao3"
             ],
             "meaning": "friendly (relations); close friends"
         },
         {
             "question": "相反",
             "valid_answers": [
-                "xiang1fan3",
                 "xiang1 fan3"
             ],
             "meaning": "opposite; contrary"
@@ -3378,7 +3047,6 @@
         {
             "question": "大夫",
             "valid_answers": [
-                "dai4fu5",
                 "dai4 fu5"
             ],
             "meaning": "doctor; physician"
@@ -3386,7 +3054,6 @@
         {
             "question": "友谊",
             "valid_answers": [
-                "you3yi4",
                 "you3 yi4"
             ],
             "meaning": "friendship; companionship"
@@ -3394,15 +3061,13 @@
         {
             "question": "准确",
             "valid_answers": [
-                "zhun3 que4",
-                "zhun3que4"
+                "zhun3 que4"
             ],
             "meaning": "accurate; precise"
         },
         {
             "question": "平时",
             "valid_answers": [
-                "ping2shi2",
                 "ping2 shi2"
             ],
             "meaning": "ordinarily; in normal times; in peacetime"
@@ -3410,7 +3075,6 @@
         {
             "question": "对面",
             "valid_answers": [
-                "dui4mian4",
                 "dui4 mian4"
             ],
             "meaning": "opposite; across from; the other side"
@@ -3418,23 +3082,20 @@
         {
             "question": "脾气",
             "valid_answers": [
-                "pi2 qi5",
-                "pi2qi5"
+                "pi2 qi5"
             ],
             "meaning": "temperament; disposition; temper"
         },
         {
             "question": "价格",
             "valid_answers": [
-                "jia4 ge2",
-                "jia4ge2"
+                "jia4 ge2"
             ],
             "meaning": "price"
         },
         {
             "question": "性格",
             "valid_answers": [
-                "xing4ge2",
                 "xing4 ge2"
             ],
             "meaning": "nature; personality; temperament"
@@ -3442,7 +3103,6 @@
         {
             "question": "鼓励",
             "valid_answers": [
-                "gu3li4",
                 "gu3 li4"
             ],
             "meaning": "encourage; inspire"
@@ -3450,7 +3110,6 @@
         {
             "question": "及时",
             "valid_answers": [
-                "ji2shi2",
                 "ji2 shi2"
             ],
             "meaning": "timely; in time; promptly; without delay"
@@ -3458,8 +3117,7 @@
         {
             "question": "迷路",
             "valid_answers": [
-                "mi2 lu4",
-                "mi2lu4"
+                "mi2 lu4"
             ],
             "meaning": "to get lost"
         },
@@ -3473,47 +3131,41 @@
         {
             "question": "理想",
             "valid_answers": [
-                "li3 xiang3",
-                "li3xiang3"
+                "li3 xiang3"
             ],
             "meaning": "ideal"
         },
         {
             "question": "工资",
             "valid_answers": [
-                "gong1 zi1",
-                "gong1zi1"
+                "gong1 zi1"
             ],
             "meaning": "wages; pay; earnings; salary"
         },
         {
             "question": "散步",
             "valid_answers": [
-                "san4bu4",
-                "san4  bu4"
+                "san4 bu4"
             ],
             "meaning": "to go for a walk"
         },
         {
             "question": "只好",
             "valid_answers": [
-                "zhi3 hao3",
-                "zhi3hao3"
+                "zhi3 hao3"
             ],
             "meaning": "have to; be forced to"
         },
         {
             "question": "感动",
             "valid_answers": [
-                "gan3 dong4",
-                "gan3dong4"
+                "gan3 dong4"
             ],
             "meaning": "be moved; to touch emotionally"
         },
         {
             "question": "知识",
             "valid_answers": [
-                "zhi1shi5",
                 "zhi1 shi5"
             ],
             "meaning": "knowledge; intellectual"
@@ -3521,15 +3173,13 @@
         {
             "question": "难受",
             "valid_answers": [
-                "nan2 shou4",
-                "nan2shou4"
+                "nan2 shou4"
             ],
             "meaning": "feel unwell; to suffer pain"
         },
         {
             "question": "奖金",
             "valid_answers": [
-                "jiang3jin1",
                 "jiang3 jin1"
             ],
             "meaning": "bonus"
@@ -3537,15 +3187,13 @@
         {
             "question": "幽默",
             "valid_answers": [
-                "you1 mo4",
-                "you1mo4"
+                "you1 mo4"
             ],
             "meaning": "humorous"
         },
         {
             "question": "孙子",
             "valid_answers": [
-                "sun1zi5",
                 "sun1 zi5"
             ],
             "meaning": "grandson; son's son"
@@ -3560,7 +3208,6 @@
         {
             "question": "收入",
             "valid_answers": [
-                "shou1ru4",
                 "shou1 ru4"
             ],
             "meaning": "take in; income; revenue"
@@ -3575,7 +3222,6 @@
         {
             "question": "公里",
             "valid_answers": [
-                "gong1li3",
                 "gong1 li3"
             ],
             "meaning": "kilometer"
@@ -3583,15 +3229,13 @@
         {
             "question": "害羞",
             "valid_answers": [
-                "hai4  xiu1",
-                "hai4xiu1"
+                "hai4 xiu1"
             ],
             "meaning": "blush; shy"
         },
         {
             "question": "基础",
             "valid_answers": [
-                "ji1chu3",
                 "ji1 chu3"
             ],
             "meaning": "base; foundation"
@@ -3599,16 +3243,14 @@
         {
             "question": "准时",
             "valid_answers": [
-                "zhun3 shi2",
-                "zhun3shi2"
+                "zhun3 shi2"
             ],
             "meaning": "punctually; on time"
         },
         {
             "question": "积极",
             "valid_answers": [
-                "ji1 ji2",
-                "ji1ji2"
+                "ji1 ji2"
             ],
             "meaning": "active; positive; energetic"
         },
@@ -3622,39 +3264,34 @@
         {
             "question": "力气",
             "valid_answers": [
-                "li4 qi5",
-                "li4qi5"
+                "li4 qi5"
             ],
             "meaning": "physical strength; effort"
         },
         {
             "question": "入口",
             "valid_answers": [
-                "ru4 kou3",
-                "ru4kou3"
+                "ru4 kou3"
             ],
             "meaning": "entrance"
         },
         {
             "question": "袜子",
             "valid_answers": [
-                "wa4 zi5",
-                "wa4zi5"
+                "wa4 zi5"
             ],
             "meaning": "socks; stockings"
         },
         {
             "question": "烦恼",
             "valid_answers": [
-                "fan2 nao3",
-                "fan2nao3"
+                "fan2 nao3"
             ],
             "meaning": "worried; vexed"
         },
         {
             "question": "举办",
             "valid_answers": [
-                "ju3ban4",
                 "ju3 ban4"
             ],
             "meaning": "to conduct; to hold"
@@ -3662,23 +3299,20 @@
         {
             "question": "修理",
             "valid_answers": [
-                "xiu1 li3",
-                "xiu1li3"
+                "xiu1 li3"
             ],
             "meaning": "to repair; perform maintenance; to overhaul"
         },
         {
             "question": "减少",
             "valid_answers": [
-                "jian3 shao3",
-                "jian3shao3"
+                "jian3 shao3"
             ],
             "meaning": "reduce; to decrease"
         },
         {
             "question": "亲戚",
             "valid_answers": [
-                "qin1qi5",
                 "qin1 qi5"
             ],
             "meaning": "a relative (i.e. family relation)"
@@ -3686,15 +3320,13 @@
         {
             "question": "参观",
             "valid_answers": [
-                "can1 guan1",
-                "can1guan1"
+                "can1 guan1"
             ],
             "meaning": "to visit (a place, such as a tourist spot); inspect"
         },
         {
             "question": "丰富",
             "valid_answers": [
-                "feng1fu4",
                 "feng1 fu4"
             ],
             "meaning": "rich; enrich; abundant; plentiful"
@@ -3702,7 +3334,6 @@
         {
             "question": "果汁",
             "valid_answers": [
-                "guo3zhi1",
                 "guo3 zhi1"
             ],
             "meaning": "fruit juice"
@@ -3710,7 +3341,6 @@
         {
             "question": "毛巾",
             "valid_answers": [
-                "mao2jin1",
                 "mao2 jin1"
             ],
             "meaning": "towel; washcloth"
@@ -3718,7 +3348,6 @@
         {
             "question": "作者",
             "valid_answers": [
-                "zuo4zhe3",
                 "zuo4 zhe3"
             ],
             "meaning": "author; writer"
@@ -3726,7 +3355,6 @@
         {
             "question": "海洋",
             "valid_answers": [
-                "hai3yang2",
                 "hai3 yang2"
             ],
             "meaning": "ocean"
@@ -3734,7 +3362,6 @@
         {
             "question": "批评",
             "valid_answers": [
-                "pi1ping2",
                 "pi1 ping2"
             ],
             "meaning": "criticize"
@@ -3742,15 +3369,13 @@
         {
             "question": "排队",
             "valid_answers": [
-                "pai2  dui4",
-                "pai2dui4"
+                "pai2 dui4"
             ],
             "meaning": "queue; stand in line"
         },
         {
             "question": "例如",
             "valid_answers": [
-                "li4ru2",
                 "li4 ru2"
             ],
             "meaning": "for example; for instance"
@@ -3758,8 +3383,7 @@
         {
             "question": "植物",
             "valid_answers": [
-                "zhi2 wu4",
-                "zhi2wu4"
+                "zhi2 wu4"
             ],
             "meaning": "plant; botanical; vegetation"
         },
@@ -3773,8 +3397,7 @@
         {
             "question": "家具",
             "valid_answers": [
-                "jia1 ju4",
-                "jia1ju4"
+                "jia1 ju4"
             ],
             "meaning": "furniture"
         },
@@ -3788,7 +3411,6 @@
         {
             "question": "温度",
             "valid_answers": [
-                "wen1du4",
                 "wen1 du4"
             ],
             "meaning": "temperature"
@@ -3796,7 +3418,6 @@
         {
             "question": "数量",
             "valid_answers": [
-                "shu4liang4",
                 "shu4 liang4"
             ],
             "meaning": "amount; quantity; number"
@@ -3818,31 +3439,27 @@
         {
             "question": "亚洲",
             "valid_answers": [
-                "ya4 zhou1",
-                "ya4zhou1"
+                "ya4 zhou1"
             ],
             "meaning": "Asia"
         },
         {
             "question": "来不及",
             "valid_answers": [
-                "lai2bu5ji2",
-                "lai2  bu5  ji2"
+                "lai2 bu5 ji2"
             ],
             "meaning": "there's not enough time (to do something); it's too late"
         },
         {
             "question": "师傅",
             "valid_answers": [
-                "shi1 fu5",
-                "shi1fu5"
+                "shi1 fu5"
             ],
             "meaning": "master; qualified worker; teacher"
         },
         {
             "question": "污染",
             "valid_answers": [
-                "wu1ran3",
                 "wu1 ran3"
             ],
             "meaning": "pollution; contamination"
@@ -3850,15 +3467,13 @@
         {
             "question": "来得及",
             "valid_answers": [
-                "lai2  de5  ji2",
-                "lai2de5ji2"
+                "lai2 de5 ji2"
             ],
             "meaning": "there's still time"
         },
         {
             "question": "减肥",
             "valid_answers": [
-                "jian3fei2",
                 "jian3 fei2"
             ],
             "meaning": "go on a diet; lose weight"
@@ -3866,7 +3481,6 @@
         {
             "question": "客厅",
             "valid_answers": [
-                "ke4ting1",
                 "ke4 ting1"
             ],
             "meaning": "living room; parlor"
@@ -3874,7 +3488,6 @@
         {
             "question": "缺少",
             "valid_answers": [
-                "que1shao3",
                 "que1 shao3"
             ],
             "meaning": "to lack; be short of; be deficient in"
@@ -3882,16 +3495,14 @@
         {
             "question": "老虎",
             "valid_answers": [
-                "lao3 hu3",
-                "lao3hu3"
+                "lao3 hu3"
             ],
             "meaning": "tiger"
         },
         {
             "question": "降低",
             "valid_answers": [
-                "jiang4 di1",
-                "jiang4di1"
+                "jiang4 di1"
             ],
             "meaning": "reduce; to lower; to drop"
         },
@@ -3905,7 +3516,6 @@
         {
             "question": "质量",
             "valid_answers": [
-                "zhi4liang4",
                 "zhi4 liang4"
             ],
             "meaning": "quality; mass (physics)"
@@ -3913,23 +3523,20 @@
         {
             "question": "学期",
             "valid_answers": [
-                "xue2 qi1",
-                "xue2qi1"
+                "xue2 qi1"
             ],
             "meaning": "semester; school term"
         },
         {
             "question": "卫生间",
             "valid_answers": [
-                "wei4 sheng1 jian1",
-                "wei4sheng1jian1"
+                "wei4 sheng1 jian1"
             ],
             "meaning": "restroom; bathroom; water closet (WC)"
         },
         {
             "question": "网球",
             "valid_answers": [
-                "wang3qiu2",
                 "wang3 qiu2"
             ],
             "meaning": "tennis; tennis ball"
@@ -3937,23 +3544,20 @@
         {
             "question": "其次",
             "valid_answers": [
-                "qi2 ci4",
-                "qi2ci4"
+                "qi2 ci4"
             ],
             "meaning": "next; secondly"
         },
         {
             "question": "打招呼",
             "valid_answers": [
-                "da3 zhao1 hu5",
-                "da3zhao1hu5"
+                "da3 zhao1 hu5"
             ],
             "meaning": "notify; greet; inform"
         },
         {
             "question": "表格",
             "valid_answers": [
-                "biao3ge2",
                 "biao3 ge2"
             ],
             "meaning": "form (document)"
@@ -3961,7 +3565,6 @@
         {
             "question": "阅读",
             "valid_answers": [
-                "yue4du2",
                 "yue4 du2"
             ],
             "meaning": "read; reading"
@@ -3969,7 +3572,6 @@
         {
             "question": "信封",
             "valid_answers": [
-                "xin4feng1",
                 "xin4 feng1"
             ],
             "meaning": "envelope"
@@ -3977,7 +3579,6 @@
         {
             "question": "顺序",
             "valid_answers": [
-                "shun4xu4",
                 "shun4 xu4"
             ],
             "meaning": "sequence; order"
@@ -3985,31 +3586,27 @@
         {
             "question": "放暑假",
             "valid_answers": [
-                "fang4shu3jia4",
-                "fang4  shu3 jia4"
+                "fang4 shu3 jia4"
             ],
             "meaning": "have summer vacation"
         },
         {
             "question": "乘坐",
             "valid_answers": [
-                "cheng2 zuo4",
-                "cheng2zuo4"
+                "cheng2 zuo4"
             ],
             "meaning": "ride; get into (a vehicle)"
         },
         {
             "question": "重视",
             "valid_answers": [
-                "zhong4 shi4",
-                "zhong4shi4"
+                "zhong4 shi4"
             ],
             "meaning": "to value; take seriously"
         },
         {
             "question": "推迟",
             "valid_answers": [
-                "tui1chi2",
                 "tui1 chi2"
             ],
             "meaning": "postpone; defer"
@@ -4017,7 +3614,6 @@
         {
             "question": "缺点",
             "valid_answers": [
-                "que1dian3",
                 "que1 dian3"
             ],
             "meaning": "weak point; defect; fault; shortcoming"
@@ -4025,23 +3621,20 @@
         {
             "question": "加油站",
             "valid_answers": [
-                "jia1 you2 zhan4",
-                "jia1you2zhan4"
+                "jia1 you2 zhan4"
             ],
             "meaning": "gas station"
         },
         {
             "question": "首都",
             "valid_answers": [
-                "shou3 du1",
-                "shou3du1"
+                "shou3 du1"
             ],
             "meaning": "capital (city)"
         },
         {
             "question": "羡慕",
             "valid_answers": [
-                "xian4mu4",
                 "xian4 mu4"
             ],
             "meaning": "to envy; admire"
@@ -4049,16 +3642,14 @@
         {
             "question": "零钱",
             "valid_answers": [
-                "ling2 qian2",
-                "ling2qian2"
+                "ling2 qian2"
             ],
             "meaning": "small change (of money)"
         },
         {
             "question": "暖和",
             "valid_answers": [
-                "nuan3 huo5",
-                "nuan3huo5"
+                "nuan3 huo5"
             ],
             "meaning": "warm; nice and warm"
         },
@@ -4072,31 +3663,27 @@
         {
             "question": "出差",
             "valid_answers": [
-                "chu1  chai1",
-                "chu1chai1"
+                "chu1 chai1"
             ],
             "meaning": "go on a business trip"
         },
         {
             "question": "民族",
             "valid_answers": [
-                "min2 zu2",
-                "min2zu2"
+                "min2 zu2"
             ],
             "meaning": "nationality; ethnic group"
         },
         {
             "question": "传真",
             "valid_answers": [
-                "chuan2 zhen1",
-                "chuan2zhen1"
+                "chuan2 zhen1"
             ],
             "meaning": "fax; facsimile"
         },
         {
             "question": "优点",
             "valid_answers": [
-                "you1dian3",
                 "you1 dian3"
             ],
             "meaning": "merit; good point; a strength; a benefit"
@@ -4104,7 +3691,6 @@
         {
             "question": "垃圾桶",
             "valid_answers": [
-                "la1ji1tong3",
                 "la1 ji1 tong3"
             ],
             "meaning": "garbage can"
@@ -4112,31 +3698,27 @@
         {
             "question": "加班",
             "valid_answers": [
-                "jia1  ban1",
-                "jia1ban1"
+                "jia1 ban1"
             ],
             "meaning": "work overtime"
         },
         {
             "question": "房东",
             "valid_answers": [
-                "fang2 dong1",
-                "fang2dong1"
+                "fang2 dong1"
             ],
             "meaning": "landlord"
         },
         {
             "question": "按时",
             "valid_answers": [
-                "an4 shi2",
-                "an4shi2"
+                "an4 shi2"
             ],
             "meaning": "on time; on schedule"
         },
         {
             "question": "葡萄",
             "valid_answers": [
-                "pu2tao5",
                 "pu2 tao5"
             ],
             "meaning": "grape"
@@ -4144,7 +3726,6 @@
         {
             "question": "往往",
             "valid_answers": [
-                "wang3wang3",
                 "wang3 wang3"
             ],
             "meaning": "often; frequently; more often than not"
@@ -4152,15 +3733,13 @@
         {
             "question": "高速公路",
             "valid_answers": [
-                "gao1su4gong1lu4",
-                "gao1 su4  gong1 lu4"
+                "gao1 su4 gong1 lu4"
             ],
             "meaning": "highway"
         },
         {
             "question": "得意",
             "valid_answers": [
-                "de2yi4",
                 "de2 yi4"
             ],
             "meaning": "proud of oneself; complacent"
@@ -4168,7 +3747,6 @@
         {
             "question": "特点",
             "valid_answers": [
-                "te4dian3",
                 "te4 dian3"
             ],
             "meaning": "a characteristic; trait; feature"
@@ -4176,31 +3754,27 @@
         {
             "question": "合格",
             "valid_answers": [
-                "he2 ge2",
-                "he2ge2"
+                "he2 ge2"
             ],
             "meaning": "qualified; up to standard"
         },
         {
             "question": "性别",
             "valid_answers": [
-                "xing4 bie2",
-                "xing4bie2"
+                "xing4 bie2"
             ],
             "meaning": "gender; sex; sexual distinction"
         },
         {
             "question": "报名",
             "valid_answers": [
-                "bao4  ming2",
-                "bao4ming2"
+                "bao4 ming2"
             ],
             "meaning": "sign up; apply"
         },
         {
             "question": "互联网",
             "valid_answers": [
-                "hu4lian2wang3",
                 "hu4 lian2 wang3"
             ],
             "meaning": "Internet"
@@ -4208,15 +3782,13 @@
         {
             "question": "景色",
             "valid_answers": [
-                "jing3 se4",
-                "jing3se4"
+                "jing3 se4"
             ],
             "meaning": "scenery; landscape; scene; view"
         },
         {
             "question": "大使馆",
             "valid_answers": [
-                "da4shi3guan3",
                 "da4 shi3 guan3"
             ],
             "meaning": "embassy"
@@ -4224,15 +3796,13 @@
         {
             "question": "总结",
             "valid_answers": [
-                "zong3 jie2",
-                "zong3jie2"
+                "zong3 jie2"
             ],
             "meaning": "summarize; conclude"
         },
         {
             "question": "热闹",
             "valid_answers": [
-                "re4nao5",
                 "re4 nao5"
             ],
             "meaning": "bustling; lively; busy"
@@ -4240,15 +3810,13 @@
         {
             "question": "郊区",
             "valid_answers": [
-                "jiao1 qu1",
-                "jiao1qu1"
+                "jiao1 qu1"
             ],
             "meaning": "suburbs; outskirts"
         },
         {
             "question": "咳嗽",
             "valid_answers": [
-                "ke2sou5",
                 "ke2 sou5"
             ],
             "meaning": "to cough"
@@ -4256,7 +3824,6 @@
         {
             "question": "签证",
             "valid_answers": [
-                "qian1zheng4",
                 "qian1 zheng4"
             ],
             "meaning": "visa"
@@ -4271,15 +3838,13 @@
         {
             "question": "打印",
             "valid_answers": [
-                "da3 yin4",
-                "da3yin4"
+                "da3 yin4"
             ],
             "meaning": "to print"
         },
         {
             "question": "活泼",
             "valid_answers": [
-                "huo2po5",
                 "huo2 po5"
             ],
             "meaning": "lively; vivacious"
@@ -4287,15 +3852,13 @@
         {
             "question": "邮局",
             "valid_answers": [
-                "you2 ju2",
-                "you2ju2"
+                "you2 ju2"
             ],
             "meaning": "post office"
         },
         {
             "question": "牙膏",
             "valid_answers": [
-                "ya2gao1",
                 "ya2 gao1"
             ],
             "meaning": "toothpaste"
@@ -4303,7 +3866,6 @@
         {
             "question": "气候",
             "valid_answers": [
-                "qi4hou4",
                 "qi4 hou4"
             ],
             "meaning": "climate; atmosphere; weather"
@@ -4311,7 +3873,6 @@
         {
             "question": "勺子",
             "valid_answers": [
-                "shao2zi5",
                 "shao2 zi5"
             ],
             "meaning": "spoon; scoop; ladle"
@@ -4319,39 +3880,34 @@
         {
             "question": "付款",
             "valid_answers": [
-                "fu4  kuan3",
-                "fu4kuan3"
+                "fu4 kuan3"
             ],
             "meaning": "to pay"
         },
         {
             "question": "理发",
             "valid_answers": [
-                "li3 fa4",
-                "li3fa4"
+                "li3 fa4"
             ],
             "meaning": "a barber, hairdressing; haircut"
         },
         {
             "question": "复印",
             "valid_answers": [
-                "fu4 yin4",
-                "fu4yin4"
+                "fu4 yin4"
             ],
             "meaning": "photocopy; duplicate"
         },
         {
             "question": "词语",
             "valid_answers": [
-                "ci2 yu3",
-                "ci2yu3"
+                "ci2 yu3"
             ],
             "meaning": "words and expressions; terms"
         },
         {
             "question": "表扬",
             "valid_answers": [
-                "biao3yang2",
                 "biao3 yang2"
             ],
             "meaning": "to praise; commend"
@@ -4359,15 +3915,13 @@
         {
             "question": "打针",
             "valid_answers": [
-                "da3 zhen1",
-                "da3zhen1"
+                "da3 zhen1"
             ],
             "meaning": "inject; get a shot"
         },
         {
             "question": "普遍",
             "valid_answers": [
-                "pu3bian4",
                 "pu3 bian4"
             ],
             "meaning": "common; universal; general; widespread"
@@ -4375,7 +3929,6 @@
         {
             "question": "堵车",
             "valid_answers": [
-                "du3che1",
                 "du3 che1"
             ],
             "meaning": "traffic jam"
@@ -4383,7 +3936,6 @@
         {
             "question": "叶子",
             "valid_answers": [
-                "ye4zi5",
                 "ye4 zi5"
             ],
             "meaning": "leaves"
@@ -4391,7 +3943,6 @@
         {
             "question": "打折",
             "valid_answers": [
-                "da3zhe2",
                 "da3 zhe2"
             ],
             "meaning": "sell at a discount"
@@ -4399,23 +3950,20 @@
         {
             "question": "排列",
             "valid_answers": [
-                "pai2 lie4",
-                "pai2lie4"
+                "pai2 lie4"
             ],
             "meaning": "arrange; align; permutation"
         },
         {
             "question": "凉快",
             "valid_answers": [
-                "liang2 kuai5",
-                "liang2kuai5"
+                "liang2 kuai5"
             ],
             "meaning": "nice and cool; pleasantly cool"
         },
         {
             "question": "塑料袋",
             "valid_answers": [
-                "su4liao4dai4",
                 "su4 liao4 dai4"
             ],
             "meaning": "plastic bag"
@@ -4423,7 +3971,6 @@
         {
             "question": "导游",
             "valid_answers": [
-                "dao3you2",
                 "dao3 you2"
             ],
             "meaning": "tour guide"
@@ -4431,31 +3978,27 @@
         {
             "question": "小吃",
             "valid_answers": [
-                "xiao3 chi1",
-                "xiao3chi1"
+                "xiao3 chi1"
             ],
             "meaning": "snack; refreshments"
         },
         {
             "question": "西红柿",
             "valid_answers": [
-                "xi1 hong2 shi4",
-                "xi1hong2shi4"
+                "xi1 hong2 shi4"
             ],
             "meaning": "tomato"
         },
         {
             "question": "招聘",
             "valid_answers": [
-                "zhao1 pin4",
-                "zhao1pin4"
+                "zhao1 pin4"
             ],
             "meaning": "recruitment; take job applications for a job"
         },
         {
             "question": "节约",
             "valid_answers": [
-                "jie2yue1",
                 "jie2 yue1"
             ],
             "meaning": "frugal; to save"
@@ -4463,7 +4006,6 @@
         {
             "question": "硕士",
             "valid_answers": [
-                "shuo4shi4",
                 "shuo4 shi4"
             ],
             "meaning": "Master's degree (M.A.)"
@@ -4471,7 +4013,6 @@
         {
             "question": "乒乓球",
             "valid_answers": [
-                "ping1pang1qiu2",
                 "ping1 pang1 qiu2"
             ],
             "meaning": "ping pong; table tennis"
@@ -4479,7 +4020,6 @@
         {
             "question": "积累",
             "valid_answers": [
-                "ji1lei3",
                 "ji1 lei3"
             ],
             "meaning": "accumulate; accumulation"
@@ -4487,7 +4027,6 @@
         {
             "question": "橡皮",
             "valid_answers": [
-                "xiang4pi2",
                 "xiang4 pi2"
             ],
             "meaning": "rubber; an eraser"
@@ -4495,31 +4034,27 @@
         {
             "question": "应聘",
             "valid_answers": [
-                "ying4 pin4",
-                "ying4pin4"
+                "ying4 pin4"
             ],
             "meaning": "accept a job offer; to apply for a job"
         },
         {
             "question": "矿泉水",
             "valid_answers": [
-                "kuang4 quan2 shui3",
-                "kuang4quan2shui3"
+                "kuang4 quan2 shui3"
             ],
             "meaning": "mineral water"
         },
         {
             "question": "长城",
             "valid_answers": [
-                "chang2 cheng2",
-                "chang2cheng2"
+                "chang2 cheng2"
             ],
             "meaning": "the Great Wall"
         },
         {
             "question": "语法",
             "valid_answers": [
-                "yu3fa3",
                 "yu3 fa3"
             ],
             "meaning": "grammar"
@@ -4527,23 +4062,20 @@
         {
             "question": "礼拜天",
             "valid_answers": [
-                "li3 bai4 tian1",
-                "li3bai4tian1"
+                "li3 bai4 tian1"
             ],
             "meaning": "Sunday"
         },
         {
             "question": "饺子",
             "valid_answers": [
-                "jiao3 zi5",
-                "jiao3zi5"
+                "jiao3 zi5"
             ],
             "meaning": "dumpling; potsticker"
         },
         {
             "question": "国籍",
             "valid_answers": [
-                "guo2ji2",
                 "guo2 ji2"
             ],
             "meaning": "nationality"
@@ -4551,7 +4083,6 @@
         {
             "question": "售货员",
             "valid_answers": [
-                "shou4huo4yuan2",
                 "shou4 huo4 yuan2"
             ],
             "meaning": "salesclerk; shop assistant"
@@ -4559,15 +4090,13 @@
         {
             "question": "翻译",
             "valid_answers": [
-                "fan1 yi4",
-                "fan1yi4"
+                "fan1 yi4"
             ],
             "meaning": "translate; translation; interpret"
         },
         {
             "question": "流利",
             "valid_answers": [
-                "liu2li4",
                 "liu2 li4"
             ],
             "meaning": "fluent"
@@ -4575,7 +4104,6 @@
         {
             "question": "粗心",
             "valid_answers": [
-                "cu1xin1",
                 "cu1 xin1"
             ],
             "meaning": "careless; inadvertent; negligent"
@@ -4583,15 +4111,13 @@
         {
             "question": "养成",
             "valid_answers": [
-                "yang3 cheng2",
-                "yang3cheng2"
+                "yang3 cheng2"
             ],
             "meaning": "cultivate; acquire; to form"
         },
         {
             "question": "马虎",
             "valid_answers": [
-                "ma3hu5",
                 "ma3 hu5"
             ],
             "meaning": "careless; sloppy; casual"
@@ -4599,7 +4125,6 @@
         {
             "question": "百分之",
             "valid_answers": [
-                "bai3fen1zhi1",
                 "bai3 fen1 zhi1"
             ],
             "meaning": "percent"
@@ -4607,7 +4132,6 @@
         {
             "question": "普通话",
             "valid_answers": [
-                "pu3tong1hua4",
                 "pu3 tong1 hua4"
             ],
             "meaning": "Mandarin (common language)"
@@ -4615,7 +4139,6 @@
         {
             "question": "登机牌",
             "valid_answers": [
-                "deng1ji1pai2",
                 "deng1 ji1 pai2"
             ],
             "meaning": "boarding pass"
@@ -4623,7 +4146,6 @@
         {
             "question": "占线",
             "valid_answers": [
-                "zhan4xian4",
                 "zhan4 xian4"
             ],
             "meaning": "the (phone) line is busy"
@@ -4631,15 +4153,13 @@
         {
             "question": "包子",
             "valid_answers": [
-                "bao1 zi5",
-                "bao1zi5"
+                "bao1 zi5"
             ],
             "meaning": "steamed stuffed bun"
         },
         {
             "question": "羽毛球",
             "valid_answers": [
-                "yu3mao2qiu2",
                 "yu3 mao2 qiu2"
             ],
             "meaning": "badminton"
@@ -4647,7 +4167,6 @@
         {
             "question": "烤鸭",
             "valid_answers": [
-                "kao3ya1",
                 "kao3 ya1"
             ],
             "meaning": "roast duck"
@@ -4655,15 +4174,13 @@
         {
             "question": "寒假",
             "valid_answers": [
-                "han2 jia4",
-                "han2jia4"
+                "han2 jia4"
             ],
             "meaning": "winter vacation"
         },
         {
             "question": "长江",
             "valid_answers": [
-                "chang2jiang1",
                 "chang2 jiang1"
             ],
             "meaning": "the Yangtze River; the Changjiang River"
@@ -4671,15 +4188,13 @@
         {
             "question": "预习",
             "valid_answers": [
-                "yu4 xi2",
-                "yu4xi2"
+                "yu4 xi2"
             ],
             "meaning": "(of students) prepare a lesson before class; preview"
         },
         {
             "question": "填空",
             "valid_answers": [
-                "tian2kong4",
                 "tian2 kong4"
             ],
             "meaning": "fill in the blanks; fill a vacancy"
@@ -4687,7 +4202,6 @@
         {
             "question": "京剧",
             "valid_answers": [
-                "jing1ju4",
                 "jing1 ju4"
             ],
             "meaning": "Beijing Opera"

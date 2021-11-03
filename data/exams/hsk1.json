@@ -106,8 +106,7 @@
         {
             "question": "什么",
             "valid_answers": [
-                "shen2 me5",
-                "shen2me5"
+                "shen2 me5"
             ],
             "meaning": "what?"
         },
@@ -219,7 +218,6 @@
         {
             "question": "没有",
             "valid_answers": [
-                "mei2you3",
                 "mei2 you3"
             ],
             "meaning": "not have; there is not"
@@ -234,15 +232,13 @@
         {
             "question": "怎么",
             "valid_answers": [
-                "zen3 me5",
-                "zen3me5"
+                "zen3 me5"
             ],
             "meaning": "how?"
         },
         {
             "question": "现在",
             "valid_answers": [
-                "xian4zai4",
                 "xian4 zai4"
             ],
             "meaning": "now"
@@ -299,7 +295,6 @@
         {
             "question": "时候",
             "valid_answers": [
-                "shi2hou5",
                 "shi2 hou5"
             ],
             "meaning": "time"
@@ -314,24 +309,21 @@
         {
             "question": "谢谢",
             "valid_answers": [
-                "xie4 xie5",
-                "xie4xie5"
+                "xie4 xie5"
             ],
             "meaning": "thank you"
         },
         {
             "question": "先生",
             "valid_answers": [
-                "xian1 sheng5",
-                "xian1sheng5"
+                "xian1 sheng5"
             ],
             "meaning": "teacher"
         },
         {
             "question": "喜欢",
             "valid_answers": [
-                "xi3 huan5",
-                "xi3huan5"
+                "xi3 huan5"
             ],
             "meaning": "to like"
         },
@@ -345,7 +337,6 @@
         {
             "question": "东西",
             "valid_answers": [
-                "dong1xi5",
                 "dong1 xi5"
             ],
             "meaning": "something"
@@ -395,8 +386,7 @@
         {
             "question": "工作",
             "valid_answers": [
-                "gong1 zuo4",
-                "gong1zuo4"
+                "gong1 zuo4"
             ],
             "meaning": "work, job"
         },
@@ -438,24 +428,21 @@
         {
             "question": "朋友",
             "valid_answers": [
-                "peng2 you5",
-                "peng2you5"
+                "peng2 you5"
             ],
             "meaning": "friend"
         },
         {
             "question": "妈妈",
             "valid_answers": [
-                "ma1 ma5",
-                "ma1ma5"
+                "ma1 ma5"
             ],
             "meaning": "mom"
         },
         {
             "question": "今天",
             "valid_answers": [
-                "jin1 tian1",
-                "jin1tian1"
+                "jin1 tian1"
             ],
             "meaning": "today"
         },
@@ -469,8 +456,7 @@
         {
             "question": "爸爸",
             "valid_answers": [
-                "ba4 ba5",
-                "ba4ba5"
+                "ba4 ba5"
             ],
             "meaning": "dad"
         },
@@ -484,7 +470,6 @@
         {
             "question": "怎么样",
             "valid_answers": [
-                "zen3me5yang4",
                 "zen3 me5 yang4"
             ],
             "meaning": "how?"
@@ -492,8 +477,7 @@
         {
             "question": "对不起",
             "valid_answers": [
-                "dui4 bu5 qi3",
-                "dui4bu5qi3"
+                "dui4 bu5 qi3"
             ],
             "meaning": "sorry"
         },
@@ -514,8 +498,7 @@
         {
             "question": "高兴",
             "valid_answers": [
-                "gao1 xing4",
-                "gao1xing4"
+                "gao1 xing4"
             ],
             "meaning": "happy"
         },
@@ -529,15 +512,13 @@
         {
             "question": "医生",
             "valid_answers": [
-                "yi1 sheng1",
-                "yi1sheng1"
+                "yi1 sheng1"
             ],
             "meaning": "doctor"
         },
         {
             "question": "哪儿",
             "valid_answers": [
-                "na3r5",
                 "na3 r5"
             ],
             "meaning": "where?"
@@ -552,16 +533,14 @@
         {
             "question": "名字",
             "valid_answers": [
-                "ming2 zi5",
-                "ming2zi5"
+                "ming2 zi5"
             ],
             "meaning": "name"
         },
         {
             "question": "认识",
             "valid_answers": [
-                "ren4 shi5",
-                "ren4shi5"
+                "ren4 shi5"
             ],
             "meaning": "to know someone"
         },
@@ -617,16 +596,14 @@
         {
             "question": "看见",
             "valid_answers": [
-                "kan4 jian4",
-                "kan4jian4"
+                "kan4 jian4"
             ],
             "meaning": "see"
         },
         {
             "question": "打电话",
             "valid_answers": [
-                "da3  dian4 hua4",
-                "da3dian4hua4"
+                "da3 dian4 hua4"
             ],
             "meaning": "to make a phone call"
         },
@@ -640,23 +617,20 @@
         {
             "question": "儿子",
             "valid_answers": [
-                "er2 zi5",
-                "er2zi5"
+                "er2 zi5"
             ],
             "meaning": "son"
         },
         {
             "question": "漂亮",
             "valid_answers": [
-                "piao4 liang5",
-                "piao4liang5"
+                "piao4 liang5"
             ],
             "meaning": "pretty"
         },
         {
             "question": "分钟",
             "valid_answers": [
-                "fen1zhong1",
                 "fen1 zhong1"
             ],
             "meaning": "minute [counter word]"
@@ -664,8 +638,7 @@
         {
             "question": "再见",
             "valid_answers": [
-                "zai4 jian4",
-                "zai4jian4"
+                "zai4 jian4"
             ],
             "meaning": "see you later"
         },
@@ -679,7 +652,6 @@
         {
             "question": "明天",
             "valid_answers": [
-                "ming2tian1",
                 "ming2 tian1"
             ],
             "meaning": "tomorrow"
@@ -694,8 +666,7 @@
         {
             "question": "多少",
             "valid_answers": [
-                "duo1 shao5",
-                "duo1shao5"
+                "duo1 shao5"
             ],
             "meaning": "how much?"
         },
@@ -709,15 +680,13 @@
         {
             "question": "女儿",
             "valid_answers": [
-                "nv3'er2",
-                "nv3 'er2"
+                "nv3 er2"
             ],
             "meaning": "daughter"
         },
         {
             "question": "小姐",
             "valid_answers": [
-                "xiao3jie5",
                 "xiao3 jie5"
             ],
             "meaning": "young lady"
@@ -725,7 +694,6 @@
         {
             "question": "衣服",
             "valid_answers": [
-                "yi1fu5",
                 "yi1 fu5"
             ],
             "meaning": "clothes"
@@ -740,15 +708,13 @@
         {
             "question": "学校",
             "valid_answers": [
-                "xue2 xiao4",
-                "xue2xiao4"
+                "xue2 xiao4"
             ],
             "meaning": "school"
         },
         {
             "question": "电影",
             "valid_answers": [
-                "dian4ying3",
                 "dian4 ying3"
             ],
             "meaning": "movie"
@@ -777,7 +743,6 @@
         {
             "question": "医院",
             "valid_answers": [
-                "yi1yuan4",
                 "yi1 yuan4"
             ],
             "meaning": "hospital"
@@ -785,16 +750,14 @@
         {
             "question": "没关系",
             "valid_answers": [
-                "mei2guan1xi5",
-                "mei2  guan1 xi5"
+                "mei2 guan1 xi5"
             ],
             "meaning": "never mind"
         },
         {
             "question": "飞机",
             "valid_answers": [
-                "fei1 ji1",
-                "fei1ji1"
+                "fei1 ji1"
             ],
             "meaning": "airplane"
         },
@@ -808,8 +771,7 @@
         {
             "question": "电视",
             "valid_answers": [
-                "dian4 shi4",
-                "dian4shi4"
+                "dian4 shi4"
             ],
             "meaning": "TV"
         },
@@ -823,7 +785,6 @@
         {
             "question": "后面",
             "valid_answers": [
-                "hou4mian5",
                 "hou4 mian5"
             ],
             "meaning": "behind"
@@ -831,7 +792,6 @@
         {
             "question": "昨天",
             "valid_answers": [
-                "zuo2tian1",
                 "zuo2 tian1"
             ],
             "meaning": "yesterday"
@@ -839,8 +799,7 @@
         {
             "question": "睡觉",
             "valid_answers": [
-                "shui4jiao4",
-                "shui4  jiao4"
+                "shui4 jiao4"
             ],
             "meaning": "to sleep"
         },
@@ -854,16 +813,14 @@
         {
             "question": "老师",
             "valid_answers": [
-                "lao3 shi1",
-                "lao3shi1"
+                "lao3 shi1"
             ],
             "meaning": "teacher"
         },
         {
             "question": "星期",
             "valid_answers": [
-                "xing1 qi1",
-                "xing1qi1"
+                "xing1 qi1"
             ],
             "meaning": "week"
         },
@@ -884,7 +841,6 @@
         {
             "question": "电脑",
             "valid_answers": [
-                "dian4nao3",
                 "dian4 nao3"
             ],
             "meaning": "computer"
@@ -899,23 +855,20 @@
         {
             "question": "学生",
             "valid_answers": [
-                "xue2 sheng5",
-                "xue2sheng5"
+                "xue2 sheng5"
             ],
             "meaning": "student"
         },
         {
             "question": "下午",
             "valid_answers": [
-                "xia4 wu3",
-                "xia4wu3"
+                "xia4 wu3"
             ],
             "meaning": "afternoon"
         },
         {
             "question": "学习",
             "valid_answers": [
-                "xue2xi2",
                 "xue2 xi2"
             ],
             "meaning": "to study"
@@ -930,16 +883,14 @@
         {
             "question": "不客气",
             "valid_answers": [
-                "bu2ke4qi5",
-                "bu2  ke4 qi5"
+                "bu2 ke4 qi5"
             ],
             "meaning": "you're welcome"
         },
         {
             "question": "前面",
             "valid_answers": [
-                "qian2 mian4",
-                "qian2mian4"
+                "qian2 mian4"
             ],
             "meaning": "in front"
         },
@@ -953,8 +904,7 @@
         {
             "question": "中国",
             "valid_answers": [
-                "zhong1 guo2",
-                "zhong1guo2"
+                "zhong1 guo2"
             ],
             "meaning": "China"
         },
@@ -975,7 +925,6 @@
         {
             "question": "桌子",
             "valid_answers": [
-                "zhuo1zi5",
                 "zhuo1 zi5"
             ],
             "meaning": "table"
@@ -983,15 +932,13 @@
         {
             "question": "出租车",
             "valid_answers": [
-                "chu1 zu1 che1",
-                "chu1zu1che1"
+                "chu1 zu1 che1"
             ],
             "meaning": "taxi"
         },
         {
             "question": "天气",
             "valid_answers": [
-                "tian1qi4",
                 "tian1 qi4"
             ],
             "meaning": "weather"
@@ -1013,7 +960,6 @@
         {
             "question": "商店",
             "valid_answers": [
-                "shang1dian4",
                 "shang1 dian4"
             ],
             "meaning": "store, shop"
@@ -1021,7 +967,6 @@
         {
             "question": "椅子",
             "valid_answers": [
-                "yi3zi5",
                 "yi3 zi5"
             ],
             "meaning": "chair"
@@ -1029,7 +974,6 @@
         {
             "question": "同学",
             "valid_answers": [
-                "tong2xue2",
                 "tong2 xue2"
             ],
             "meaning": "classmate"
@@ -1037,31 +981,27 @@
         {
             "question": "一点儿",
             "valid_answers": [
-                "yi4 dian3 r5",
-                "yi4dian3r5"
+                "yi4 dian3 r5"
             ],
             "meaning": "a little bit"
         },
         {
             "question": "苹果",
             "valid_answers": [
-                "ping2 guo3",
-                "ping2guo3"
+                "ping2 guo3"
             ],
             "meaning": "apple"
         },
         {
             "question": "饭店",
             "valid_answers": [
-                "fan4 dian4",
-                "fan4dian4"
+                "fan4 dian4"
             ],
             "meaning": "restaurant; hotel"
         },
         {
             "question": "中午",
             "valid_answers": [
-                "zhong1wu3",
                 "zhong1 wu3"
             ],
             "meaning": "noon"
@@ -1069,7 +1009,6 @@
         {
             "question": "上午",
             "valid_answers": [
-                "shang4wu3",
                 "shang4 wu3"
             ],
             "meaning": "late morning"
@@ -1077,7 +1016,6 @@
         {
             "question": "水果",
             "valid_answers": [
-                "shui3guo3",
                 "shui3 guo3"
             ],
             "meaning": "fruit"
@@ -1085,7 +1023,6 @@
         {
             "question": "杯子",
             "valid_answers": [
-                "bei1zi5",
                 "bei1 zi5"
             ],
             "meaning": "cup, glass"
@@ -1093,7 +1030,6 @@
         {
             "question": "下雨",
             "valid_answers": [
-                "xia4yu3",
                 "xia4 yu3"
             ],
             "meaning": "to rain"
@@ -1101,23 +1037,20 @@
         {
             "question": "米饭",
             "valid_answers": [
-                "mi3 fan4",
-                "mi3fan4"
+                "mi3 fan4"
             ],
             "meaning": "cooked rice"
         },
         {
             "question": "北京",
             "valid_answers": [
-                "bei3 jing1",
-                "bei3jing1"
+                "bei3 jing1"
             ],
             "meaning": "Beijing"
         },
         {
             "question": "汉语",
             "valid_answers": [
-                "han4yu3",
                 "han4 yu3"
             ],
             "meaning": "Chinese language"
