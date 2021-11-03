@@ -53,6 +53,15 @@ class MongoDbDocumentStore:
     def get_all_profiles(self) -> t.List[Profile]:
         return [profile_from_json(p) for p in self.profiles.find({})]
 
+    def leaderboard(self) -> t.List[Profile]:
+        profiles = self.profiles.aggregate(
+            [
+                {"$sort": {"credit": -1}},
+                {"$limit": 10},
+            ]
+        )
+        return [profile_from_json(p) for p in profiles]
+
     def get_exam_names(self) -> t.List[str]:
         return [
             exam["name"]

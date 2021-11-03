@@ -34,10 +34,7 @@ class Query:
     @s.field
     async def leaderboard(self, info) -> t.List[Profile]:
         entries = []
-        profiles = info.context.store.get_all_profiles()
-        profiles.sort(reverse=True, key=lambda profile: profile.credit)
-
-        for profile in profiles[:10]:
+        for profile in info.context.store.leaderboard():
             entries.append(await info.context.dataloaders.profile.load(str(profile.user_id)))
         return entries
 
