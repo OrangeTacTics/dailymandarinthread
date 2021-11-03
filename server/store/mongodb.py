@@ -9,9 +9,6 @@ from bson.objectid import ObjectId
 from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question, DictEntry
 
 
-SCHEMA_VERSION = 5
-
-
 class MongoDbDocumentStore:
     def __init__(self, mongo_url: str, mongo_db: str) -> None:
         self.mongo_client = pymongo.MongoClient(mongo_url)
@@ -148,12 +145,11 @@ def profile_to_json(profile: Profile) -> Json:
         "yuan": profile.yuan,
         "hanzi": [],
         "mined_words": profile.mined_words,
-        "schema_version": SCHEMA_VERSION,
+        "defected": profile.defected,
     }
 
 
 def profile_from_json(profile_json: Json) -> Profile:
-    assert profile_json["schema_version"] == SCHEMA_VERSION, f"schema_version of {profile_json} is not {SCHEMA_VERSION}"
     roles = [Role.from_str(role) for role in profile_json["roles"]]
     return Profile(
         user_id=profile_json["user_id"],
@@ -166,6 +162,7 @@ def profile_from_json(profile_json: Json) -> Profile:
         hanzi=profile_json["hanzi"],
         mined_words=profile_json["mined_words"],
         yuan=profile_json["yuan"],
+        defected=profile_json["defected"],
     )
 
 

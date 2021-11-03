@@ -23,6 +23,8 @@ class Profile:
     hanzi: t.List[str]
     mined_words: t.List[str]
 
+    defected: bool
+
     @staticmethod
     def make(user_id: UserId, discord_username: str) -> Profile:
         assert discord_username[-5] == "#"
@@ -40,6 +42,7 @@ class Profile:
             yuan=0,
             hanzi=[],
             mined_words=[],
+            defected=False,
         )
 
 

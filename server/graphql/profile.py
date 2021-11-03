@@ -27,6 +27,7 @@ class Profile:
     last_seen: datetime
     yuan: int
     hsk: t.Optional[int]
+    defected: bool
 
 
 async def get_me(info) -> Profile:

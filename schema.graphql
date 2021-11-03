@@ -89,6 +89,7 @@ type Profile {
   lastSeen: DateTime!
   yuan: Int!
   hsk: Int
+  defected: Boolean!
 }
 
 type Query {

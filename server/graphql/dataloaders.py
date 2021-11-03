@@ -67,6 +67,7 @@ def store_profile_to_graphql_profile(profile: types.Profile) -> schema.Profile:
         last_seen=profile.last_seen,
         yuan=profile.yuan,
         hsk=hsk,
+        defected=profile.defected,
     )
 
 
