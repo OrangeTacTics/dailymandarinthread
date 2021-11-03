@@ -23,7 +23,7 @@ class SyncInfo:
     user_id: UserId
     display_name: str
     credit: int
-    roles: t.Set[types.Role]
+    roles: t.Set[str]
     hsk_level: t.Optional[int]
 
 
@@ -70,12 +70,14 @@ class Api:
 
         roles = []
         if "Jailed" in profile["roles"]:
-            roles.append(types.Role.Jailed)
+            roles.append("Jailed")
         else:
+            roles.append("Comrade")
+
             if "Party" in profile["roles"]:
-                roles.append(types.Role.Party)
+                roles.append("Party")
             if "Learner" in profile["roles"]:
-                roles.append(types.Role.Learner)
+                roles.append("Learner")
 
         return SyncInfo(
             user_id=int(profile["userId"]),

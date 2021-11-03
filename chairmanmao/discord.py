@@ -12,12 +12,6 @@ class DiscordConstants:
     ccp_role: discord.Role
     jailed_role: discord.Role
     learner_role: discord.Role
-    hsk1_role: discord.Role
-    hsk2_role: discord.Role
-    hsk3_role: discord.Role
-    hsk4_role: discord.Role
-    hsk5_role: discord.Role
-    hsk6_role: discord.Role
     bumpers_role: discord.Role
 
     thread_channel: discord.TextChannel
@@ -48,12 +42,6 @@ class DiscordConstants:
             ccp_role=DiscordConstants._load_role(guild, "共产党员"),
             jailed_role=DiscordConstants._load_role(guild, "劳改"),
             learner_role=DiscordConstants._load_role(guild, "中文学习者"),
-            hsk1_role=DiscordConstants._load_role(guild, "HSK1"),
-            hsk2_role=DiscordConstants._load_role(guild, "HSK2"),
-            hsk3_role=DiscordConstants._load_role(guild, "HSK3"),
-            hsk4_role=DiscordConstants._load_role(guild, "HSK4"),
-            hsk5_role=DiscordConstants._load_role(guild, "HSK5"),
-            hsk6_role=DiscordConstants._load_role(guild, "HSK6"),
             bumpers_role=DiscordConstants._load_role(guild, "Bumpers"),
             news_channel=DiscordConstants._load_channel(guild, "📰"),
             rules_channel=DiscordConstants._load_channel(guild, "🈲"),
