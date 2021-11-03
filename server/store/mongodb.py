@@ -4,8 +4,9 @@ import os
 from datetime import timezone
 
 import pymongo
+from bson.objectid import ObjectId
 
-from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question
+from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question, DictEntry
 
 
 SCHEMA_VERSION = 5
@@ -18,6 +19,7 @@ class MongoDbDocumentStore:
         self.profiles = self.db["Profiles"]
         self.server_settings = self.db["ServerSettings"]
         self.exams = self.db["Exams"]
+        self.dict_entries = self.db["DictEntries"]
 
     def profile(self, user_id: UserId) -> "OpenProfileContextManager":
         return OpenProfileContextManager(self, user_id)
@@ -83,6 +85,21 @@ class MongoDbDocumentStore:
             "last_bump": server_settings.last_bump,
         }
         self.server_settings.replace_one({}, doc)
+
+    def dict_entry_lookup(self, query: str) -> t.List[DictEntry]:
+        docs = self.dict_entries.aggregate(
+            [
+                {
+                    "$match": {
+                        "$or": [
+                            {"traditional": query},
+                            {"simplified": query},
+                        ]
+                    }
+                }
+            ]
+        )
+        return [dict_entry_from_json(doc) for doc in docs]
 
 
 def profile_to_json(profile: Profile) -> Json:
@@ -154,6 +171,26 @@ def question_from_json(question_json: Json) -> Question:
         question=question_json["question"],
         valid_answers=question_json["valid_answers"],
         meaning=question_json["meaning"],
+    )
+
+
+def dict_entry_to_json(dict_entry: DictEntry) -> Json:
+    return {
+        '_id': ObjectId(dict_entry.dict_entry_id),
+        'simplified': dict_entry.simplified,
+        'traditional': dict_entry.traditional,
+        'pinyin': dict_entry.pinyin,
+        'meanings': dict_entry.meanings,
+    }
+
+
+def dict_entry_from_json(dict_entry: Json) -> DictEntry:
+    return DictEntry(
+        dict_entry_id=str(dict_entry['_id']),
+        simplified=dict_entry['simplified'],
+        traditional=dict_entry['traditional'],
+        pinyin=dict_entry['pinyin'],
+        meanings=dict_entry['meanings'],
     )
 
 

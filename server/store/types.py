@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime, timezone
 
-
 @dataclass
 class Profile:
     user_id: UserId
@@ -90,4 +89,13 @@ class Question:
 
 
 UserId = int
+DictEntryId = str
 Json = t.Any
+
+@dataclass
+class DictEntry:
+    dict_entry_id: DictEntryId
+    simplified: str
+    traditional: str
+    pinyin: str
+    meanings: t.List[str]
