@@ -52,8 +52,8 @@ class ExamCog(ChairmanMaoCog):
     async def exam(self, ctx):
         constants = self.chairmanmao.constants()
         if await self.api.exams_disabled():
-            await ctx.send('Sorry, exams are currently disabled')
-            await constants.guild.owner.send(f'{ctx.author.name} tried to use !exam while it is disabled.')
+            await ctx.send("Sorry, exams are currently disabled")
+            await constants.guild.owner.send(f"{ctx.author.name} tried to use !exam while it is disabled.")
             return
 
         if ctx.invoked_subcommand is None:

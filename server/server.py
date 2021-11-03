@@ -156,7 +156,7 @@ def make_app() -> t.Any:
         return PlainTextResponse(
             content=json_str,
             headers={
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
         )
 

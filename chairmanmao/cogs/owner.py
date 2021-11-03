@@ -76,10 +76,10 @@ class OwnerCog(ChairmanMaoCog):
     @commands.is_owner()
     async def cmd_disableexams(self, ctx):
         await self.api.disable_exams(True)
-        await ctx.send('Exams have been disabled')
+        await ctx.send("Exams have been disabled")
 
     @commands.command(name="enableexams")
     @commands.is_owner()
     async def cmd_enableexams(self, ctx):
         await self.api.disable_exams(False)
-        await ctx.send('Exams have been enabled')
+        await ctx.send("Exams have been enabled")
