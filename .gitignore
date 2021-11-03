@@ -5,3 +5,4 @@ fonts
 *.egg-info
 dist
 ca-certificate.crt
+cedict_ts.u8
