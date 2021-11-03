@@ -3,7 +3,7 @@ import jwt
 import json
 import httpx
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse
+from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse, Response
 
 from .graphql.schema import schema
 from .graphql.context import ChairmanMaoGraphQL
@@ -140,12 +140,12 @@ def make_app() -> t.Any:
             json_str = json.dumps(data, indent=4, ensure_ascii=False)
             return PlainTextResponse(content=json_str)
 
-    @app.get("/leaderboard")
-    async def route_leaderboard():
+    @app.get("/leaderboard.json")
+    async def route_leaderboard(response: Response):
         query = """
             query leaderboard {
               leaderboard {
-                name
+                displayName
                 credit
               }
             }
@@ -153,7 +153,12 @@ def make_app() -> t.Any:
 
         data = await query_graphql(query)
         json_str = json.dumps(data, indent=4, ensure_ascii=False)
-        return PlainTextResponse(content=json_str)
+        return PlainTextResponse(
+            content=json_str,
+            headers={
+                'Content-Type': 'application/json',
+            },
+        )
 
     @app.get("/logout")
     async def route_logout(response: JSONResponse):
