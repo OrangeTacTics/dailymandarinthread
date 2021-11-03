@@ -25,6 +25,7 @@ type AdminQuery {
 scalar DateTime
 
 type DictEntry {
+  id: ID!
   simplified: String!
   traditional: String!
   pinyinNumbered: String!

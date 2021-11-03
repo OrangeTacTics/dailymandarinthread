@@ -2,7 +2,7 @@ import typing as t
 
 import strawberry as s
 
-from .dictionary import DictEntry, parse_dictentry
+from .dictionary import DictEntry
 from .exam import Exam, Question
 from .profile import Profile, Role, get_me
 from .admin import AdminQuery, AdminMutation
@@ -55,15 +55,19 @@ class Query:
         return AdminQuery()
 
     @s.field
-    def dict(self, word: str) -> t.List[DictEntry]:
+    def dict(self, info, word: str) -> t.List[DictEntry]:
         results = []
-        with open("data/cedict_ts.u8") as infile:
-            for line in infile:
-                if line.startswith("#"):
-                    continue
-                dictentry = parse_dictentry(line)
-                if dictentry.simplified == word or dictentry.traditional == word:
-                    results.append(dictentry)
+        for store_dict_entry in info.context.store.dict_entry_lookup(word):
+            results.append(
+                DictEntry(
+                    id=store_dict_entry.dict_entry_id,
+                    simplified=store_dict_entry.simplified,
+                    traditional=store_dict_entry.traditional,
+                    pinyin_numbered=store_dict_entry.pinyin,
+                    meanings=store_dict_entry.meanings,
+                )
+            )
+
         return results
 
 

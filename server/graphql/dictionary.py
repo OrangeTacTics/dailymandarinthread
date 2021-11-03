@@ -6,6 +6,7 @@ import strawberry as s
 
 @s.type
 class DictEntry:
+    id: s.ID
     simplified: str
     traditional: str
     pinyin_numbered: str
@@ -20,28 +21,3 @@ class DictEntry:
     def zhuyin(self) -> str:
         zhuyin = pinyin_to_zhuyin(self.pinyin_numbered)
         return zhuyin
-
-
-def parse_dictentry(line: str) -> DictEntry:
-    traditional, simplified, *_ = line.split(" ")
-    left_brace = line.index("[")
-    right_brace = line.index("]")
-    pinyin_numbered = line[left_brace + 1 : right_brace]
-
-    slash = line.index("/")
-    meanings = []
-    try:
-        while True:
-            line = line[slash + 1 :]
-            slash = line.index("/")
-            meaning = line[:slash]
-            meanings.append(meaning)
-    except:
-        pass
-
-    return DictEntry(
-        simplified=simplified,
-        traditional=traditional,
-        pinyin_numbered=pinyin_numbered,
-        meanings=meanings,
-    )

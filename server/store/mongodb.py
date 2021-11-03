@@ -176,21 +176,21 @@ def question_from_json(question_json: Json) -> Question:
 
 def dict_entry_to_json(dict_entry: DictEntry) -> Json:
     return {
-        '_id': ObjectId(dict_entry.dict_entry_id),
-        'simplified': dict_entry.simplified,
-        'traditional': dict_entry.traditional,
-        'pinyin': dict_entry.pinyin,
-        'meanings': dict_entry.meanings,
+        "_id": ObjectId(dict_entry.dict_entry_id),
+        "simplified": dict_entry.simplified,
+        "traditional": dict_entry.traditional,
+        "pinyin": dict_entry.pinyin,
+        "meanings": dict_entry.meanings,
     }
 
 
 def dict_entry_from_json(dict_entry: Json) -> DictEntry:
     return DictEntry(
-        dict_entry_id=str(dict_entry['_id']),
-        simplified=dict_entry['simplified'],
-        traditional=dict_entry['traditional'],
-        pinyin=dict_entry['pinyin'],
-        meanings=dict_entry['meanings'],
+        dict_entry_id=str(dict_entry["_id"]),
+        simplified=dict_entry["simplified"],
+        traditional=dict_entry["traditional"],
+        pinyin=dict_entry["pinyin"],
+        meanings=dict_entry["meanings"],
     )
 
 
