@@ -83,3 +83,11 @@ class OwnerCog(ChairmanMaoCog):
     async def cmd_enableexams(self, ctx):
         await self.api.disable_exams(False)
         await ctx.send("Exams have been enabled")
+
+    @commands.command(name="syncdefectors")
+    @commands.is_owner()
+    async def cmd_syncdefectors(self, ctx):
+        constants = self.chairmanmao.constants()
+        user_ids = [str(m.id) for m in constants.guild.members]
+        await self.api.sync_users(user_ids)
+        await ctx.send("Finished syncing defectors")
