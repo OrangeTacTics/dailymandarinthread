@@ -48,7 +48,7 @@ class OwnerCog(ChairmanMaoCog):
     @commands.is_owner()
     async def cmd_setlearner(self, ctx, member: commands.MemberConverter, flag: bool = True):
         target_username = self.chairmanmao.member_to_username(member)
-        await self.api.set_learner(flag)
+        await self.api.set_learner(member.id, flag)
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send(f"{target_username}'s learner status has been changed to {flag}")
 
