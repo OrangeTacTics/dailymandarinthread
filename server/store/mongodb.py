@@ -1,7 +1,7 @@
 from __future__ import annotations
 import typing as t
 import os
-from datetime import timezone
+from datetime import timezone, timedelta, datetime
 
 import pymongo
 from bson.objectid import ObjectId
@@ -61,6 +61,28 @@ class MongoDbDocumentStore:
             ]
         )
         return [profile_from_json(p) for p in profiles]
+
+    def profile_count(self) -> int:
+         return self.profiles.count_documents({})
+
+    def active_profile_count(self) -> int:
+        now = datetime.now(timezone.utc)
+        a_week_ago = now - timedelta(days=7)
+
+        results = self.profiles.aggregate(
+            [
+                {
+                    "$match": {
+                        "last_seen": {"$gte": a_week_ago},
+                        "credit": {"$gte": 1010},
+                    },
+                },
+                {
+                    "$count": "count",
+                },
+            ]
+        )
+        return list(results)[0]["count"]
 
     def get_exam_names(self) -> t.List[str]:
         return [
