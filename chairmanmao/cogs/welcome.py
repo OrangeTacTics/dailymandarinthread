@@ -21,8 +21,18 @@ class WelcomeCog(ChairmanMaoCog):
         if await self.api.is_registered(member.id):
             self.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")
 
-            # embed = self.rejoin_embed(member)
-            # await constants.commentators_channel.send(embed=embed)
+            embed = discord.Embed(
+                title="A former Comrade has rejoined us!",
+                description=f"{member.mention} has returned to the Daily Mandarin Thread.",
+                color=0xFF0000,
+            )
+
+            embed.set_author(
+                name=member.display_name,
+                icon_url=member.avatar_url,
+            )
+
+            await constants.tiananmen_channel.send(embed=embed)
 
             embed = discord.Embed(
                 title="Comrade has been jailed!",
@@ -57,14 +67,24 @@ class WelcomeCog(ChairmanMaoCog):
                 color=0xFF0000,
             )
 
-            await constants.commentators_channel.send(embed=embed)
+            embed.set_author(
+                name=member.display_name,
+                icon_url=member.avatar_url,
+            )
+            await constants.tiananmen_channel.send(embed=embed)
 
         self.chairmanmao.queue_member_update(member.id)
 
-    def rejoin_embed(self, member):
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        username = self.chairmanmao.member_to_username(member)
+        self.logger.info(f"User left: {username}. Member ID: {member.id}.")
+        constants = self.chairmanmao.constants()
+        await self.api.jail(member.id)
+
         embed = discord.Embed(
-            title="A former Comrade has rejoined us!",
-            description=f"{member.mention} has returned to the Daily Mandarin Thread.",
+            title="A Comrade has defected!",
+            description=f"{member.mention} has defected from the Daily Mandarin Thread.",
             color=0xFF0000,
         )
 
@@ -73,13 +93,7 @@ class WelcomeCog(ChairmanMaoCog):
             icon_url=member.avatar_url,
         )
 
-        return embed
-
-    @commands.Cog.listener()
-    async def on_member_remove(self, member):
-        username = self.chairmanmao.member_to_username(member)
-        self.logger.info(f"User left: {username}. Member ID: {member.id}.")
-        await self.api.jail(member.id)
+        await constants.tiananmen_channel.send(embed=embed)
 
     async def welcome(self, member) -> None:
         channel = await member.create_dm()
