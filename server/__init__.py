@@ -29,4 +29,5 @@ def main_test():
         make_app(),
         host=os.environ.get("SERVER_HOST", "0.0.0.0"),
         port=int(os.environ.get("SERVER_PORT", "9666")),
+        access_log=False,
     )

@@ -14,30 +14,48 @@ from chairmanmao.api import Api
 
 load_dotenv()
 
+
 MONGODB_TEST_URL = os.getenv('MONGODB_TEST_URL')
 MONGODB_TEST_DB = os.getenv('MONGODB_TEST_DB')
 
 
-proc = subprocess.Popen([
-    'poetry',
-    'run',
-    'server-testing',
-])
+@pytest.fixture(scope="session")
+def test_server(request):
+    proc = subprocess.Popen(
+        [
+            'poetry',
+            'run',
+            'server-testing',
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
 
-resp = requests.get('http://localhost:9666/graphql')
-attempts = 1
-while resp.status_code != 200 and attempts < 10:
-    time.sleep(0.25)
-    resp = requests.get('http://localhost:9666/graphql')
-    attempts += 1
+    ready = False
+    start = time.time()
+    while not ready:
+        try:
+            resp = requests.get('http://localhost:9666/graphql')
+            if resp.status_code == 200:
+                break
+        except:
+            pass
 
+        time.sleep(1.)
+        now = time.time()
+        duration = ready - now
+        if duration > 10:
+            raise Exception('Could not connect to development server.')
 
-if attempts == 10:
-    raise Exception('Could not connect to development server.')
+    def finalizer():
+        proc.terminate()
+        proc.wait()
+
+    request.addfinalizer(finalizer)
 
 
 @pytest.fixture
-def empty_db():
+def empty_db(test_server):
     client = pymongo.MongoClient(MONGODB_TEST_URL)
     assert 'TEST' in MONGODB_TEST_DB, "Cannot delete everything from a database that doesn't have the word 'TEST' in it"
     db = client[MONGODB_TEST_DB]
@@ -48,7 +66,7 @@ def empty_db():
 
 
 @pytest.fixture
-def api():
+def api(test_server):
     GRAPHQL_ENDPOINT = 'http://localhost:9666/graphql'
     GRAPHQL_TOKEN = os.getenv("GRAPHQL_TOKEN", "")
     api = Api(GRAPHQL_ENDPOINT, GRAPHQL_TOKEN)
