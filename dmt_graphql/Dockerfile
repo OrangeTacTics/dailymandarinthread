@@ -1,0 +1,16 @@
+FROM docker.io/library/python:3.8.12-buster
+RUN pip install poetry
+
+WORKDIR /run/
+
+COPY poetry.lock /run/
+COPY pyproject.toml /run/
+
+RUN poetry install
+
+COPY dmt_graphql /run/dmt_graphql
+COPY data /run/data
+
+EXPOSE 8002
+
+CMD ["poetry", "run", "dmt-graphql"]
