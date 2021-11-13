@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "dmt-auth"
+version = "0.1.0"
+description = ""
+authors = ["OrangeTacTics"]
+readme = "README.md"
+homepage = "https://dailymandarinthread.info"
+repository = "https://github.com/OrangeTacTics/chairmanmao"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+httpx = "^0.19.0"
+fastapi = "^0.68.1"
+uvicorn = "^0.15.0"
+requests = "^2.26.0"
+PyJWT = "^2.1.0"
+python-dotenv = "^0.19.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.2"
+mypy = "^0.910"
+black = "^21.9b0"
+pytest_asyncio = "^0.16.0"
+
+[tool.poetry.scripts]
+dmt-auth = "dmt_auth:main"
+
+[tool.black]
+line-length = 120
