@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: chairmanmao-server
+  namespace: chairmanmao
+spec:
+  type: NodePort
+  selector:
+    app: chairmanmao-server
+  ports:
+    - port: 8002
+      targetPort: 8002

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chairmanmao-bot
+  namespace: chairmanmao
+spec:
+  selector:
+    matchLabels:
+      app: chairmanmao-bot
+  template:
+    metadata:
+      labels:
+        app: chairmanmao-bot
+    spec:
+      containers:
+      - image: registry.digitalocean.com/tactics40/chairmanmao-bot
+        name: chairmanmao-bot
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: credentials
+          mountPath: "/credentials"
+          readOnly: true
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - cp /credentials/.env /run/.env
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+      - name: credentials
+        secret:
+          secretName: credentials

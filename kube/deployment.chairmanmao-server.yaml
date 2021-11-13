@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chairmanmao-server
+  namespace: chairmanmao
+spec:
+  selector:
+    matchLabels:
+      app: chairmanmao-server
+  template:
+    metadata:
+      labels:
+        app: chairmanmao-server
+    spec:
+      containers:
+      - image: registry.digitalocean.com/tactics40/chairmanmao-server
+        name: chairmanmao-server
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8002
+        volumeMounts:
+        - name: credentials
+          mountPath: "/credentials"
+          readOnly: true
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - cp /credentials/.env /run/.env && cp /credentials/ca-certificate.crt /run/ca-certificate.crt
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+      - name: credentials
+        secret:
+          secretName: credentials
