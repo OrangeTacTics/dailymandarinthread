@@ -6,7 +6,7 @@ orbs:
 
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  lint-and-test-chairmanmao:
+  lint-and-test:
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
@@ -18,47 +18,8 @@ jobs:
       - checkout
 
       - run:
-          name: Enter project directory
-          command: cd dmt_chairmanmao
-
-      # Cache can be tricky at first, but this means
-      # Please, restore my cache (what is actually on the cache will be defined later)
-      # if the text key `deps-{{ checksum "poetry.lock" }}` changes (and it WILL change everytime poetry.lock is updated since we rely on its checksum)
-      # and poetry.lock is updated every time we add a new dependency to our project
-      - restore_cache:
-          keys:
-            - deps-{{ checksum "poetry.lock" }}
-      - run:
-          name: Install Dependencies
-          command: |
-            poetry install
-
-      # Save's the specified path as a cache. This is the path Poetry uses to install the dependencies
-      # So if you don't install anything new, this folder won't change and the cache will be effective
-      - save_cache:
-          key: deps-{{ checksum "poetry.lock" }}
-          paths:
-            - /home/circleci/.cache/pypoetry/virtualenvs
-
-      - run:
-          name: Check schema
-          command: |
-            poetry run schema --diff
-
-      - run:
-          name: Run mypy
-          command: |
-            poetry run mypy --install-types --non-interactive
-
-      - run:
-          name: Run flake8
-          command: |
-            poetry run flake8
-
-      - run:
-          name: Run black
-          command: |
-            poetry run black --diff --check chairmanmao server
+          name: Run CI script
+          command: bash scripts/run-ci.sh
 
   deployment:
     docker:
@@ -104,12 +65,12 @@ workflows:
   flow: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - lint-and-test-chairmanmao:
+      - lint-and-test:
           context: DailyMandarinThread
       - deployment:
           context: DailyMandarinThread
           requires:
-            - lint-and-test-chairmanmao
+            - lint-and-test
           filters:
             branches:
               only:
