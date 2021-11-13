@@ -119,4 +119,6 @@ enum Role {
 type ServerSettings {
   lastBump: DateTime!
   examsDisabled: Boolean!
+  adminUsername: String!
+  botUsername: String!
 }

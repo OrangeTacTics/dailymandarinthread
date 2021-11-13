@@ -107,12 +107,16 @@ class MongoDbDocumentStore:
         return ServerSettings(
             last_bump=json_data["last_bump"].replace(tzinfo=timezone.utc),
             exams_disabled=json_data.get("exams_disabled", False),
+            admin_username=json_data.get("admin_username", os.environ["ADMIN_USERNAME"]),
+            bot_username=json_data.get("bot_username", os.environ["BOT_USERNAME"]),
         )
 
     def store_server_settings(self, server_settings: ServerSettings) -> None:
         doc = {
             "last_bump": server_settings.last_bump,
             "exams_disabled": server_settings.exams_disabled,
+            "admin_username": server_settings.admin_username,
+            "bot_username": server_settings.bot_username,
         }
         self.server_settings.replace_one({}, doc)
 

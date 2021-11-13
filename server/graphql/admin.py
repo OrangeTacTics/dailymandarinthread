@@ -26,6 +26,8 @@ class AdminQuery:
         return ServerSettings(
             last_bump=server_settings.last_bump,
             exams_disabled=server_settings.exams_disabled,
+            admin_username=server_settings.admin_username,
+            bot_username=server_settings.bot_username,
         )
 
 

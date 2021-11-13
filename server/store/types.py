@@ -74,6 +74,8 @@ class Role(Enum):
 class ServerSettings:
     last_bump: datetime
     exams_disabled: bool
+    admin_username: str
+    bot_username: str
 
 
 @dataclass

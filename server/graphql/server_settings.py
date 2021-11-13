@@ -7,3 +7,5 @@ import strawberry as s
 class ServerSettings:
     last_bump: datetime
     exams_disabled: bool
+    admin_username: str
+    bot_username: str
