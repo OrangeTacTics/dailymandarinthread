@@ -10,7 +10,7 @@ def main():
 
     uvicorn.run(
         make_app(),
-        host=os.environ.get("SERVER_HOST", "127.0.0.1"),
+        host=os.environ.get("SERVER_HOST", "0.0.0.0"),
         port=int(os.environ.get("SERVER_PORT", "8002")),
     )
 
@@ -27,6 +27,6 @@ def main_test():
 
     uvicorn.run(
         make_app(),
-        host=os.environ.get("SERVER_HOST", "127.0.0.1"),
+        host=os.environ.get("SERVER_HOST", "0.0.0.0"),
         port=int(os.environ.get("SERVER_PORT", "9666")),
     )

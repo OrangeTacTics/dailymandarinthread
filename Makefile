@@ -8,3 +8,7 @@ lint:
 
 test:
 	poetry run pytest || exit
+
+containers:
+	podman build -t chairmanmao-bot:latest    -f Dockerfile.chairmanmao-bot
+	podman build -t chairmanmao-server:latest -f Dockerfile.chairmanmao-server
