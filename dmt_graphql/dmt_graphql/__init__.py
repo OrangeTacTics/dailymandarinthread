@@ -1,4 +1,8 @@
 from .server import make_app
+from .graphql.schema import schema
+
+
+_ = schema
 
 
 def main():
