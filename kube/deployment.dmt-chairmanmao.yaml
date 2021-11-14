@@ -1,23 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chairmanmao-server
-  namespace: chairmanmao
+  name: dmt-chairmanmao
+  namespace: dmt
 spec:
   selector:
     matchLabels:
-      app: chairmanmao-server
+      app: dmt-chairmanmao
   template:
     metadata:
       labels:
-        app: chairmanmao-server
+        app: dmt-chairmanmao
     spec:
       containers:
-      - image: registry.digitalocean.com/tactics40/chairmanmao-server
-        name: chairmanmao-server
+      - image: registry.digitalocean.com/tactics40/dmt-chairmanmao
+        name: dmt-chairmanmao
         imagePullPolicy: Always
-        ports:
-        - containerPort: 8002
         volumeMounts:
         - name: credentials
           mountPath: "/credentials"
@@ -28,7 +26,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - cp /credentials/.env /run/.env && cp /credentials/ca-certificate.crt /run/ca-certificate.crt
+                - cp /credentials/.env /run/.env
       imagePullSecrets:
       - name: regcred
       volumes:

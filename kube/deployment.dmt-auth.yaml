@@ -1,21 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chairmanmao-bot
-  namespace: chairmanmao
+  name: dmt-auth
+  namespace: dmt
 spec:
   selector:
     matchLabels:
-      app: chairmanmao-bot
+      app: dmt-auth
   template:
     metadata:
       labels:
-        app: chairmanmao-bot
+        app: dmt-auth
     spec:
       containers:
-      - image: registry.digitalocean.com/tactics40/chairmanmao-bot
-        name: chairmanmao-bot
+      - image: registry.digitalocean.com/tactics40/dmt-auth
+        name: dmt-auth
         imagePullPolicy: Always
+        ports:
+        - containerPort: 8002
         volumeMounts:
         - name: credentials
           mountPath: "/credentials"

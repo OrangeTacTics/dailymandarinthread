@@ -1,18 +1,37 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: chairmanmao
-  namespace: chairmanmao
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: dmt
+  namespace: dmt
 spec:
   rules:
   - http:
       paths:
+      - path: /graphql
+        pathType: Prefix
+        backend:
+          service:
+            name: dmt-graphql
+            port:
+              number: 8002
+      - path: /login
+        pathType: Prefix
+        backend:
+          service:
+            name: dmt-auth
+            port:
+              number: 8004
+      - path: /logout
+        pathType: Prefix
+        backend:
+          service:
+            name: dmt-auth
+            port:
+              number: 8004
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: chairmanmao
+            name: dmt-dailymandarinthreadinfo
             port:
-              number: 8002
+              number: 8001
