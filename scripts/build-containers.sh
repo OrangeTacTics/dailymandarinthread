@@ -3,19 +3,27 @@
 set -xe
 
 REGISTRY=${1:-"localhost"}
+DOCKER_BIN=${DOCKER_BIN:-"docker"}
+TAG=${TAG:-"local"}
 
-podman build \
-    -t $REGISTRY/dmt-chairmanmao:latest \
-    -f dmt_chairmanmao/Dockerfile
+eval $(minikube docker-env)
 
-podman build \
-    -t $REGISTRY/dmt-graphql:latest \
-    -f dmt_graphql/Dockerfile
+$DOCKER_BIN build \
+    -t $REGISTRY/dmt-chairmanmao:$TAG \
+    -f dmt_chairmanmao/Dockerfile \
+    dmt_chairmanmao
 
-podman build \
-    -t $REGISTRY/dmt-auth:latest \
-    -f dmt_auth/Dockerfile
+$DOCKER_BIN build \
+    -t $REGISTRY/dmt-graphql:$TAG \
+    -f dmt_graphql/Dockerfile \
+    dmt_graphql
 
-podman build \
-    -t $REGISTRY/dmt-dailymandarinthreadinfo:latest \
-    -f dmt_dailymandarinthreadinfo/Dockerfile
+$DOCKER_BIN build \
+    -t $REGISTRY/dmt-auth:$TAG \
+    -f dmt_auth/Dockerfile \
+    dmt_auth
+
+$DOCKER_BIN build \
+    -t $REGISTRY/dmt-dailymandarinthreadinfo:$TAG \
+    -f dmt_dailymandarinthreadinfo/Dockerfile \
+    dmt_dailymandarinthreadinfo
