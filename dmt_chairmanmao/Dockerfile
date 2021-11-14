@@ -11,4 +11,4 @@ RUN poetry install
 COPY dmt_chairmanmao /run/dmt_chairmanmao
 COPY data /run/data
 
-CMD ["poetry", "run", "chairmanmao"]
+CMD ["poetry", "run", "dmt-chairmanmao"]
