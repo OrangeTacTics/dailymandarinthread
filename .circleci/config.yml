@@ -21,7 +21,7 @@ jobs:
           name: Run CI script
           command: bash scripts/run-ci.sh
 
-  deployment:
+  build-containers:
     docker:
       - image: docker:17.05.0-ce-git
     steps:
@@ -30,34 +30,67 @@ jobs:
           docker_layer_caching: true
       - run:
           name: Docker Login
-          command: |
-            docker login -u $CONTAINER_REGISTRY_USERNAME -p $CONTAINER_REGISTRY_PASSWORD $CONTAINER_REGISTRY
+          command: docker login -u $CONTAINER_REGISTRY_USERNAME -p $CONTAINER_REGISTRY_PASSWORD $CONTAINER_REGISTRY
 
       - run:
-          name: Docker Build Server
+          name: Docker Build dmt-dailymandarinthreadinfo
           command: |
             docker build \
-                -t $CONTAINER_REGISTRY/chairmanmao-server:$CIRCLE_SHA1 \
-                -t $CONTAINER_REGISTRY/chairmanmao-server:latest \
-                -f Dockerfile.chairmanmao-server \
-                .
+                -t $CONTAINER_REGISTRY/dmt-dailymandarinthreadinfo:latest \
+                -t $CONTAINER_REGISTRY/dmt-dailymandarinthreadinfo:$CIRCLE_SHA1 \
+                -f dmt_dailymandarinthreadinfo/Dockerfile \
+                dmt_dailymandarinthreadinfo
 
       - run:
-          name: Docker Build Bot
+          name: Docker Build dmt-auth
           command: |
             docker build \
-                -t $CONTAINER_REGISTRY/chairmanmao-bot:$CIRCLE_SHA1 \
-                -t $CONTAINER_REGISTRY/chairmanmao-bot:latest \
-                -f Dockerfile.chairmanmao-bot \
-                .
+                -t $CONTAINER_REGISTRY/dmt-auth:latest \
+                -t $CONTAINER_REGISTRY/dmt-auth:$CIRCLE_SHA1 \
+                -f dmt_auth/Dockerfile \
+                dmt_auth
 
       - run:
-          name: Docker Push
+          name: Docker Build dmt-chairmanmao
           command: |
-            docker push $CONTAINER_REGISTRY/chairmanmao-bot:$CIRCLE_SHA1
-            docker push $CONTAINER_REGISTRY/chairmanmao-server:$CIRCLE_SHA1
-            docker push $CONTAINER_REGISTRY/chairmanmao-bot:latest
-            docker push $CONTAINER_REGISTRY/chairmanmao-server:latest
+            docker build \
+                -t $CONTAINER_REGISTRY/dmt-chairmanmao:latest \
+                -t $CONTAINER_REGISTRY/dmt-chairmanmao:$CIRCLE_SHA1 \
+                -f dmt_chairmanmao/Dockerfile \
+                dmt_chairmanmao
+
+      - run:
+          name: Docker Build dmt-graphql
+          command: |
+            docker build \
+                -t $CONTAINER_REGISTRY/dmt-graphql:latest \
+                -t $CONTAINER_REGISTRY/dmt-graphql:$CIRCLE_SHA1 \
+                -f dmt_graphql/Dockerfile \
+                dmt_graphql
+
+      - run:
+          name: Docker Push dmt-chairmanmao
+          command: |
+            docker push $CONTAINER_REGISTRY/dmt-chairmanmao:latest
+            docker push $CONTAINER_REGISTRY/dmt-chairmanmao:$CIRCLE_SHA1
+
+      - run:
+          name: Docker Push dmt-graphql
+          command: |
+            docker push $CONTAINER_REGISTRY/dmt-graphql:latest
+            docker push $CONTAINER_REGISTRY/dmt-graphql:$CIRCLE_SHA1
+
+      - run:
+          name: Docker Push dmt-auth
+          command: |
+            docker push $CONTAINER_REGISTRY/dmt-auth:latest
+            docker push $CONTAINER_REGISTRY/dmt-auth:$CIRCLE_SHA1
+
+      - run:
+          name: Docker Push dmt-dailymandarinthreadinfo
+          command: |
+            docker push $CONTAINER_REGISTRY/dmt-dailymandarinthreadinfo:latest
+            docker push $CONTAINER_REGISTRY/dmt-dailymandarinthreadinfo:$CIRCLE_SHA1
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -65,12 +98,12 @@ workflows:
   flow: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - lint-and-test:
+        #      - lint-and-test:
+        #          context: DailyMandarinThread
+      - build-containers:
           context: DailyMandarinThread
-      - deployment:
-          context: DailyMandarinThread
-          requires:
-            - lint-and-test
+          #          requires:
+          #            - lint-and-test
           filters:
             branches:
               only:
