@@ -28,15 +28,15 @@ def make_app() -> t.Any:
             username = profile["username"] + "#" + profile["discriminator"]
             cookie_json = jwt.encode(
                 {
-                    "username": username,
+                    "userId": profile["id"],
+                    "discordUsername": username,
                 },
                 JWT_KEY,
                 algorithm="HS256",
             )
-            assert isinstance(cookie_json, bytes)
 
             response = RedirectResponse("/")
-            response.set_cookie(key="token", value=cookie_json.decode())
+            response.set_cookie(key="token", value=cookie_json)
             return response
 
     @app.get("/logout")
