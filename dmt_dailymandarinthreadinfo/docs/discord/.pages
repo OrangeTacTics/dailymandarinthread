@@ -1,0 +1,5 @@
+nav:
+    - 'Invite': invite.md
+    - 'Channels': channels.md
+    - 'Roles': roles.md
+    - 'Social Credit': socialcredit.md

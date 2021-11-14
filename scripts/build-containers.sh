@@ -11,3 +11,7 @@ podman build \
 podman build \
     -t dmt-auth:latest \
     -f dmt_auth/Dockerfile
+
+podman build \
+    -t dmt-dailymandarinthreadinfo:latest \
+    -f dmt_dailymandarinthreadinfo/Dockerfile

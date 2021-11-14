@@ -1,0 +1,22 @@
+site_name: Daily Mandarin Thread
+site_url: https://dailymandarinthread.info/
+
+theme:
+    name: material
+    favicon: /assets/favicon.png
+    palette:
+        scheme: slate
+        primary: red
+        accent: cyan
+    features:
+        - navigation.instant
+        - navigation.sections
+        - navigation.tabs
+        - navigation.indexes
+
+extra_css:
+    - /assets/custom.css
+
+plugins:
+    - search
+    - awesome-pages

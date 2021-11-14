@@ -1,0 +1,7 @@
+nav:
+    - '欢迎': index.md
+    - 'The DMT Method': method
+    - 'Philosophy': philosophy
+    - 'Topics': topics
+    - 'Tools': tools
+    - 'Discord': discord
