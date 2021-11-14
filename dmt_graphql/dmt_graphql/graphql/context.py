@@ -1,6 +1,5 @@
 import typing as t
 from dataclasses import dataclass
-import os
 
 from strawberry.asgi import GraphQL
 from strawberry.dataloader import DataLoader
@@ -12,6 +11,7 @@ from starlette.websockets import WebSocket
 import dmt_graphql.graphql.dataloaders as dl
 import dmt_graphql.graphql.schema as schema
 from ..store.mongodb import MongoDbDocumentStore
+from dmt_graphql.config import Configuration
 
 
 MemberId = str
@@ -30,6 +30,7 @@ class Context:
     dataloaders: Dataloaders
     discord_username: t.Optional[str]
     store: MongoDbDocumentStore
+    configuration: Configuration
 
     @property
     def is_admin(self) -> bool:
@@ -37,20 +38,21 @@ class Context:
             return False
 
         return (
-            self.discord_username == os.environ["ADMIN_USERNAME"] or self.discord_username == os.environ["BOT_USERNAME"]
+            self.discord_username == self.configuration.ADMIN_USERNAME or self.discord_username == self.configuration.BOT_USERNAME
         )
 
 
 class ChairmanMaoGraphQL(GraphQL):
+    def __init__(self, schema, configuration: Configuration):
+        super().__init__(schema)
+        self.configuration = configuration
+
     async def get_context(
         self,
         request: t.Union[Request, WebSocket],
         response: t.Optional[Response] = None,
     ) -> t.Any:
-        MONGODB_URL = os.getenv("MONGODB_URL", "")
-        MONGODB_DB = os.getenv("MONGODB_DB", "")
-
-        store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
+        store = MongoDbDocumentStore(self.configuration)
 
         if request.state.token is not None:
             discord_username = request.state.token.get("username")
@@ -69,4 +71,5 @@ class ChairmanMaoGraphQL(GraphQL):
             ),
             discord_username=discord_username,
             store=store,
+            configuration=self.configuration,
         )

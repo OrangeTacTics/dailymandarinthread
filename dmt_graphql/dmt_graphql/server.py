@@ -1,22 +1,18 @@
 import typing as t
 import jwt
-import json
-import httpx
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse, JSONResponse, PlainTextResponse, Response
 
 from .graphql.schema import schema
 from .graphql.context import ChairmanMaoGraphQL
-
-import os
+from .config import Configuration
 
 
 def make_app() -> t.Any:
-    JWT_KEY = t.cast(str, os.getenv("JWT_KEY"))
+    configuration = Configuration.from_environment()
 
     app = FastAPI()
 
-    graphql_app = ChairmanMaoGraphQL(schema)
+    graphql_app = ChairmanMaoGraphQL(schema, configuration)
 
     app.add_route("/graphql", graphql_app)
     app.add_websocket_route("/graphql", graphql_app)
@@ -27,9 +23,9 @@ def make_app() -> t.Any:
             auth_header = request.headers["Authorization"]
             assert auth_header.startswith("BEARER ")
             token = auth_header[len("BEARER ") :]
-            request.state.token = jwt.decode(token, JWT_KEY, algorithms=["HS256"])
+            request.state.token = jwt.decode(token, configuration.JWT_KEY, algorithms=["HS256"])
         elif "token" in request.cookies:
-            request.state.token = jwt.decode(request.cookies["token"], JWT_KEY, algorithms=["HS256"])
+            request.state.token = jwt.decode(request.cookies["token"], configuration.JWT_KEY, algorithms=["HS256"])
         else:
             request.state.token = None
 

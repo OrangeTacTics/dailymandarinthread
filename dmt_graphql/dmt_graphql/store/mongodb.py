@@ -1,18 +1,25 @@
 from __future__ import annotations
 import typing as t
-import os
 from datetime import timezone, timedelta, datetime
 
 import pymongo
 from bson.objectid import ObjectId
 
 from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question, DictEntry
+from dmt_graphql.config import Configuration
 
 
 class MongoDbDocumentStore:
-    def __init__(self, mongo_url: str, mongo_db: str) -> None:
-        self.mongo_client = pymongo.MongoClient(mongo_url)
-        self.db = self.mongo_client[mongo_db]
+    def __init__(self, configuration: Configuration) -> None:
+        self.configuration = configuration
+        self.mongo_client = pymongo.MongoClient(
+            host=configuration.MONGODB_URL,
+            username=configuration.MONGODB_USER,
+            password=configuration.MONGODB_PASS,
+            tlsCAFile=configuration.MONGODB_CERT,
+        )
+        self.db = self.mongo_client[configuration.MONGODB_DB]
+
         self.profiles = self.db["Profiles"]
         self.server_settings = self.db["ServerSettings"]
         self.exams = self.db["Exams"]
@@ -26,7 +33,7 @@ class MongoDbDocumentStore:
 
         assert not self.profile_exists(user_id)
 
-        if discord_username == os.environ["BOT_USERNAME"]:
+        if discord_username == self.configuration.BOT_USERNAME:
             profile.yuan = 10000
 
         self.profiles.insert_one(profile_to_json(profile))
@@ -107,8 +114,8 @@ class MongoDbDocumentStore:
         return ServerSettings(
             last_bump=json_data["last_bump"].replace(tzinfo=timezone.utc),
             exams_disabled=json_data.get("exams_disabled", False),
-            admin_username=json_data.get("admin_username", os.environ["ADMIN_USERNAME"]),
-            bot_username=json_data.get("bot_username", os.environ["BOT_USERNAME"]),
+            admin_username=json_data.get("admin_username", self.configuration.ADMIN_USERNAME),
+            bot_username=json_data.get("bot_username", self.configuration.BOT_USERNAME),
         )
 
     def store_server_settings(self, server_settings: ServerSettings) -> None:
