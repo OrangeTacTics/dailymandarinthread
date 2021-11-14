@@ -8,7 +8,7 @@ COPY pyproject.toml /run/
 
 RUN poetry install
 
-COPY dmt_auth /run/dmt_graphql
+COPY dmt_auth /run/dmt_auth
 
 EXPOSE 8004
 
