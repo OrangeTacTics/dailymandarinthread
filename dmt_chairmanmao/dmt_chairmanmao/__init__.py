@@ -1,7 +1,7 @@
 def main():
-    from dotenv import load_dotenv
     from dmt_chairmanmao.chairmanmao import ChairmanMao
+    from .config import Configuration
 
-    load_dotenv()
-    chairmanmao = ChairmanMao()
+    config = Configuration.from_environment()
+    chairmanmao = ChairmanMao(config)
     chairmanmao.run()

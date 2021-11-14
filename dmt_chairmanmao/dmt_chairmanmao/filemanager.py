@@ -1,33 +1,14 @@
 from __future__ import annotations
 import typing as t
-from dataclasses import dataclass
 from io import BytesIO
-import os
 
 import boto3
 
-
-@dataclass
-class DoSpacesConfig:
-    DO_SPACES_KEY: str
-    DO_SPACES_SECRET: str
-    DO_SPACES_BUCKETNAME: str
-    DO_SPACES_URL: str
-    DO_SPACES_REGION: str
-
-    @staticmethod
-    def from_environment() -> DoSpacesConfig:
-        return DoSpacesConfig(
-            DO_SPACES_KEY=os.environ["DO_SPACES_KEY"],
-            DO_SPACES_SECRET=os.environ["DO_SPACES_SECRET"],
-            DO_SPACES_BUCKETNAME=os.environ["DO_SPACES_BUCKETNAME"],
-            DO_SPACES_URL=os.environ["DO_SPACES_URL"],
-            DO_SPACES_REGION=os.environ["DO_SPACES_REGION"],
-        )
+from .config import Configuration
 
 
 class FileManager:
-    def __init__(self, config: DoSpacesConfig) -> None:
+    def __init__(self, config: Configuration) -> None:
         self.config = config
 
         self.session = boto3.session.Session()

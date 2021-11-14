@@ -5,13 +5,12 @@ import logging
 import discord
 from discord.ext import commands
 
-import os
-
-from dmt_chairmanmao.filemanager import DoSpacesConfig, FileManager
+from dmt_chairmanmao.filemanager import FileManager
 from dmt_chairmanmao.api import Api
 from dmt_chairmanmao.draw import DrawManager
 from dmt_chairmanmao.fourchan import FourChanManager
 from dmt_chairmanmao.types import UserId
+from dmt_chairmanmao.config import Configuration
 
 from dmt_chairmanmao.discord import DiscordConstants
 
@@ -49,24 +48,24 @@ logger.addHandler(stream)
 
 
 class ChairmanMao:
-    def __init__(self) -> None:
+    def __init__(self, configuration: Configuration) -> None:
         self.logger = logger
+        self.configuration = configuration
 
-        GRAPHQL_ENDPOINT = os.getenv("GRAPHQL_ENDPOINT", "")
-        GRAPHQL_TOKEN = os.getenv("GRAPHQL_TOKEN", "")
+        GRAPHQL_ENDPOINT = configuration.GRAPHQL_ENDPOINT
+        GRAPHQL_TOKEN = configuration.GRAPHQL_TOKEN
 
         self.api = Api(GRAPHQL_ENDPOINT, GRAPHQL_TOKEN)
 
         self.member_update_queue: t.Set[discord.Member] = set()
         self.constants_cache: t.Optional[DiscordConstants] = None
 
-        do_spaces_config = DoSpacesConfig.from_environment()
-        file_manager = FileManager(do_spaces_config)
+        file_manager = FileManager(configuration)
         self.draw_manager = DrawManager(file_manager)
         self.fourchan_manager = FourChanManager(file_manager)
 
     async def chairmanmao_user_id(self) -> int:
-        return await self.api.get_user_id(os.environ["BOT_USERNAME"])
+        return await self.api.get_user_id(self.configuration.BOT_USERNAME)
 
     def load_constants(self, guild: discord.Guild) -> None:
         assert self.constants_cache is None
@@ -111,5 +110,5 @@ class ChairmanMao:
         client.add_cog(TiananmenCog(client, self))
         # client.add_cog(InvitesCog(client, self))
 
-        DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+        DISCORD_TOKEN = self.configuration.DISCORD_TOKEN
         client.run(DISCORD_TOKEN)
