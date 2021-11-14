@@ -53,7 +53,9 @@ class ChairmanMaoGraphQL(GraphQL):
         store = MongoDbDocumentStore(MONGODB_URL, MONGODB_DB)
 
         if request.state.token is not None:
-            discord_username = request.state.token["username"]
+            discord_username = request.state.token.get("username")
+            if discord_username is None:
+                discord_username = request.state.token["discordUsername"]
         else:
             discord_username = None
 
