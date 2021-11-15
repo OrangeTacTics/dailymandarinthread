@@ -31,6 +31,13 @@ spec:
             name: dmt-auth
             port:
               number: 8004
+      - path: /profile
+        pathType: Prefix
+        backend:
+          service:
+            name: dmt-profiles
+            port:
+              number: 8005
       - path: /
         pathType: Prefix
         backend:
