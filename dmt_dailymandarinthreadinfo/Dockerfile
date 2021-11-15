@@ -11,16 +11,9 @@ COPY mkdocs.yml /run/
 RUN mkdocs build
 
 
-FROM alpine:3.13.2
+FROM docker.io/library/caddy
 
-RUN apk add thttpd
-
-RUN adduser -D static
-USER static
-WORKDIR /home/static
-
-COPY --from=build /run/site /home/static
+COPY Caddyfile /etc/caddy/
+COPY --from=build /run/site /run/site
 
 EXPOSE 8001
-
-CMD ["thttpd", "-D", "-h", "0.0.0.0", "-p", "8001", "-d", "/home/static", "-u", "static", "-l", "-", "-M", "60"]
