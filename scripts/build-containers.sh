@@ -27,3 +27,8 @@ $DOCKER_BIN build \
     -t $REGISTRY/dmt-dailymandarinthreadinfo:$TAG \
     -f dmt_dailymandarinthreadinfo/Dockerfile \
     dmt_dailymandarinthreadinfo
+
+$DOCKER_BIN build \
+    -t $REGISTRY/dmt-profiles:$TAG \
+    -f dmt_profiles/Dockerfile \
+    dmt_profiles
