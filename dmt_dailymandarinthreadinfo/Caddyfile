@@ -1,3 +1,6 @@
-http://localhost:8001
+:8001
 root * /run/site
+log {
+    output stdout
+}
 file_server
