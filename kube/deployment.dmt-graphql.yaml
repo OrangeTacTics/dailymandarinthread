@@ -13,9 +13,9 @@ spec:
         app: dmt-graphql
     spec:
       containers:
-      - image: registry.digitalocean.com/tactics40/dmt-graphql
+      - image: localhost/dmt-graphql:local
         name: dmt-graphql
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8002
         volumeMounts:

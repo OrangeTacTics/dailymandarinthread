@@ -13,9 +13,9 @@ spec:
         app: dmt-dailymandarinthreadinfo
     spec:
       containers:
-      - image: registry.digitalocean.com/tactics40/dmt-dailymandarinthreadinfo
+      - image: localhost/dmt-dailymandarinthreadinfo:local
         name: dmt-dailymandarinthreadinfo
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8001
       imagePullSecrets:

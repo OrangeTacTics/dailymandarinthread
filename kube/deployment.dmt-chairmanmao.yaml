@@ -13,9 +13,9 @@ spec:
         app: dmt-chairmanmao
     spec:
       containers:
-      - image: registry.digitalocean.com/tactics40/dmt-chairmanmao
+      - image: localhost/dmt-chairmanmao:local
         name: dmt-chairmanmao
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: credentials
           mountPath: "/credentials"

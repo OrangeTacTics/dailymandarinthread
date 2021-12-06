@@ -13,9 +13,9 @@ spec:
         app: dmt-profiles
     spec:
       containers:
-      - image: registry.digitalocean.com/tactics40/dmt-profiles
+      - image: localhost/dmt-profiles:local
         name: dmt-profiles
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8005
       imagePullSecrets:

@@ -1,3 +1,12 @@
 :8005
-root * /run/build
-file_server
+
+log {
+    output stdout
+}
+
+redir /profile /profile/
+
+handle_path /profile/* {
+    root * /run/build
+    file_server
+}

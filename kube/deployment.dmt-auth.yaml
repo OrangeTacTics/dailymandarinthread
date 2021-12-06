@@ -13,9 +13,9 @@ spec:
         app: dmt-auth
     spec:
       containers:
-      - image: registry.digitalocean.com/tactics40/dmt-auth
+      - image: localhost/dmt-auth:local
         name: dmt-auth
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8002
         volumeMounts:

@@ -3,11 +3,13 @@ import React, { useState } from 'react'
 
 
 function ProfileLookup() {
+  const uri = new URL(window.location.href);
+  const username = uri.pathname + uri.hash;
   const [profileData, setProfileData] = useState<any>(null);
 
   return <>
       Learn React, Ok?
-      <input className="md-search__input" onChange={async (ev) => setProfileData(await profile(ev.target.value))}/>
+      <input className="md-search__input" defaultValue={username} onChange={async (ev) => setProfileData(await profile(ev.target.value))}/>
       <div style={{whiteSpace: "pre"}}>{JSON.stringify(profileData, null, 4)}</div>
   </>
 }
