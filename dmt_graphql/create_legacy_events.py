@@ -3,13 +3,9 @@ import pprint
 import pymongo
 from dmt_graphql.events import Event, EventStore, EventType
 
-from dmt_graphql.store.mongodb import MongoDbDocumentStore
+from dmt_graphql.store.mongodb import MongoDbDocumentStore, create_mongodb_client
 from dmt_graphql.config import Configuration
 from dotenv import load_dotenv
-
-load_dotenv()
-
-configuration = Configuration.from_environment()
 
 
 def create_legacy_event(profile):
@@ -41,7 +37,11 @@ def assert_mirror_equivalent(store, user_id):
 
 
 def main():
-    store = MongoDbDocumentStore(configuration)
+    load_dotenv()
+    configuration = Configuration.from_environment()
+    db = create_mongodb_client(configuration)
+    store = MongoDbDocumentStore(db, configuration)
+    event_store = EventStore(db, configuration)
 
     for profile in store.get_all_profiles():
         print(profile.discord_username)
@@ -50,7 +50,6 @@ def main():
         pprint.pprint(event.to_dict())
         print()
         print()
-        event_store = EventStore(configuration)
         event_store.push(event)
 
         assert_mirror_equivalent(store, profile.user_id)

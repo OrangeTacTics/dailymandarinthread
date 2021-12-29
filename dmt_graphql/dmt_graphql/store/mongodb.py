@@ -3,6 +3,7 @@ import typing as t
 from datetime import timezone, timedelta, datetime
 
 import pymongo
+from pymongo.database import Database
 from bson.objectid import ObjectId
 
 from dmt_graphql.events import Event, EventType
@@ -10,16 +11,20 @@ from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question, 
 from dmt_graphql.config import Configuration
 
 
+def create_mongodb_client(configuration: Configuration) -> Database:
+    mongo_client = pymongo.MongoClient(
+        host=configuration.MONGODB_URL,
+#        username=configuration.MONGODB_USER,
+#        password=configuration.MONGODB_PASS,
+#        tlsCAFile=configuration.MONGODB_CERT,
+    )
+    return mongo_client[configuration.MONGODB_DB]
+
+
 class MongoDbDocumentStore:
-    def __init__(self, configuration: Configuration, *, mirror: bool = False) -> None:
+    def __init__(self, db: Database, configuration: Configuration, *, mirror: bool = False) -> None:
         self.configuration = configuration
-        self.mongo_client = pymongo.MongoClient(
-            host=configuration.MONGODB_URL,
-#            username=configuration.MONGODB_USER,
-#            password=configuration.MONGODB_PASS,
-#            tlsCAFile=configuration.MONGODB_CERT,
-        )
-        self.db = self.mongo_client[configuration.MONGODB_DB]
+        self.db = db
 
         prefix = 'mirror_' if mirror else ''
 

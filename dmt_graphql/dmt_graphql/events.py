@@ -169,19 +169,11 @@ def handler_LegacyProfileLoaded(store, event):
 
 
 class EventStore:
-    def __init__(self, configuration: Configuration) -> None:
-        self.configuration = configuration
-        self.mongo_client = pymongo.MongoClient(
-            host=configuration.MONGODB_URL,
-#            username=configuration.MONGODB_USER,
-#            password=configuration.MONGODB_PASS,
-#            tlsCAFile=configuration.MONGODB_CERT,
-        )
-        db = self.mongo_client[configuration.MONGODB_DB]
+    def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
 
         from dmt_graphql.store.mongodb import MongoDbDocumentStore
-        self.store = MongoDbDocumentStore(configuration, mirror=True)
+        self.store = MongoDbDocumentStore(db, configuration, mirror=True)
 
     def push(self, event: Event) -> None:
         event.validate()

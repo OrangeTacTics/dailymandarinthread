@@ -10,7 +10,7 @@ from starlette.websockets import WebSocket
 
 import dmt_graphql.graphql.dataloaders as dl
 import dmt_graphql.graphql.schema as schema
-from ..store.mongodb import MongoDbDocumentStore
+from ..store.mongodb import MongoDbDocumentStore, create_mongodb_client
 from dmt_graphql.config import Configuration
 
 
@@ -52,7 +52,8 @@ class ChairmanMaoGraphQL(GraphQL):
         request: t.Union[Request, WebSocket],
         response: t.Optional[Response] = None,
     ) -> t.Any:
-        store = MongoDbDocumentStore(self.configuration)
+        db = create_mongodb_client(self.configuration)
+        store = MongoDbDocumentStore(db, self.configuration)
 
         if request.state.token is not None:
             discord_username = request.state.token.get("username")
