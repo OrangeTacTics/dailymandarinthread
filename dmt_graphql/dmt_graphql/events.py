@@ -215,6 +215,19 @@ def handler_ComradeUnjailed(store, event):
             raise Exception("Not jailed")
 
 
+def handler_ComradeDishonored(store, event):
+    user_id = event.payload["honoree_user_id"]
+    amount = event.payload["amount"]
+    with store.profile(int(user_id)) as profile:
+        profile.credit -= amount
+
+def handler_ComradeHonored(store, event):
+    user_id = event.payload["honoree_user_id"]
+    amount = event.payload["amount"]
+    with store.profile(int(user_id)) as profile:
+        profile.credit += amount
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -235,6 +248,8 @@ class EventStore:
             EventType("ServerBumped-1.0.0"): handler_ServerBumped,
             EventType("ComradeJailed-1.0.0"): handler_ComradeJailed,
             EventType("ComradeUnjailed-1.0.0"): handler_ComradeUnjailed,
+            EventType("ComradeHonored-1.0.0"): handler_ComradeHonored,
+            EventType("ComradeDishonored-1.0.0"): handler_ComradeDishonored,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -307,13 +322,28 @@ def comrade_unjailed_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["jailer_user_id"], str)
 
 
-#@EventType.register("ComradeChangedName", "1.0.0")
-#def comrade_changed_name_1_0_0(payload: t.Any) -> None:
-#    pass
+@EventType.register("ComradeHonored", "1.0.0")
+def comrade_honored_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["honoree_user_id"], str)
+    assert isinstance(payload["honorer_user_id"], str)
+    assert isinstance(payload["amount"], int)
+    assert payload["amount"] > 0
+    assert payload["reason"] is None or isinstance(payload["reason"], str)
 
-#@EventType.register("AdminChangedComradeName", "1.0.0")
-#def admin_changed_comrade_name_1_0_0(payload: t.Any) -> None:
-#    pass
+
+@EventType.register("ComradeDishonored", "1.0.0")
+def comrade_dishonored_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["honoree_user_id"], str)
+    assert isinstance(payload["honorer_user_id"], str)
+    assert isinstance(payload["amount"], int)
+    assert payload["amount"] > 0
+    assert payload["reason"] is None or isinstance(payload["reason"], str)
+
+
+#@EventType.register("NameChanged", "1.0.0")
+#def comrade_changed_name_1_0_0(payload: t.Any) -> None:
+#    assert instance(payload["user_id"], str)
+#    assert instance(payload["changed_by_user_id"], str)
 
 #@EventType.register("ComradeJoined", "1.0.0")
 #def comrade_joined_1_0_0(payload: t.Any) -> None:
@@ -321,14 +351,6 @@ def comrade_unjailed_1_0_0(payload: t.Any) -> None:
 #
 #@EventType.register("ComradeDefected", "1.0.0")
 #def comrade_defected_1_0_0(payload: t.Any) -> None:
-#    pass
-#
-#@EventType.register("ComradeHonored", "1.0.0")
-#def comrade_honored_1_0_0(payload: t.Any) -> None:
-#    pass
-#
-#@EventType.register("ComradeDishonored", "1.0.0")
-#def comrade_dishonored_1_0_0(payload: t.Any) -> None:
 #    pass
 #
 #@EventType.register("ComradePromotedToParty", "1.0.0")

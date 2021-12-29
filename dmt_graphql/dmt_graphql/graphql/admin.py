@@ -73,22 +73,54 @@ class AdminMutation:
         return True
 
     @s.field
-    async def honor(self, info, user_id: str, amount: int) -> Profile:
+    async def honor(
+        self,
+        info,
+        honoree_user_id: str,
+        honorer_user_id: str,
+        amount: int,
+        reason: t.Optional[str],
+    ) -> Profile:
         assert amount > 0
 
-        with info.context.store.profile(int(user_id)) as profile:
+        with info.context.store.profile(int(honoree_user_id)) as profile:
             profile.credit += amount
+            info.context.event_store.push(
+                "ComradeHonored-1.0.0",
+                {
+                    "honoree_user_id": honoree_user_id,
+                    "honorer_user_id": honorer_user_id,
+                    "amount": amount,
+                    "reason": reason,
+                },
+            )
 
-        return await info.context.dataloaders.profile.load(user_id)
+        return await info.context.dataloaders.profile.load(honoree_user_id)
 
     @s.field
-    async def dishonor(self, info, user_id: str, amount: int) -> Profile:
+    async def dishonor(
+        self,
+        info,
+        honoree_user_id: str,
+        honorer_user_id: str,
+        amount: int,
+        reason: t.Optional[str],
+) -> Profile:
         assert amount > 0
 
-        with info.context.store.profile(int(user_id)) as profile:
+        with info.context.store.profile(int(honoree_user_id)) as profile:
             profile.credit -= amount
+            info.context.event_store.push(
+                "ComradeDishonored-1.0.0",
+                {
+                    "honoree_user_id": honoree_user_id,
+                    "honorer_user_id": honorer_user_id,
+                    "amount": amount,
+                    "reason": reason,
+                },
+            )
 
-        return await info.context.dataloaders.profile.load(user_id)
+        return await info.context.dataloaders.profile.load(honoree_user_id)
 
     @s.field
     async def transfer(self, info, from_user_id: str, to_user_id: str, amount: int) -> bool:
