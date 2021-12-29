@@ -12,6 +12,7 @@ import dmt_graphql.graphql.dataloaders as dl
 import dmt_graphql.graphql.schema as schema
 from ..store.mongodb import MongoDbDocumentStore, create_mongodb_client
 from dmt_graphql.config import Configuration
+from dmt_graphql.events import EventStore
 
 
 MemberId = str
@@ -30,6 +31,7 @@ class Context:
     dataloaders: Dataloaders
     discord_username: t.Optional[str]
     store: MongoDbDocumentStore
+    event_store: EventStore
     configuration: Configuration
 
     @property
@@ -54,6 +56,7 @@ class ChairmanMaoGraphQL(GraphQL):
     ) -> t.Any:
         db = create_mongodb_client(self.configuration)
         store = MongoDbDocumentStore(db, self.configuration)
+        event_store = EventStore(db, self.configuration)
 
         if request.state.token is not None:
             discord_username = request.state.token.get("username")
@@ -72,5 +75,6 @@ class ChairmanMaoGraphQL(GraphQL):
             ),
             discord_username=discord_username,
             store=store,
+            event_store=event_store,
             configuration=self.configuration,
         )

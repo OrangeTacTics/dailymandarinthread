@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 def create_legacy_event(profile):
     event = Event.new(
-        EventType("LegacyProfileLoaded", "1.0.0"),
+        EventType("LegacyProfileLoaded-1.0.0"),
         {
             'user_id': str(profile.user_id),
             'discord_username': profile.discord_username,
@@ -27,11 +27,11 @@ def create_legacy_event(profile):
     )
     return event
 
+
 def assert_mirror_equivalent(store, user_id):
     std_profile = store.db.Profiles.find_one({'user_id': user_id})
-    mir_profile = store.db.mirror_Profiles.find_one({'user_id': str(user_id)})
+    mir_profile = store.db.mirror_Profiles.find_one({'user_id': user_id})
 
-    std_profile['user_id'] = str(std_profile['user_id'])
     std_profile["_id"] = mir_profile["_id"]
     assert std_profile == mir_profile
 
@@ -50,7 +50,7 @@ def main():
         pprint.pprint(event.to_dict())
         print()
         print()
-        event_store.push(event)
+        event_store.push_event(event)
 
         assert_mirror_equivalent(store, profile.user_id)
 

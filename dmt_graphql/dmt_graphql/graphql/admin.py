@@ -7,6 +7,7 @@ from .exam import Exam, ExamMutation, NewExam
 from .profile import Profile, add_role, remove_role, set_hsk
 from .server_settings import ServerSettings
 import dmt_graphql.store.types as types
+from dmt_graphql.events import EventType, Event
 
 
 @s.type
@@ -42,6 +43,12 @@ class AdminMutation:
     @s.field
     async def alert_activity(self, info, user_ids: t.List[str]) -> datetime:
         now = datetime.now(timezone.utc).replace(microsecond=0)
+        info.context.event_store.push(
+            "ActivityAlerted-1.0.0",
+            {
+                "user_ids": user_ids,
+            },
+        )
         for user_id in user_ids:
             with info.context.store.profile(int(user_id)) as profile:
                 profile.last_seen = now

@@ -24,16 +24,10 @@ class EventType:
     name: str
     version: Version
 
-    def __init__(self, name: str, version: t.Optional[str] = None) -> None:
-        if version is None:
-            versions: t.Set[Version] = {
-                v for n, v in EVENT_TYPES.keys() if n == name
-            }
-            vversion = max(versions)
-        else:
-            vversion = Version(version)
-
-
+    def __init__(self, name_version: str) -> None:
+        name, version = name_version.split('-')
+        vversion = Version(version)
+        assert (name, vversion) in EVENT_TYPES, f"No such event: {name}-{version}"
         self.name = name
         self.version = vversion
 
@@ -55,13 +49,13 @@ class EventType:
             vversion = Version(version)
             assert (name, vversion) not in EVENT_TYPES, "Event is already defined"
             EVENT_TYPES[name, vversion] = validator
-            return EventType(name, version)
+            return EventType(f"{name}-{version}")
 
         return wrapper
 
     @staticmethod
     def all() -> t.List[EventType]:
-        return [EventType(name, str(version)) for (name, version) in EVENT_TYPES.keys()]
+        return [EventType(f"{name}-{version}") for (name, version) in EVENT_TYPES.keys()]
 
     def validator(self, payload: t.Any) -> None:
         validator = EVENT_TYPES[self.name, self.version]
@@ -120,7 +114,7 @@ class Event:
 
         event = Event(
             id=id,
-            type=EventType(type, version),
+            type=EventType(f"{type}-{version}"),
             created_at=created_at,
             payload=payload,
         )
@@ -146,11 +140,11 @@ def handler_LegacyProfileLoaded(store, event):
     from dmt_graphql.store.types import Role
 
     profile = store.create_profile(
-        event.payload["user_id"],
+        int(event.payload["user_id"]),
         event.payload["discord_username"],
     )
 
-    profile.user_id = event.payload['user_id']
+    profile.user_id = int(event.payload['user_id'])
     profile.discord_username = event.payload['discord_username']
     profile.display_name = event.payload['display_name']
     profile.created = datetime.fromisoformat(event.payload['created'])
@@ -168,6 +162,13 @@ def handler_LegacyProfileLoaded(store, event):
     print(event)
 
 
+def handler_ActivityAlerted(store, event):
+    for user_id in event.payload["user_ids"]:
+        with store.profile(int(user_id)) as profile:
+            profile.last_seen = event.created_at
+            profile.defected = False
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -175,10 +176,14 @@ class EventStore:
         from dmt_graphql.store.mongodb import MongoDbDocumentStore
         self.store = MongoDbDocumentStore(db, configuration, mirror=True)
 
-    def push(self, event: Event) -> None:
-        event.validate()
+    def push(self, event_type: str, payload: t.Any) -> None:
+        event = Event.new(EventType(event_type), payload)
+        self.push_event(event)
+
+    def push_event(self, event: Event) -> None:
         handler = {
-            EventType("LegacyProfileLoaded", "1.0.0"): handler_LegacyProfileLoaded
+            EventType("LegacyProfileLoaded-1.0.0"): handler_LegacyProfileLoaded,
+            EventType("ActivityAlerted-1.0.0"): handler_ActivityAlerted,
 
         }[event.type]
         self.events.insert_one(event.to_dict())
@@ -202,3 +207,9 @@ def legacy_profile_loaded_1_0_0(payload: t.Any) -> None:
     assert all(isinstance(x, str) for x in payload["hanzi"])
     assert all(isinstance(x, str) for x in payload["mined_words"])
     assert isinstance(payload["defected"], bool)
+
+
+@EventType.register("ActivityAlerted", "1.0.0")
+def activity_alerted_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_ids"], list)
+    assert all(isinstance(x, str) for x in payload["user_ids"])
