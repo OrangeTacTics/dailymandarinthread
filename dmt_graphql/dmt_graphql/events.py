@@ -234,3 +234,60 @@ def rmb_transferred_1_0_0(payload: t.Any) -> None:
     assert payload["from_user_id"] != payload["to_user_id"]
     assert isinstance(payload["amount"], int)
     assert payload["amount"] > 0
+
+
+#@EventType.register("ComradeChangedName", "1.0.0")
+#def comrade_changed_name_1_0_0(payload: t.Any) -> None:
+#    pass
+
+#@EventType.register("AdminChangedComradeName", "1.0.0")
+#def admin_changed_comrade_name_1_0_0(payload: t.Any) -> None:
+#    pass
+
+#@EventType.register("ComradeJoined", "1.0.0")
+#def comrade_joined_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ComradeDefected", "1.0.0")
+#def comrade_defected_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ComradeHonored", "1.0.0")
+#def comrade_honored_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ComradeDishonored", "1.0.0")
+#def comrade_dishonored_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ServerBumped", "1.0.0")
+#def server_bumped_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ComradePromotedToParty", "1.0.0")
+#def comrade_promoted_to_party_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ComradeDemotedFromParty", "1.0.0")
+#def comrade_demoted_from_party_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("WordMined", "1.0.0")
+#def word_mined_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ExamsDisabled", "1.0.0")
+#def exams_disabled_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ExamsEnabled", "1.0.0")
+#def exams_enabled_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ExamStarted", "1.0.0")
+#def exam_started_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ExamEnded", "1.0.0")
+#def exam_ended_1_0_0(payload: t.Any) -> None:
+#    pass
