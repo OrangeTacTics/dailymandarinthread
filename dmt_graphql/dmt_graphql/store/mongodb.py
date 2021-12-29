@@ -2,11 +2,22 @@ from __future__ import annotations
 import typing as t
 import os
 from datetime import timezone, timedelta, datetime
+import base64
 
 import pymongo
 from bson.objectid import ObjectId
 
-from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question, DictEntry
+from .types import (
+    Profile,
+    Role,
+    Json,
+    UserId,
+    ServerSettings,
+    Exam,
+    Question,
+    DictEntry,
+    Emoji,
+)
 
 
 class MongoDbDocumentStore:
@@ -17,6 +28,7 @@ class MongoDbDocumentStore:
         self.server_settings = self.db["ServerSettings"]
         self.exams = self.db["Exams"]
         self.dict_entries = self.db["DictEntries"]
+        self.emojis = self.db["Emojis"]
 
     def profile(self, user_id: UserId) -> "OpenProfileContextManager":
         return OpenProfileContextManager(self, user_id)
@@ -135,6 +147,21 @@ class MongoDbDocumentStore:
         )
         return [dict_entry_from_json(doc) for doc in docs]
 
+    def create_emoji(self, user_id: UserId, name: str, image_data: bytes) -> Emoji:
+        now = datetime.now(timezone.utc)
+        emoji = Emoji(
+            user_id=user_id,
+            created=now,
+            name=name,
+            image_data_b64=base64.b64encode(image_data),
+        )
+        self.emojis.insert_one(emoji_to_json(emoji))
+        return emoji
+
+    def load_emoji(self, name: str) -> Emoji:
+        emoji_json = self.emojis.find_one({'name': name})
+        return emoji_from_json(emoji_json)
+
 
 def profile_to_json(profile: Profile) -> Json:
     roles = [role.value for role in profile.roles]
@@ -225,6 +252,26 @@ def dict_entry_from_json(dict_entry: Json) -> DictEntry:
         traditional=dict_entry["traditional"],
         pinyin=dict_entry["pinyin"],
         meanings=dict_entry["meanings"],
+    )
+
+
+# await create_custom_emoji(*, name, image, roles=None, reason=None)
+
+def emoji_to_json(emoji: Emoji) -> Json:
+    return {
+        'user_id': emoji.user_id,
+        'created': emoji.created,
+        'name': emoji.name,
+        'image_data_b64': emoji.image_data_b64,
+    }
+
+
+def emoji_from_json(emoji_json: Json) -> Emoji:
+    return Emoji(
+        user_id=emoji_json['user_id'],
+        created=emoji_json['created'],
+        name=emoji_json['name'],
+        image_data_b64=emoji_json['image_data_b64'],
     )
 
 

@@ -107,3 +107,11 @@ class DictEntry:
     traditional: str
     pinyin: str
     meanings: t.List[str]
+
+
+@dataclass
+class Emoji:
+    user_id: UserId
+    created: datetime
+    name: str
+    image_data_b64: str
