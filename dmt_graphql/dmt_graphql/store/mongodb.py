@@ -119,13 +119,6 @@ class MongoDbDocumentStore:
 
     def load_server_settings(self) -> ServerSettings:
         json_data = self.server_settings.find_one({})
-        if json_data is None:
-            json_data = {
-                "last_bump": datetime.now(timezone.utc),
-                "exams_disabled": False,
-                "admin_username": self.configuration.ADMIN_USERNAME,
-                "bot_username": self.configuration.BOT_USERNAME,
-            }
 
         return ServerSettings(
             last_bump=json_data["last_bump"].replace(tzinfo=timezone.utc),
@@ -141,7 +134,7 @@ class MongoDbDocumentStore:
             "admin_username": server_settings.admin_username,
             "bot_username": server_settings.bot_username,
         }
-        self.server_settings.replace_one({}, doc)
+        self.server_settings.replace_one({}, doc, upsert=True)
 
     def dict_entry_lookup(self, query: str) -> t.List[DictEntry]:
         docs = self.dict_entries.aggregate(

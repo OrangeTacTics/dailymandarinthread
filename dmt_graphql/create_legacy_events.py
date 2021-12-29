@@ -1,11 +1,12 @@
 import json
 import pprint
 import pymongo
-from dmt_graphql.events import Event, EventStore, EventType
 
+from dotenv import load_dotenv
+
+from dmt_graphql.events import Event, EventStore, EventType
 from dmt_graphql.store.mongodb import MongoDbDocumentStore, create_mongodb_client
 from dmt_graphql.config import Configuration
-from dotenv import load_dotenv
 
 
 def create_legacy_event(profile):
@@ -28,6 +29,18 @@ def create_legacy_event(profile):
     return event
 
 
+def create_legacy_server_settings(server_settings):
+    return Event.new(
+        EventType("LegacyServerSettingsLoaded-1.0.0"),
+        {
+            "last_bump": server_settings.last_bump.isoformat(),
+            "exams_disabled": server_settings.exams_disabled,
+            "admin_username": server_settings.admin_username,
+            "bot_username": server_settings.bot_username,
+        },
+    )
+
+
 def assert_mirror_equivalent(store, user_id):
     std_profile = store.db.Profiles.find_one({'user_id': user_id})
     mir_profile = store.db.mirror_Profiles.find_one({'user_id': user_id})
@@ -42,6 +55,9 @@ def main():
     db = create_mongodb_client(configuration)
     store = MongoDbDocumentStore(db, configuration)
     event_store = EventStore(db, configuration)
+
+    event = create_legacy_server_settings(store.load_server_settings())
+    event_store.push_event(event)
 
     for profile in store.get_all_profiles():
         print(profile.discord_username)

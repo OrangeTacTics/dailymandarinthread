@@ -11,6 +11,7 @@ from ulid import ULID
 import pymongo
 
 from dmt_graphql.config import Configuration
+from dmt_graphql.store.types import ServerSettings
 
 
 class EventValueError(Exception):
@@ -135,6 +136,15 @@ class Event:
     def __lt__(self, other):
         return (self.created_at, self.id) < (other.created_at, self.id)
 
+def handler_LegacyServerSettingsLoaded(store, event):
+    server_settings = ServerSettings(
+        last_bump=datetime.fromisoformat(event.payload['last_bump']),
+        exams_disabled=event.payload['exams_disabled'],
+        admin_username=event.payload['admin_username'],
+        bot_username=event.payload['bot_username'],
+    )
+    store.store_server_settings(server_settings)
+
 
 def handler_LegacyProfileLoaded(store, event):
     from dmt_graphql.store.types import Role
@@ -200,6 +210,7 @@ class EventStore:
 
     def push_event(self, event: Event) -> None:
         handler = {
+            EventType("LegacyServerSettingsLoaded-1.0.0"): handler_LegacyServerSettingsLoaded,
             EventType("LegacyProfileLoaded-1.0.0"): handler_LegacyProfileLoaded,
             EventType("ActivityAlerted-1.0.0"): handler_ActivityAlerted,
             EventType("RmbTransferred-1.0.0"): handler_RmbTransferred,
@@ -207,6 +218,20 @@ class EventStore:
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
+
+    def recent_events(self, count: int) -> t.List[Event]:
+        return list(self.events.aggregate([
+            {"$sort": {"id": -1}},
+            {"$limit": count},
+        ]))
+
+
+@EventType.register("LegacyServerSettingsLoaded", "1.0.0")
+def legacy_server_settings_loaded_1_0_0(payload: t.Any) -> None:
+    _ = datetime.fromisoformat(payload["last_bump"])
+    assert isinstance(payload["exams_disabled"], bool)
+    assert isinstance(payload["admin_username"], str)
+    assert isinstance(payload["bot_username"], str)
 
 
 @EventType.register("LegacyProfileLoaded", "1.0.0")
