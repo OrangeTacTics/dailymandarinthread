@@ -11,7 +11,7 @@ from dmt_graphql.config import Configuration
 
 
 class MongoDbDocumentStore:
-    def __init__(self, configuration: Configuration) -> None:
+    def __init__(self, configuration: Configuration, *, mirror: bool = False) -> None:
         self.configuration = configuration
         self.mongo_client = pymongo.MongoClient(
             host=configuration.MONGODB_URL,
@@ -21,10 +21,12 @@ class MongoDbDocumentStore:
         )
         self.db = self.mongo_client[configuration.MONGODB_DB]
 
-        self.profiles = self.db["Profiles"]
-        self.server_settings = self.db["ServerSettings"]
-        self.exams = self.db["Exams"]
-        self.dict_entries = self.db["DictEntries"]
+        prefix = 'mirror_' if mirror else ''
+
+        self.profiles = self.db[prefix + "Profiles"]
+        self.server_settings = self.db[prefix + "ServerSettings"]
+        self.exams = self.db[prefix + "Exams"]
+        self.dict_entries = self.db[prefix + "DictEntries"]
 
     def profile(self, user_id: UserId) -> "OpenProfileContextManager":
         return OpenProfileContextManager(self, user_id)

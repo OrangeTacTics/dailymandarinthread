@@ -12,6 +12,7 @@ import pymongo
 
 from dmt_graphql.config import Configuration
 
+
 class EventValueError(Exception):
     pass
 
@@ -141,6 +142,32 @@ class Event:
         return (self.created_at, self.id) < (other.created_at, self.id)
 
 
+def handler_LegacyProfileLoaded(store, event):
+    from dmt_graphql.store.types import Role
+
+    profile = store.create_profile(
+        event.payload["user_id"],
+        event.payload["discord_username"],
+    )
+
+    profile.user_id = event.payload['user_id']
+    profile.discord_username = event.payload['discord_username']
+    profile.display_name = event.payload['display_name']
+    profile.created = datetime.fromisoformat(event.payload['created'])
+    profile.last_seen = datetime.fromisoformat(event.payload['last_seen'])
+    profile.roles = [Role.from_str(role) for role in event.payload['roles']]
+    profile.credit = event.payload['credit']
+    profile.yuan = event.payload['yuan']
+    profile.hanzi = event.payload['hanzi']
+    profile.mined_words = event.payload['mined_words']
+    profile.defected = event.payload['defected']
+
+    store.store_profile(profile)
+
+    print(profile)
+    print(event)
+
+
 class EventStore:
     def __init__(self, configuration: Configuration) -> None:
         self.configuration = configuration
@@ -153,10 +180,17 @@ class EventStore:
         db = self.mongo_client[configuration.MONGODB_DB]
         self.events = db["Events"]
 
+        from dmt_graphql.store.mongodb import MongoDbDocumentStore
+        self.store = MongoDbDocumentStore(configuration, mirror=True)
+
     def push(self, event: Event) -> None:
         event.validate()
-        self.events.insert_one(event.to_dict())
+        handler = {
+            EventType("LegacyProfileLoaded", "1.0.0"): handler_LegacyProfileLoaded
 
+        }[event.type]
+        self.events.insert_one(event.to_dict())
+        handler(self.store, event)
 
 
 @EventType.register("LegacyProfileLoaded", "1.0.0")
@@ -164,8 +198,10 @@ def legacy_profile_loaded_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["user_id"], str)
     assert isinstance(payload["discord_username"], str)
     assert isinstance(payload["display_name"], str)
-    assert isinstance(payload["created"], datetime)
-    assert isinstance(payload["last_seen"], datetime)
+    assert isinstance(payload["created"], str)
+    _ = datetime.fromisoformat(payload["created"])
+    assert isinstance(payload["last_seen"], str)
+    _ = datetime.fromisoformat(payload["last_seen"])
     assert isinstance(payload["roles"], list)
     assert all(isinstance(x, str) for x in payload["roles"])
     assert isinstance(payload["credit"], int)
