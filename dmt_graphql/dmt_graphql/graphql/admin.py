@@ -208,8 +208,15 @@ class AdminMutation:
             )
 
     @s.field
-    async def set_last_bump(self, info) -> datetime:
+    async def bump(self, info, user_id: str) -> datetime:
         now = datetime.now(timezone.utc)
+
+        info.context.event_store.push(
+            "ServerBumped-1.0.0",
+            {
+                "user_id": user_id,
+            },
+        )
 
         server_settings = info.context.store.load_server_settings()
         server_settings.last_bump = now

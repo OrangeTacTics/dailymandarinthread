@@ -181,6 +181,12 @@ def handler_RmbTransferred(store, event):
         to_profile.yuan += amount
 
 
+def handler_ServerBumped(store, event):
+    server_settings = store.load_server_settings()
+    server_settings.last_bump = event.created_at
+    store.store_server_settings(server_settings)
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -197,6 +203,7 @@ class EventStore:
             EventType("LegacyProfileLoaded-1.0.0"): handler_LegacyProfileLoaded,
             EventType("ActivityAlerted-1.0.0"): handler_ActivityAlerted,
             EventType("RmbTransferred-1.0.0"): handler_RmbTransferred,
+            EventType("ServerBumped-1.0.0"): handler_ServerBumped,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -234,7 +241,12 @@ def rmb_transferred_1_0_0(payload: t.Any) -> None:
     assert payload["from_user_id"] != payload["to_user_id"]
     assert isinstance(payload["amount"], int)
     assert payload["amount"] > 0
+    assert payload["message"] is None or isinstance(payload["message"], str)
 
+
+@EventType.register("ServerBumped", "1.0.0")
+def server_bumped_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
 
 #@EventType.register("ComradeChangedName", "1.0.0")
 #def comrade_changed_name_1_0_0(payload: t.Any) -> None:
@@ -260,8 +272,12 @@ def rmb_transferred_1_0_0(payload: t.Any) -> None:
 #def comrade_dishonored_1_0_0(payload: t.Any) -> None:
 #    pass
 #
-#@EventType.register("ServerBumped", "1.0.0")
-#def server_bumped_1_0_0(payload: t.Any) -> None:
+#@EventType.register("ComradeJailed", "1.0.0")
+#def comrade_jailed_1_0_0(payload: t.Any) -> None:
+#    pass
+#
+#@EventType.register("ComradeUnjailed", "1.0.0")
+#def comrade_unjailed_1_0_0(payload: t.Any) -> None:
 #    pass
 #
 #@EventType.register("ComradePromotedToParty", "1.0.0")
