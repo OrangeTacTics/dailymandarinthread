@@ -169,6 +169,18 @@ def handler_ActivityAlerted(store, event):
             profile.defected = False
 
 
+def handler_RmbTransferred(store, event):
+    from_user_id = event.payload["from_user_id"]
+    to_user_id = event.payload["to_user_id"]
+    amount = event.payload["amount"]
+
+    with store.profile(int(from_user_id)) as from_profile:
+        from_profile.yuan -= amount
+
+    with store.profile(int(to_user_id)) as to_profile:
+        to_profile.yuan += amount
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -184,7 +196,7 @@ class EventStore:
         handler = {
             EventType("LegacyProfileLoaded-1.0.0"): handler_LegacyProfileLoaded,
             EventType("ActivityAlerted-1.0.0"): handler_ActivityAlerted,
-
+            EventType("RmbTransferred-1.0.0"): handler_RmbTransferred,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -213,3 +225,12 @@ def legacy_profile_loaded_1_0_0(payload: t.Any) -> None:
 def activity_alerted_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["user_ids"], list)
     assert all(isinstance(x, str) for x in payload["user_ids"])
+
+
+@EventType.register("RmbTransferred", "1.0.0")
+def rmb_transferred_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["from_user_id"], str)
+    assert isinstance(payload["to_user_id"], str)
+    assert payload["from_user_id"] != payload["to_user_id"]
+    assert isinstance(payload["amount"], int)
+    assert payload["amount"] > 0

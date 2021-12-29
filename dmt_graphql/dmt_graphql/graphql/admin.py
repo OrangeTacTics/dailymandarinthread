@@ -94,6 +94,15 @@ class AdminMutation:
     async def transfer(self, info, from_user_id: str, to_user_id: str, amount: int) -> bool:
         assert amount > 0
 
+        info.context.event_store.push(
+            "RmbTransferred-1.0.0",
+            {
+                "from_user_id": from_user_id,
+                "to_user_id": to_user_id,
+                "amount": amount,
+            },
+        )
+
         with info.context.store.profile(int(from_user_id)) as from_profile:
             assert amount <= from_profile.yuan, "Insufficient funds"
             from_profile.yuan -= amount
