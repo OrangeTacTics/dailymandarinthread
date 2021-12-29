@@ -254,6 +254,16 @@ class AdminMutation:
 
             profile.mined_words = sorted(new_words)
 
+            info.context.event_store.push(
+                "WordsMined-1.0.0",
+                {
+                    "user_id": user_id,
+                    "words": words,
+                    "remove": remove,
+                },
+            )
+
+
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field

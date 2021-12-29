@@ -267,6 +267,22 @@ def handler_ComradeDemotedFromParty(store, event):
         remove_role(profile, types.Role.Party)
 
 
+def handler_WordsMined(store, event):
+    user_id = event.payload["user_id"]
+    words = event.payload["words"]
+    remove = event.payload["remove"]
+
+    with store.profile(int(user_id)) as profile:
+        new_words = set(profile.mined_words)
+
+        if remove:
+            new_words = new_words.difference(set(words))
+        else:
+            new_words = new_words.union(set(words))
+
+        profile.mined_words = sorted(new_words)
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -294,6 +310,7 @@ class EventStore:
             EventType("ComradeDefected-1.0.0"): handler_ComradeDefected,
             EventType("ComradePromotedToParty-1.0.0"): handler_ComradePromotedToParty,
             EventType("ComradeDemotedFromParty-1.0.0"): handler_ComradeDemotedFromParty,
+            EventType("WordsMined-1.0.0"): handler_WordsMined,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -410,10 +427,14 @@ def comrade_demoted_from_party_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["user_id"], str)
 
 
-#@EventType.register("WordMined", "1.0.0")
-#def word_mined_1_0_0(payload: t.Any) -> None:
-#    pass
-#
+@EventType.register("WordsMined", "1.0.0")
+def word_mined_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+    assert isinstance(payload["words"], list)
+    assert all(isinstance(x, str) for x in payload["words"])
+    assert isinstance(payload["remove"], bool)
+
+
 #@EventType.register("ExamsDisabled", "1.0.0")
 #def exams_disabled_1_0_0(payload: t.Any) -> None:
 #    pass
