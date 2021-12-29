@@ -215,8 +215,20 @@ class AdminMutation:
         with info.context.store.profile(int(user_id)) as profile:
             if flag:
                 add_role(profile, types.Role.Party)
+                info.context.event_store.push(
+                    "ComradePromotedToParty-1.0.0",
+                    {
+                        "user_id": user_id,
+                    },
+                )
             else:
                 remove_role(profile, types.Role.Party)
+                info.context.event_store.push(
+                    "ComradeDemotedFromParty-1.0.0",
+                    {
+                        "user_id": user_id,
+                    },
+                )
 
         return await info.context.dataloaders.profile.load(user_id)
 

@@ -251,6 +251,22 @@ def handler_ComradeDefected(store, event):
         profile.defected = True
 
 
+def handler_ComradePromotedToParty(store, event):
+    from dmt_graphql.graphql.profile import add_role
+    import dmt_graphql.store.types as types
+    user_id = event.payload["user_id"]
+    with store.profile(int(user_id)) as profile:
+        add_role(profile, types.Role.Party)
+
+
+def handler_ComradeDemotedFromParty(store, event):
+    from dmt_graphql.graphql.profile import remove_role
+    import dmt_graphql.store.types as types
+    user_id = event.payload["user_id"]
+    with store.profile(int(user_id)) as profile:
+        remove_role(profile, types.Role.Party)
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -276,6 +292,8 @@ class EventStore:
             EventType("NameChanged-1.0.0"): handler_NameChanged,
             EventType("ComradeJoined-1.0.0"): handler_ComradeJoined,
             EventType("ComradeDefected-1.0.0"): handler_ComradeDefected,
+            EventType("ComradePromotedToParty-1.0.0"): handler_ComradePromotedToParty,
+            EventType("ComradeDemotedFromParty-1.0.0"): handler_ComradeDemotedFromParty,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -382,14 +400,16 @@ def comrade_joined_1_0_0(payload: t.Any) -> None:
 def comrade_defected_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["user_id"], str)
 
-#@EventType.register("ComradePromotedToParty", "1.0.0")
-#def comrade_promoted_to_party_1_0_0(payload: t.Any) -> None:
-#    pass
-#
-#@EventType.register("ComradeDemotedFromParty", "1.0.0")
-#def comrade_demoted_from_party_1_0_0(payload: t.Any) -> None:
-#    pass
-#
+@EventType.register("ComradePromotedToParty", "1.0.0")
+def comrade_promoted_to_party_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+
+
+@EventType.register("ComradeDemotedFromParty", "1.0.0")
+def comrade_demoted_from_party_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+
+
 #@EventType.register("WordMined", "1.0.0")
 #def word_mined_1_0_0(payload: t.Any) -> None:
 #    pass
