@@ -215,17 +215,40 @@ def handler_ComradeUnjailed(store, event):
             raise Exception("Not jailed")
 
 
+def handler_ComradeHonored(store, event):
+    user_id = event.payload["honoree_user_id"]
+    amount = event.payload["amount"]
+    with store.profile(int(user_id)) as profile:
+        profile.credit += amount
+
+
 def handler_ComradeDishonored(store, event):
     user_id = event.payload["honoree_user_id"]
     amount = event.payload["amount"]
     with store.profile(int(user_id)) as profile:
         profile.credit -= amount
 
-def handler_ComradeHonored(store, event):
-    user_id = event.payload["honoree_user_id"]
-    amount = event.payload["amount"]
-    with store.profile(int(user_id)) as profile:
-        profile.credit += amount
+
+def handler_NameChanged(store, event):
+    with store.profile(int(event.payload["user_id"])) as profile:
+        profile.display_name = event.payload["name"]
+
+
+def handler_ComradeJoined(store, event):
+    user_id = event.payload["user_id"]
+    discord_username = event.payload["discord_username"]
+
+    if not store.profile_exists(int(user_id)):
+        store.create_profile(int(user_id), discord_username)
+    else:
+        with info.context.store.profile(int(user_id)) as profile:
+            profile.defected = False
+
+
+def handler_ComradeDefected(store, event):
+    user_id = event.payload["user_id"]
+    with info.context.store.profile(int(user_id)) as profile:
+        profile.defected = True
 
 
 class EventStore:
@@ -250,6 +273,9 @@ class EventStore:
             EventType("ComradeUnjailed-1.0.0"): handler_ComradeUnjailed,
             EventType("ComradeHonored-1.0.0"): handler_ComradeHonored,
             EventType("ComradeDishonored-1.0.0"): handler_ComradeDishonored,
+            EventType("NameChanged-1.0.0"): handler_NameChanged,
+            EventType("ComradeJoined-1.0.0"): handler_ComradeJoined,
+            EventType("ComradeDefected-1.0.0"): handler_ComradeDefected,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -340,19 +366,22 @@ def comrade_dishonored_1_0_0(payload: t.Any) -> None:
     assert payload["reason"] is None or isinstance(payload["reason"], str)
 
 
-#@EventType.register("NameChanged", "1.0.0")
-#def comrade_changed_name_1_0_0(payload: t.Any) -> None:
-#    assert instance(payload["user_id"], str)
-#    assert instance(payload["changed_by_user_id"], str)
+@EventType.register("NameChanged", "1.0.0")
+def comrade_changed_name_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+    assert isinstance(payload["name"], str)
 
-#@EventType.register("ComradeJoined", "1.0.0")
-#def comrade_joined_1_0_0(payload: t.Any) -> None:
-#    pass
-#
-#@EventType.register("ComradeDefected", "1.0.0")
-#def comrade_defected_1_0_0(payload: t.Any) -> None:
-#    pass
-#
+
+@EventType.register("ComradeJoined", "1.0.0")
+def comrade_joined_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+    assert isinstance(payload["discord_username"], str)
+
+
+@EventType.register("ComradeDefected", "1.0.0")
+def comrade_defected_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+
 #@EventType.register("ComradePromotedToParty", "1.0.0")
 #def comrade_promoted_to_party_1_0_0(payload: t.Any) -> None:
 #    pass

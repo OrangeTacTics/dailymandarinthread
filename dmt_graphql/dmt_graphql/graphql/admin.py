@@ -192,6 +192,14 @@ class AdminMutation:
         assert len(name) < 32, "Name must be 32 characters or less."
         with info.context.store.profile(int(user_id)) as profile:
             profile.display_name = name
+            info.context.event_store.push(
+                "NameChanged-1.0.0",
+                {
+                    "user_id": user_id,
+                    "name": name,
+                },
+            )
+
 
         return await info.context.dataloaders.profile.load(user_id)
 

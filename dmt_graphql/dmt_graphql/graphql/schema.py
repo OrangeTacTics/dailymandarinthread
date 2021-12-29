@@ -81,6 +81,13 @@ class Mutation:
         me = await get_me(info)
         with info.context.store.profile(int(me.user_id)) as profile:
             profile.display_name = name
+            info.context.event_store.push(
+                "NameChanged-1.0.0",
+                {
+                    "user_id": me.user_id,
+                    "name": name,
+                },
+            )
 
         me.display_name = name
         return me
