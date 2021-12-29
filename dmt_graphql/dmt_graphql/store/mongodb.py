@@ -5,6 +5,7 @@ from datetime import timezone, timedelta, datetime
 import pymongo
 from bson.objectid import ObjectId
 
+from dmt_graphql.events import Event, EventType
 from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question, DictEntry
 from dmt_graphql.config import Configuration
 
@@ -14,9 +15,9 @@ class MongoDbDocumentStore:
         self.configuration = configuration
         self.mongo_client = pymongo.MongoClient(
             host=configuration.MONGODB_URL,
-            username=configuration.MONGODB_USER,
-            password=configuration.MONGODB_PASS,
-            tlsCAFile=configuration.MONGODB_CERT,
+#            username=configuration.MONGODB_USER,
+#            password=configuration.MONGODB_PASS,
+#            tlsCAFile=configuration.MONGODB_CERT,
         )
         self.db = self.mongo_client[configuration.MONGODB_DB]
 
