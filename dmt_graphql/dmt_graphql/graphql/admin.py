@@ -113,20 +113,47 @@ class AdminMutation:
         return True
 
     @s.field
-    async def jail(self, info, user_id: str) -> Profile:
-        with info.context.store.profile(int(user_id)) as profile:
+    async def jail(
+        self, info,
+        jailee_user_id: str,
+        jailer_user_id: str,
+        reason: str,
+    ) -> Profile:
+        with info.context.store.profile(int(jailee_user_id)) as profile:
             if not add_role(profile, types.Role.Jailed):
                 raise Exception("Already jailed")
 
-        return await info.context.dataloaders.profile.load(user_id)
+            info.context.event_store.push(
+                "ComradeJailed-1.0.0",
+                {
+                    "jailee_user_id": jailee_user_id,
+                    "jailer_user_id": jailer_user_id,
+                    "reason": reason,
+                },
+            )
+
+        return await info.context.dataloaders.profile.load(jailee_user_id)
 
     @s.field
-    async def unjail(self, info, user_id: str) -> Profile:
-        with info.context.store.profile(int(user_id)) as profile:
+    async def unjail(
+        self,
+        info,
+        jailee_user_id: str,
+        jailer_user_id: str,
+    ) -> Profile:
+        with info.context.store.profile(int(jailee_user_id)) as profile:
             if not remove_role(profile, types.Role.Jailed):
                 raise Exception("Not jailed")
 
-        return await info.context.dataloaders.profile.load(user_id)
+            info.context.event_store.push(
+                "ComradeUnjailed-1.0.0",
+                {
+                    "jailee_user_id": jailee_user_id,
+                    "jailer_user_id": jailer_user_id,
+                },
+            )
+
+        return await info.context.dataloaders.profile.load(jailee_user_id)
 
     @s.field
     async def set_name(self, info, user_id: str, name: str) -> Profile:

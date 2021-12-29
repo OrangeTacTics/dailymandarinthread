@@ -197,6 +197,24 @@ def handler_ServerBumped(store, event):
     store.store_server_settings(server_settings)
 
 
+def handler_ComradeJailed(store, event):
+    from dmt_graphql.graphql.profile import add_role
+    import dmt_graphql.store.types as types
+    jailee_user_id = event.payload["jailee_user_id"]
+    with store.profile(int(jailee_user_id)) as profile:
+        if not add_role(profile, types.Role.Jailed):
+            raise Exception("Already jailed")
+
+
+def handler_ComradeUnjailed(store, event):
+    from dmt_graphql.graphql.profile import remove_role
+    import dmt_graphql.store.types as types
+    jailee_user_id = event.payload["jailee_user_id"]
+    with store.profile(int(jailee_user_id)) as profile:
+        if not remove_role(profile, types.Role.Jailed):
+            raise Exception("Not jailed")
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -215,6 +233,8 @@ class EventStore:
             EventType("ActivityAlerted-1.0.0"): handler_ActivityAlerted,
             EventType("RmbTransferred-1.0.0"): handler_RmbTransferred,
             EventType("ServerBumped-1.0.0"): handler_ServerBumped,
+            EventType("ComradeJailed-1.0.0"): handler_ComradeJailed,
+            EventType("ComradeUnjailed-1.0.0"): handler_ComradeUnjailed,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -273,6 +293,20 @@ def rmb_transferred_1_0_0(payload: t.Any) -> None:
 def server_bumped_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["user_id"], str)
 
+
+@EventType.register("ComradeJailed", "1.0.0")
+def comrade_jailed_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["jailee_user_id"], str)
+    assert isinstance(payload["jailer_user_id"], str)
+    assert payload["reason"] is None or isinstance(payload["reason"], str)
+
+
+@EventType.register("ComradeUnjailed", "1.0.0")
+def comrade_unjailed_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["jailee_user_id"], str)
+    assert isinstance(payload["jailer_user_id"], str)
+
+
 #@EventType.register("ComradeChangedName", "1.0.0")
 #def comrade_changed_name_1_0_0(payload: t.Any) -> None:
 #    pass
@@ -295,14 +329,6 @@ def server_bumped_1_0_0(payload: t.Any) -> None:
 #
 #@EventType.register("ComradeDishonored", "1.0.0")
 #def comrade_dishonored_1_0_0(payload: t.Any) -> None:
-#    pass
-#
-#@EventType.register("ComradeJailed", "1.0.0")
-#def comrade_jailed_1_0_0(payload: t.Any) -> None:
-#    pass
-#
-#@EventType.register("ComradeUnjailed", "1.0.0")
-#def comrade_unjailed_1_0_0(payload: t.Any) -> None:
 #    pass
 #
 #@EventType.register("ComradePromotedToParty", "1.0.0")
