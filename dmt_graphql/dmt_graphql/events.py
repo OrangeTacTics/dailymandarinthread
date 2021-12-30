@@ -287,6 +287,32 @@ def handler_WordsMined(store, event):
         profile.mined_words = sorted(new_words)
 
 
+def handler_ExamStarted(store, event):
+    pass
+
+
+def handler_ExamEnded(store, event):
+    user_id = event.payload["user_id"]
+    exam_name = event.payload["exam_name"]
+    #  passed = event.payload["passed"]
+    #  score = event.payload["score"]
+
+    hsk_level = {
+        "hsk1": 1,
+        "hsk2": 2,
+        "hsk3": 3,
+        "hsk4": 4,
+        "hsk5": 5,
+        "hsk6": 6,
+    }.get(exam_name)
+
+    from dmt_graphql.graphql.profile import set_hsk
+
+    if hsk_level is not None:
+        with store.profile(int(user_id)) as profile:
+            set_hsk(profile, hsk_level)
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -316,6 +342,8 @@ class EventStore:
             EventType("ComradePromotedToParty-1.0.0"): handler_ComradePromotedToParty,
             EventType("ComradeDemotedFromParty-1.0.0"): handler_ComradeDemotedFromParty,
             EventType("WordsMined-1.0.0"): handler_WordsMined,
+            EventType("ExamStarted-1.0.0"): handler_ExamStarted,
+            EventType("ExamEnded-1.0.0"): handler_ExamEnded,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -445,6 +473,20 @@ def word_mined_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["remove"], bool)
 
 
+@EventType.register("ExamStarted", "1.0.0")
+def exam_started_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+    assert isinstance(payload["exam_name"], str)
+
+
+@EventType.register("ExamEnded", "1.0.0")
+def exam_ended_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+    assert isinstance(payload["exam_name"], str)
+    assert isinstance(payload["passed"], bool)
+    assert isinstance(payload["score"], float)
+
+
 # @EventType.register("ExamsDisabled", "1.0.0")
 # def exams_disabled_1_0_0(payload: t.Any) -> None:
 #    pass
@@ -453,10 +495,5 @@ def word_mined_1_0_0(payload: t.Any) -> None:
 # def exams_enabled_1_0_0(payload: t.Any) -> None:
 #    pass
 #
-# @EventType.register("ExamStarted", "1.0.0")
-# def exam_started_1_0_0(payload: t.Any) -> None:
-#    pass
+
 #
-# @EventType.register("ExamEnded", "1.0.0")
-# def exam_ended_1_0_0(payload: t.Any) -> None:
-#    pass

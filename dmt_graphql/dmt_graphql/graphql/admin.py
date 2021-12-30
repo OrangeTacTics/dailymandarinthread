@@ -203,6 +203,37 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
+    async def exam_start(self, info, user_id: str, exam_name: str) -> bool:
+        info.context.event_store.push(
+            "ExamStarted-1.0.0",
+            {
+                "user_id": user_id,
+                "exam_name": exam_name,
+            },
+        )
+        return True
+
+    @s.field
+    async def exam_end(
+        self,
+        info,
+        user_id: str,
+        exam_name: str,
+        passed: bool,
+        score: float,
+    ) -> bool:
+        info.context.event_store.push(
+            "ExamEnded-1.0.0",
+            {
+                "user_id": user_id,
+                "exam_name": exam_name,
+                "passed": passed,
+                "score": score,
+            },
+        )
+        return True
+
+    @s.field
     async def set_hsk(self, info, user_id: str, hsk: t.Optional[int]) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
             set_hsk(profile, hsk)

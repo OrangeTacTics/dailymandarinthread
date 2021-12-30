@@ -9,6 +9,8 @@ type AdminMutation {
   jail(jaileeUserId: String!, jailerUserId: String!, reason: String!): Profile!
   unjail(jaileeUserId: String!, jailerUserId: String!): Profile!
   setName(userId: String!, name: String!): Profile!
+  examStart(userId: String!, examName: String!): Boolean!
+  examEnd(userId: String!, examName: String!, passed: Boolean!, score: Float!): Boolean!
   setHsk(userId: String!, hsk: Int): Profile!
   setParty(userId: String!, flag: Boolean! = true): Profile!
   setLearner(userId: String!, flag: Boolean! = true): Profile!
