@@ -17,6 +17,7 @@ class Configuration:
     @staticmethod
     def from_environment() -> Configuration:
         from dotenv import load_dotenv
+
         load_dotenv()
 
         return Configuration(

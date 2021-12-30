@@ -7,7 +7,6 @@ from .exam import Exam, ExamMutation, NewExam
 from .profile import Profile, add_role, remove_role, set_hsk
 from .server_settings import ServerSettings
 import dmt_graphql.store.types as types
-from dmt_graphql.events import EventType, Event
 
 
 @s.type
@@ -105,7 +104,7 @@ class AdminMutation:
         honorer_user_id: str,
         amount: int,
         reason: t.Optional[str],
-) -> Profile:
+    ) -> Profile:
         assert amount > 0
 
         with info.context.store.profile(int(honoree_user_id)) as profile:
@@ -146,7 +145,8 @@ class AdminMutation:
 
     @s.field
     async def jail(
-        self, info,
+        self,
+        info,
         jailee_user_id: str,
         jailer_user_id: str,
         reason: str,
@@ -199,7 +199,6 @@ class AdminMutation:
                     "name": name,
                 },
             )
-
 
         return await info.context.dataloaders.profile.load(user_id)
 
@@ -262,7 +261,6 @@ class AdminMutation:
                     "remove": remove,
                 },
             )
-
 
         return await info.context.dataloaders.profile.load(user_id)
 

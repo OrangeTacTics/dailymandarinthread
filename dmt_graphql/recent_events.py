@@ -1,3 +1,4 @@
+# flake8: noqa
 import json
 import pprint
 import pymongo
@@ -16,11 +17,11 @@ def main():
     event_store = EventStore(db, configuration)
 
     for event in event_store.recent_events(10):
-        del event['_id']
-        del event['version']
-        del event['created_at']
+        del event["_id"]
+        del event["version"]
+        del event["created_at"]
         print(event)
+
 
 if __name__ == "__main__":
     main()
-

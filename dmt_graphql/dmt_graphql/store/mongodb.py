@@ -6,7 +6,6 @@ import pymongo
 from pymongo.database import Database
 from bson.objectid import ObjectId
 
-from dmt_graphql.events import Event, EventType
 from .types import Profile, Role, Json, UserId, ServerSettings, Exam, Question, DictEntry
 from dmt_graphql.config import Configuration
 
@@ -14,9 +13,9 @@ from dmt_graphql.config import Configuration
 def create_mongodb_client(configuration: Configuration) -> Database:
     mongo_client = pymongo.MongoClient(
         host=configuration.MONGODB_URL,
-#        username=configuration.MONGODB_USER,
-#        password=configuration.MONGODB_PASS,
-#        tlsCAFile=configuration.MONGODB_CERT,
+        #        username=configuration.MONGODB_USER,
+        #        password=configuration.MONGODB_PASS,
+        #        tlsCAFile=configuration.MONGODB_CERT,
     )
     return mongo_client[configuration.MONGODB_DB]
 
@@ -26,7 +25,7 @@ class MongoDbDocumentStore:
         self.configuration = configuration
         self.db = db
 
-        prefix = 'mirror_' if mirror else ''
+        prefix = "mirror_" if mirror else ""
 
         self.profiles = self.db[prefix + "Profiles"]
         self.server_settings = self.db[prefix + "ServerSettings"]

@@ -3,11 +3,11 @@ type AdminMutation {
   alertActivity(userIds: [String!]!): DateTime!
   setDefected(userId: String!, flag: Boolean! = true): DateTime!
   syncUsers(userIds: [String!]!): Boolean!
-  honor(userId: String!, amount: Int!): Profile!
-  dishonor(userId: String!, amount: Int!): Profile!
+  honor(honoreeUserId: String!, honorerUserId: String!, amount: Int!, reason: String): Profile!
+  dishonor(honoreeUserId: String!, honorerUserId: String!, amount: Int!, reason: String): Profile!
   transfer(fromUserId: String!, toUserId: String!, amount: Int!): Boolean!
-  jail(userId: String!): Profile!
-  unjail(userId: String!): Profile!
+  jail(jaileeUserId: String!, jailerUserId: String!, reason: String!): Profile!
+  unjail(jaileeUserId: String!, jailerUserId: String!): Profile!
   setName(userId: String!, name: String!): Profile!
   setHsk(userId: String!, hsk: Int): Profile!
   setParty(userId: String!, flag: Boolean! = true): Profile!
@@ -15,7 +15,7 @@ type AdminMutation {
   mine(userId: String!, words: [String!]!, remove: Boolean! = false): Profile!
   createExam(exam: NewExam!): Exam
   editExam(examName: String!): ExamMutation
-  setLastBump: DateTime!
+  bump(userId: String!): DateTime!
   disableExams(flag: Boolean! = true): Boolean!
 }
 

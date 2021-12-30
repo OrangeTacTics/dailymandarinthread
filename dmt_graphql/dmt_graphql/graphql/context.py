@@ -40,7 +40,8 @@ class Context:
             return False
 
         return (
-            self.discord_username == self.configuration.ADMIN_USERNAME or self.discord_username == self.configuration.BOT_USERNAME
+            self.discord_username == self.configuration.ADMIN_USERNAME
+            or self.discord_username == self.configuration.BOT_USERNAME
         )
 
 

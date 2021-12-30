@@ -8,7 +8,6 @@ from datetime import timezone
 
 from semantic_version import Version
 from ulid import ULID
-import pymongo
 
 from dmt_graphql.config import Configuration
 from dmt_graphql.store.types import ServerSettings
@@ -26,7 +25,7 @@ class EventType:
     version: Version
 
     def __init__(self, name_version: str) -> None:
-        name, version = name_version.split('-')
+        name, version = name_version.split("-")
         vversion = Version(version)
         assert (name, vversion) in EVENT_TYPES, f"No such event: {name}-{version}"
         self.name = name
@@ -39,10 +38,10 @@ class EventType:
         return hash((self.name, str(self.version)))
 
     def __str__(self) -> str:
-        return f'{self.name}-{self.version}'
+        return f"{self.name}-{self.version}"
 
     def __repr__(self) -> str:
-        return f'{self.name}-{self.version}'
+        return f"{self.name}-{self.version}"
 
     @staticmethod
     def register(name: str, version: str) -> t.Callable[[t.Any], EventType]:
@@ -120,7 +119,7 @@ class Event:
             payload=payload,
         )
 
-        #event.validate()
+        # event.validate()
         return event
 
     def validate(self) -> None:
@@ -136,12 +135,13 @@ class Event:
     def __lt__(self, other):
         return (self.created_at, self.id) < (other.created_at, self.id)
 
+
 def handler_LegacyServerSettingsLoaded(store, event):
     server_settings = ServerSettings(
-        last_bump=datetime.fromisoformat(event.payload['last_bump']),
-        exams_disabled=event.payload['exams_disabled'],
-        admin_username=event.payload['admin_username'],
-        bot_username=event.payload['bot_username'],
+        last_bump=datetime.fromisoformat(event.payload["last_bump"]),
+        exams_disabled=event.payload["exams_disabled"],
+        admin_username=event.payload["admin_username"],
+        bot_username=event.payload["bot_username"],
     )
     store.store_server_settings(server_settings)
 
@@ -154,17 +154,17 @@ def handler_LegacyProfileLoaded(store, event):
         event.payload["discord_username"],
     )
 
-    profile.user_id = int(event.payload['user_id'])
-    profile.discord_username = event.payload['discord_username']
-    profile.display_name = event.payload['display_name']
-    profile.created = datetime.fromisoformat(event.payload['created'])
-    profile.last_seen = datetime.fromisoformat(event.payload['last_seen'])
-    profile.roles = [Role.from_str(role) for role in event.payload['roles']]
-    profile.credit = event.payload['credit']
-    profile.yuan = event.payload['yuan']
-    profile.hanzi = event.payload['hanzi']
-    profile.mined_words = event.payload['mined_words']
-    profile.defected = event.payload['defected']
+    profile.user_id = int(event.payload["user_id"])
+    profile.discord_username = event.payload["discord_username"]
+    profile.display_name = event.payload["display_name"]
+    profile.created = datetime.fromisoformat(event.payload["created"])
+    profile.last_seen = datetime.fromisoformat(event.payload["last_seen"])
+    profile.roles = [Role.from_str(role) for role in event.payload["roles"]]
+    profile.credit = event.payload["credit"]
+    profile.yuan = event.payload["yuan"]
+    profile.hanzi = event.payload["hanzi"]
+    profile.mined_words = event.payload["mined_words"]
+    profile.defected = event.payload["defected"]
 
     store.store_profile(profile)
 
@@ -200,6 +200,7 @@ def handler_ServerBumped(store, event):
 def handler_ComradeJailed(store, event):
     from dmt_graphql.graphql.profile import add_role
     import dmt_graphql.store.types as types
+
     jailee_user_id = event.payload["jailee_user_id"]
     with store.profile(int(jailee_user_id)) as profile:
         if not add_role(profile, types.Role.Jailed):
@@ -209,6 +210,7 @@ def handler_ComradeJailed(store, event):
 def handler_ComradeUnjailed(store, event):
     from dmt_graphql.graphql.profile import remove_role
     import dmt_graphql.store.types as types
+
     jailee_user_id = event.payload["jailee_user_id"]
     with store.profile(int(jailee_user_id)) as profile:
         if not remove_role(profile, types.Role.Jailed):
@@ -241,19 +243,20 @@ def handler_ComradeJoined(store, event):
     if not store.profile_exists(int(user_id)):
         store.create_profile(int(user_id), discord_username)
     else:
-        with info.context.store.profile(int(user_id)) as profile:
+        with store.profile(int(user_id)) as profile:
             profile.defected = False
 
 
 def handler_ComradeDefected(store, event):
     user_id = event.payload["user_id"]
-    with info.context.store.profile(int(user_id)) as profile:
+    with store.profile(int(user_id)) as profile:
         profile.defected = True
 
 
 def handler_ComradePromotedToParty(store, event):
     from dmt_graphql.graphql.profile import add_role
     import dmt_graphql.store.types as types
+
     user_id = event.payload["user_id"]
     with store.profile(int(user_id)) as profile:
         add_role(profile, types.Role.Party)
@@ -262,6 +265,7 @@ def handler_ComradePromotedToParty(store, event):
 def handler_ComradeDemotedFromParty(store, event):
     from dmt_graphql.graphql.profile import remove_role
     import dmt_graphql.store.types as types
+
     user_id = event.payload["user_id"]
     with store.profile(int(user_id)) as profile:
         remove_role(profile, types.Role.Party)
@@ -288,6 +292,7 @@ class EventStore:
         self.events = db["Events"]
 
         from dmt_graphql.store.mongodb import MongoDbDocumentStore
+
         self.store = MongoDbDocumentStore(db, configuration, mirror=True)
 
     def push(self, event_type: str, payload: t.Any) -> None:
@@ -316,10 +321,14 @@ class EventStore:
         handler(self.store, event)
 
     def recent_events(self, count: int) -> t.List[Event]:
-        return list(self.events.aggregate([
-            {"$sort": {"id": -1}},
-            {"$limit": count},
-        ]))
+        return list(
+            self.events.aggregate(
+                [
+                    {"$sort": {"id": -1}},
+                    {"$limit": count},
+                ]
+            )
+        )
 
 
 @EventType.register("LegacyServerSettingsLoaded", "1.0.0")
@@ -417,6 +426,7 @@ def comrade_joined_1_0_0(payload: t.Any) -> None:
 def comrade_defected_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["user_id"], str)
 
+
 @EventType.register("ComradePromotedToParty", "1.0.0")
 def comrade_promoted_to_party_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["user_id"], str)
@@ -435,18 +445,18 @@ def word_mined_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["remove"], bool)
 
 
-#@EventType.register("ExamsDisabled", "1.0.0")
-#def exams_disabled_1_0_0(payload: t.Any) -> None:
+# @EventType.register("ExamsDisabled", "1.0.0")
+# def exams_disabled_1_0_0(payload: t.Any) -> None:
 #    pass
 #
-#@EventType.register("ExamsEnabled", "1.0.0")
-#def exams_enabled_1_0_0(payload: t.Any) -> None:
+# @EventType.register("ExamsEnabled", "1.0.0")
+# def exams_enabled_1_0_0(payload: t.Any) -> None:
 #    pass
 #
-#@EventType.register("ExamStarted", "1.0.0")
-#def exam_started_1_0_0(payload: t.Any) -> None:
+# @EventType.register("ExamStarted", "1.0.0")
+# def exam_started_1_0_0(payload: t.Any) -> None:
 #    pass
 #
-#@EventType.register("ExamEnded", "1.0.0")
-#def exam_ended_1_0_0(payload: t.Any) -> None:
+# @EventType.register("ExamEnded", "1.0.0")
+# def exam_ended_1_0_0(payload: t.Any) -> None:
 #    pass
