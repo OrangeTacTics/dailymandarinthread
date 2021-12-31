@@ -141,6 +141,7 @@ class ExamCog(ChairmanMaoCog):
 
         active_exam = self.create_active_exam(ctx.author, ctx.channel, exam)
         self.active_exam = active_exam
+        await self.server_exam_start(active_exam)
         await self.send_exam_start_embed(active_exam)
 
     @exam.command(name="practice")
@@ -310,9 +311,36 @@ class ExamCog(ChairmanMaoCog):
 
     async def finish(self, active_exam: ActiveExam) -> None:
         print("Seed:", active_exam.seed)
+        await self.server_exam_end(active_exam)
         await self.show_results(active_exam)
         await self.mine_correct_answers(active_exam)
         await self.reward(active_exam)
+
+    async def server_exam_start(self, active_exam: ActiveExam) -> None:
+        # if is not practice
+        if not active_exam.examiner.fail_on_timeout:
+            user_id = active_exam.member.id
+            exam_name = active_exam.exam.name
+
+            await self.api.exam_start(
+                user_id,
+                exam_name,
+            )
+
+    async def server_exam_end(self, active_exam: ActiveExam) -> None:
+        # if is not practice
+        if not active_exam.examiner.fail_on_timeout:
+            user_id = active_exam.member.id
+            exam_name = active_exam.exam.name
+            passed = active_exam.examiner.passed()
+            score = active_exam.examiner.score()
+
+            await self.api.exam_end(
+                user_id,
+                exam_name,
+                passed,
+                score,
+            )
 
     async def show_results(self, active_exam: ActiveExam) -> None:
         lines = []

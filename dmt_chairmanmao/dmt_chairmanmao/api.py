@@ -174,6 +174,36 @@ class Api:
             },
         )
 
+    async def exam_start(
+        self,
+        user_id: UserId,
+        exam_name: str,
+    ) -> None:
+        await self.client.named_query(
+            "examStart",
+            {
+                "userId": str(user_id),
+                "examName": exam_name,
+            },
+        )
+
+    async def exam_end(
+        self,
+        user_id: UserId,
+        exam_name: str,
+        passed: bool,
+        score: float,
+    ) -> None:
+        await self.client.named_query(
+            "examEnd",
+            {
+                "userId": str(user_id),
+                "examName": exam_name,
+                "passed": passed,
+                "score": score,
+            },
+        )
+
     async def set_defected(self, user_id: UserId, flag: bool) -> None:
         await self.client.named_query(
             "setDefected",

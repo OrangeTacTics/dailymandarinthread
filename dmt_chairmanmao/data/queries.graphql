@@ -302,3 +302,31 @@ mutation editExamAnswers(
         }
     }
 }
+
+mutation examStart(
+    $userId: String!,
+    $examName: String!,
+) {
+    admin {
+        examStart(
+            userId: $userId,
+            examName: $examName,
+        )
+    }
+}
+
+mutation examEnd(
+    $userId: String!,
+    $examName: String!,
+    $passed: Boolean!,
+    $score: Float!,
+) {
+    admin {
+        examEnd(
+            userId: $userId,
+            examName: $examName,
+            passed: $passed,
+            score: $score,
+        )
+    }
+}
