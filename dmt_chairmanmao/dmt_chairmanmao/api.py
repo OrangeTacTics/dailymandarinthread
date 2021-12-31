@@ -104,22 +104,38 @@ class Api:
         )
         return results["profile"]["userId"]
 
-    async def honor(self, user_id: UserId, credit: int) -> int:
+    async def honor(
+        self,
+        user_id: UserId,
+        honorer_user_id: UserId,
+        credit: int,
+        reason: str,
+    ) -> int:
         results = await self.client.named_query(
             "honor",
             {
                 "userId": str(user_id),
+                "honorerUserId": str(honorer_user_id),
                 "credit": credit,
+                "reason": reason,
             },
         )
         return results["admin"]["honor"]["credit"]
 
-    async def dishonor(self, user_id: UserId, credit: int) -> int:
+    async def dishonor(
+        self,
+        user_id: UserId,
+        honorer_user_id: UserId,
+        credit: int,
+        reason: str,
+    ) -> int:
         results = await self.client.named_query(
             "dishonor",
             {
                 "userId": str(user_id),
+                "honorerUserId": str(honorer_user_id),
                 "credit": credit,
+                "reason": reason,
             },
         )
         return results["admin"]["dishonor"]["credit"]

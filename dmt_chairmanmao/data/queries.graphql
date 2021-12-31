@@ -28,17 +28,37 @@ query getUserId($discordUsername: String!) {
     }
 }
 
-mutation honor($userId: String!, $credit: Int!) {
+mutation honor(
+    $userId: String!,
+    $credit: Int!,
+    $honorerUserId: String!,
+    $reason: String!,
+) {
     admin {
-        honor(userId: $userId, amount: $credit) {
+        honor(
+            honoreeUserId: $userId,
+            honorerUserId: $honorerUserId,
+            amount: $credit,
+            reason: $reason,
+        ) {
             credit
         }
     }
 }
 
-mutation dishonor($userId: String!, $credit: Int!) {
+mutation dishonor(
+    $userId: String!,
+    $credit: Int!,
+    $honorerUserId: String!,
+    $reason: String!,
+) {
     admin {
-        dishonor(userId: $userId, amount: $credit) {
+        dishonor(
+            honoreeUserId: $userId,
+            honorerUserId: $honorerUserId,
+            amount: $credit,
+            reason: $reason,
+    ) {
             credit
         }
     }
