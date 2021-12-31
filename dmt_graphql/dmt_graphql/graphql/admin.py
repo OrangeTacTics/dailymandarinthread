@@ -265,6 +265,13 @@ class AdminMutation:
     @s.field
     async def set_learner(self, info, user_id: str, flag: bool = True) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
+            info.context.event_store.push(
+                "LearnerSet-1.0.0",
+                {
+                    "user_id": user_id,
+                    "is_learner": flag,
+                },
+            )
             if flag:
                 add_role(profile, types.Role.Learner)
             else:

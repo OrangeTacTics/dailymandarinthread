@@ -59,7 +59,7 @@ class BumpCog(ChairmanMaoCog):
                     return
 
                 self.has_notified = False
-                self.last_bump = await self.api.set_last_bump()
+                self.last_bump = await self.api.bump(message.author.id)
                 await self.api.transfer(
                     await self.chairmanmao.chairmanmao_user_id(),
                     message.author.id,

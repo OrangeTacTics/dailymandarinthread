@@ -313,6 +313,20 @@ def handler_ExamEnded(store, event):
             set_hsk(profile, hsk_level)
 
 
+def handler_LearnerSet(store, event):
+    from dmt_graphql.graphql.profile import add_role
+    import dmt_graphql.store.types as types
+
+    user_id = payload["user_id"]
+    is_learner = payload["is_learner"]
+
+    with store.profile(int(user_id)) as profile:
+        if flag:
+            add_role(profile, types.Role.Learner)
+        else:
+            remove_role(profile, types.Role.Learner)
+
+
 class EventStore:
     def __init__(self, db, configuration: Configuration) -> None:
         self.events = db["Events"]
@@ -344,6 +358,7 @@ class EventStore:
             EventType("WordsMined-1.0.0"): handler_WordsMined,
             EventType("ExamStarted-1.0.0"): handler_ExamStarted,
             EventType("ExamEnded-1.0.0"): handler_ExamEnded,
+            EventType("LearnerSet-1.0.0"): handler_LearnerSet,
         }[event.type]
         self.events.insert_one(event.to_dict())
         handler(self.store, event)
@@ -487,13 +502,17 @@ def exam_ended_1_0_0(payload: t.Any) -> None:
     assert isinstance(payload["score"], float)
 
 
+@EventType.register("LearnerSet", "1.0.0")
+def learner_set_1_0_0(payload: t.Any) -> None:
+    assert isinstance(payload["user_id"], str)
+    assert isinstance(payload["is_learner"], bool)
+
+
 # @EventType.register("ExamsDisabled", "1.0.0")
 # def exams_disabled_1_0_0(payload: t.Any) -> None:
 #    pass
-#
+
+
 # @EventType.register("ExamsEnabled", "1.0.0")
 # def exams_enabled_1_0_0(payload: t.Any) -> None:
 #    pass
-#
-
-#

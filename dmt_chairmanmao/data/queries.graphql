@@ -193,9 +193,9 @@ query lastBump {
     }
 }
 
-mutation setLastBump {
+mutation setLastBump($userId: String!) {
     admin {
-        setLastBump
+        bump(userId: $userId}
     }
 }
 

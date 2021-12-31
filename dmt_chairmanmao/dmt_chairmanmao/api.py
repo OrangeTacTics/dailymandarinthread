@@ -314,9 +314,12 @@ class Api:
         )
         return datetime.fromisoformat(results["admin"]["serverSettings"]["lastBump"])
 
-    async def set_last_bump(self) -> datetime:
+    async def bump(self, user_id: UserId) -> datetime:
         results = await self.client.named_query(
             "setLastBump",
+            {
+                "userId": user_id,
+            },
         )
         return datetime.fromisoformat(results["admin"]["setLastBump"])
 
