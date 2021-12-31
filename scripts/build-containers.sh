@@ -6,8 +6,6 @@ REGISTRY=${1:-"localhost"}
 DOCKER_BIN=${DOCKER_BIN:-"docker"}
 TAG=${TAG:-"local"}
 
-eval $(minikube docker-env)
-
 $DOCKER_BIN build \
     -t $REGISTRY/dmt-chairmanmao:$TAG \
     -f dmt_chairmanmao/Dockerfile \
