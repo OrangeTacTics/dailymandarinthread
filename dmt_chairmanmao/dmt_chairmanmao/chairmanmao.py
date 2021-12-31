@@ -64,13 +64,18 @@ class ChairmanMao:
         self.draw_manager = DrawManager(file_manager)
         self.fourchan_manager = FourChanManager(file_manager)
 
-    async def chairmanmao_user_id(self) -> int:
-        return await self.api.get_user_id(self.configuration.BOT_USERNAME)
-
     async def load_constants(self, guild: discord.Guild) -> None:
         assert self.constants_cache is None
-        bot_username, admin_username = await self.api.get_bot_and_admin_usernames()
-        self.constants_cache = DiscordConstants.load(guild, bot_username, admin_username)
+        self.constants_cache = DiscordConstants.load(guild)
+
+    async def bot_user_id(self) -> int:
+        return self._get_user_id(self.configuration.BOT_USERNAME)
+
+    def _get_user_id(self, username: str) -> int:
+        name, discriminator = username.split('#')
+        constants = self.constants()
+        member = discord.utils.get(constants.guild.members, name=name, discriminator=discriminator)
+        return member.id
 
     def constants(self) -> DiscordConstants:
         assert self.constants_cache is not None

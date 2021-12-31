@@ -18,6 +18,8 @@ class SyncCog(ChairmanMaoCog):
 
         self.loop_incremental_member_update.start()
         # self.loop_full_member_update.start()
+        constants = self.chairmanmao.constants()
+        await constants.tiananmen_channel.send("ChairmanMao is online.")
 
     @tasks.loop(seconds=1)
     async def loop_incremental_member_update(self):

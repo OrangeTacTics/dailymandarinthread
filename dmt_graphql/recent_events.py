@@ -1,4 +1,5 @@
 # flake8: noqa
+import time
 import json
 import pprint
 import pymongo
@@ -16,11 +17,25 @@ def main():
     store = MongoDbDocumentStore(db, configuration)
     event_store = EventStore(db, configuration)
 
-    for event in event_store.recent_events(10):
-        del event["_id"]
-        del event["version"]
-        del event["created_at"]
-        print(event)
+    seen_ids = set()
+
+    try:
+        while True:
+            for event in reversed(event_store.recent_events(100)):
+                del event["_id"]
+                del event["version"]
+                del event["created_at"]
+
+                if event["id"] not in seen_ids:
+                    seen_ids.add(event["id"])
+                    pprint.pprint(event)
+                    print()
+                    #print(event["id"])
+
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == "__main__":

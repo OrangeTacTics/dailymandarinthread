@@ -346,10 +346,10 @@ class Api:
         results = await self.client.named_query(
             "setLastBump",
             {
-                "userId": user_id,
+                "userId": str(user_id),
             },
         )
-        return datetime.fromisoformat(results["admin"]["setLastBump"])
+        return datetime.fromisoformat(results["admin"]["bump"])
 
     async def lookup_word(self, word: str) -> t.List[DictEntry]:
         results = await self.client.named_query(

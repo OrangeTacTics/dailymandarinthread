@@ -314,14 +314,14 @@ def handler_ExamEnded(store, event):
 
 
 def handler_LearnerSet(store, event):
-    from dmt_graphql.graphql.profile import add_role
+    from dmt_graphql.graphql.profile import add_role, remove_role
     import dmt_graphql.store.types as types
 
-    user_id = payload["user_id"]
-    is_learner = payload["is_learner"]
+    user_id = event.payload["user_id"]
+    is_learner = event.payload["is_learner"]
 
     with store.profile(int(user_id)) as profile:
-        if flag:
+        if is_learner:
             add_role(profile, types.Role.Learner)
         else:
             remove_role(profile, types.Role.Learner)

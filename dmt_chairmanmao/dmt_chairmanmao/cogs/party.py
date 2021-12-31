@@ -45,7 +45,7 @@ class PartyCog(ChairmanMaoCog):
             )
 
         await constants.apologies_channel.send(embed=embed)
-        await self.api.dishonor(member.id, constants.bot_user_id, 25, f"Jailed: {reason}")
+        await self.api.dishonor(member.id, await self.chairmanmao.bot_user_id(), 25, f"Jailed: {reason}")
 
     @commands.command(name="unjail")
     @commands.has_role("共产党员")

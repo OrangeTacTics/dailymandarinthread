@@ -42,7 +42,7 @@ class TiananmenCog(ChairmanMaoCog):
             and message.channel != constants.apologies_channel
         ):
             if is_infraction(message):
-                await self.api.jail(message.author.id, constants.bot_user_id, "Improper Message: {message.content}")
+                await self.api.jail(message.author.id, await self.chairmanmao.bot_user_id(), "Improper Message: {message.content}")
                 self.chairmanmao.queue_member_update(message.author.id)
                 self.logger.info("Jailed new user for infraction")
 

@@ -32,7 +32,7 @@ mutation honor(
     $userId: String!,
     $credit: Int!,
     $honorerUserId: String!,
-    $reason: String!,
+    $reason: String,
 ) {
     admin {
         honor(
@@ -115,7 +115,7 @@ mutation setDefected($userId: String!, $flag: Boolean!) {
 mutation jail(
     $userId: String!,
     $jailerUserId: String!,
-    reason: String!,
+    $reason: String!,
 ) {
     admin {
         jail(
@@ -238,7 +238,7 @@ query getBotAndAdminUsernames {
 
 mutation setLastBump($userId: String!) {
     admin {
-        bump(userId: $userId}
+        bump(userId: $userId)
     }
 }
 
