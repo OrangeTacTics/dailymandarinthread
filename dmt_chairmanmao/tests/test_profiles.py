@@ -61,14 +61,14 @@ async def test_transfer_yuan(three_user_db, api):
     assert await api.yuan(tactics_user_id) == 10
 
 
-@pytest.mark.asyncio
-async def test_honor_dishonor(three_user_db, api):
-    user_id = 182370676877819904
-    assert await api.social_credit(user_id) == 1000
-    await api.honor(user_id, 10)
-    assert await api.social_credit(user_id) == 1010
-    await api.dishonor(user_id, 15)
-    assert await api.social_credit(user_id) == 995
+#@pytest.mark.asyncio
+#async def test_honor_dishonor(three_user_db, api):
+#    user_id = 182370676877819904
+#    assert await api.social_credit(user_id) == 1000
+#    await api.honor(user_id, 10)
+#    assert await api.social_credit(user_id) == 1010
+#    await api.dishonor(user_id, 15)
+#    assert await api.social_credit(user_id) == 995
 
 
 @pytest.mark.asyncio

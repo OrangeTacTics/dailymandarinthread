@@ -45,7 +45,7 @@ class PartyCog(ChairmanMaoCog):
             )
 
         await constants.apologies_channel.send(embed=embed)
-        await self.api.dishonor(member.id, 25)
+        await self.api.dishonor(member.id, constants.bot_user_id, 25, f"Jailed: {reason}")
 
     @commands.command(name="unjail")
     @commands.has_role("共产党员")
@@ -88,7 +88,7 @@ class PartyCog(ChairmanMaoCog):
                 await ctx.send("Party members can only honor 25 social credit at a time.")
                 return
 
-        await self.api.honor(member.id, credit)
+        await self.api.honor(member.id, ctx.author.id, credit, reason or '')
 
         self.chairmanmao.queue_member_update(member.id)
 
@@ -131,7 +131,7 @@ class PartyCog(ChairmanMaoCog):
                 await ctx.send("Party members can only dishonor 25 social credit at a time.")
                 return
 
-        await self.api.dishonor(member.id, credit)
+        await self.api.dishonor(member.id, ctx.author.id, credit, reason or '')
 
         self.chairmanmao.queue_member_update(member.id)
 

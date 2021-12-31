@@ -67,9 +67,10 @@ class ChairmanMao:
     async def chairmanmao_user_id(self) -> int:
         return await self.api.get_user_id(self.configuration.BOT_USERNAME)
 
-    def load_constants(self, guild: discord.Guild) -> None:
+    async def load_constants(self, guild: discord.Guild) -> None:
         assert self.constants_cache is None
-        self.constants_cache = DiscordConstants.load(guild)
+        bot_username, admin_username = await self.api.get_bot_and_admin_usernames()
+        self.constants_cache = DiscordConstants.load(guild, bot_username, admin_username)
 
     def constants(self) -> DiscordConstants:
         assert self.constants_cache is not None

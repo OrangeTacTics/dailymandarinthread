@@ -45,31 +45,33 @@ class SocialCreditCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
+        constants = self.chairmanmao.constants()
         user_to_credit = reaction.message.author
         if user_to_credit != user:
             emoji = reaction.emoji
 
             if self.is_based_emoji(emoji):
-                credit = await self.api.honor(user_to_credit.id, 1)
+                credit = await self.api.honor(user_to_credit.id, constants.bot_user_id, 1, "Based Emoji reaction")
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.logger.info(f"User reaction added to {user_to_credit}: {credit}")
             elif self.is_cringe_emoji(emoji):
-                credit = await self.api.dishonor(user_to_credit.id, 1)
+                credit = await self.api.dishonor(user_to_credit.id, constants.bot_user_id, 1, "Cringe Emoji reaction")
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.logger.info(f"User reaction added to {user_to_credit}: {credit}")
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
+        constants = self.chairmanmao.constants()
         user_to_credit = reaction.message.author
         if user_to_credit != user:
             emoji = reaction.emoji
 
             if self.is_based_emoji(emoji):
-                credit = await self.api.dishonor(user_to_credit.id, 1)
+                credit = await self.api.dishonor(user_to_credit.id, constants.bot_user_id, 1, "Based Emoji reaction removed")
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.logger.info(f"User reaction added to {user_to_credit}: {credit}")
             elif self.is_cringe_emoji(emoji):
-                credit = await self.api.honor(user_to_credit.id, 1)
+                credit = await self.api.honor(user_to_credit.id, constants.bot_user_id, 1, "Cringe Emoji reaction removed")
                 self.chairmanmao.queue_member_update(user_to_credit.id)
                 self.logger.info(f"User reaction added to {user_to_credit}: {credit}")
 

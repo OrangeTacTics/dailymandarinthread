@@ -8,6 +8,9 @@ import discord
 class DiscordConstants:
     guild: discord.Guild
 
+    bot_user_id: int
+    admin_user_id: int
+
     comrade_role: discord.Role
     ccp_role: discord.Role
     jailed_role: discord.Role
@@ -31,13 +34,19 @@ class DiscordConstants:
     diesofcringe_emoji: discord.Emoji
     rightist_emoji: discord.Emoji
     refold_emoji: discord.Emoji
-    celx_emoji: discord.Emoji
-    rchineselanguage_emoji: discord.Emoji
+#    celx_emoji: discord.Emoji
+#    rchineselanguage_emoji: discord.Emoji
 
     @staticmethod
-    def load(guild) -> DiscordConstants:
+    def load(
+        guild,
+        bot_username: str,
+        admin_username: str,
+    ) -> DiscordConstants:
         return DiscordConstants(
             guild=guild,
+            bot_user_id=DiscordConstants._get_user_id(guild, bot_username),
+            admin_user_id=DiscordConstants._get_user_id(guild, admin_username),
             comrade_role=DiscordConstants._load_role(guild, "同志"),
             ccp_role=DiscordConstants._load_role(guild, "共产党员"),
             jailed_role=DiscordConstants._load_role(guild, "劳改"),
@@ -59,9 +68,14 @@ class DiscordConstants:
             diesofcringe_emoji=DiscordConstants._load_emoji(guild, "diesofcringe"),
             rightist_emoji=DiscordConstants._load_emoji(guild, "rightist"),
             refold_emoji=DiscordConstants._load_emoji(guild, "refold"),
-            celx_emoji=DiscordConstants._load_emoji(guild, "celx"),
-            rchineselanguage_emoji=DiscordConstants._load_emoji(guild, "rchineselanguage"),
+#            celx_emoji=DiscordConstants._load_emoji(guild, "celx"),
+#            rchineselanguage_emoji=DiscordConstants._load_emoji(guild, "rchineselanguage"),
         )
+
+    @staticmethod
+    def _get_user_id(guild: discord.Guild, username: str) -> int:
+        member = discord.utils.get(guild.members, name=username)
+        return member.id
 
     @staticmethod
     def _load_role(guild: discord.Guild, name: str) -> discord.Role:

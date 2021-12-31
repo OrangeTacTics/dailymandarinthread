@@ -14,7 +14,7 @@ class SyncCog(ChairmanMaoCog):
     async def on_ready(self):
         self.logger.info("SyncCog")
         guild = self.client.guilds[0]
-        self.chairmanmao.load_constants(guild)
+        await self.chairmanmao.load_constants(guild)
 
         self.loop_incremental_member_update.start()
         # self.loop_full_member_update.start()
