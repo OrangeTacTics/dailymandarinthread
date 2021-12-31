@@ -34,13 +34,22 @@ class AdminQuery:
 @s.type
 class AdminMutation:
     @s.field
-    async def register(self, info, user_id: str, discord_username: str) -> Profile:
+    async def register(
+        self,
+        info,
+        user_id: str,
+        discord_username: str,
+    ) -> Profile:
         assert info.context.is_admin, "Must be admin"
         info.context.store.create_profile(int(user_id), discord_username)
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def alert_activity(self, info, user_ids: t.List[str]) -> datetime:
+    async def alert_activity(
+        self,
+        info,
+        user_ids: t.List[str],
+    ) -> datetime:
         now = datetime.now(timezone.utc).replace(microsecond=0)
         info.context.event_store.push(
             "ActivityAlerted-1.0.0",
@@ -122,7 +131,13 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(honoree_user_id)
 
     @s.field
-    async def transfer(self, info, from_user_id: str, to_user_id: str, amount: int) -> bool:
+    async def transfer(
+        self,
+        info,
+        from_user_id: str,
+        to_user_id: str,
+        amount: int,
+    ) -> bool:
         assert amount > 0
 
         info.context.event_store.push(
@@ -188,7 +203,12 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(jailee_user_id)
 
     @s.field
-    async def set_name(self, info, user_id: str, name: str) -> Profile:
+    async def set_name(
+        self,
+        info,
+        user_id: str,
+        name: str,
+    ) -> Profile:
         assert len(name) < 32, "Name must be 32 characters or less."
         with info.context.store.profile(int(user_id)) as profile:
             profile.display_name = name
@@ -263,7 +283,12 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def set_learner(self, info, user_id: str, flag: bool = True) -> Profile:
+    async def set_learner(
+        self,
+        info,
+        user_id: str,
+        flag: bool = True,
+    ) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
             info.context.event_store.push(
                 "LearnerSet-1.0.0",
@@ -280,7 +305,13 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def mine(self, info, user_id: str, words: t.List[str], remove: bool = False) -> Profile:
+    async def mine(
+        self,
+        info,
+        user_id: str,
+        words: t.List[str],
+        remove: bool = False,
+    ) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
             new_words = set(profile.mined_words)
 
@@ -303,7 +334,11 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def create_exam(self, info, exam: NewExam) -> t.Optional[Exam]:
+    async def create_exam(
+        self,
+        info,
+        exam: NewExam,
+    ) -> t.Optional[Exam]:
         exam_doc = types.Exam(
             name=exam.name,
             num_questions=exam.num_questions,
@@ -323,7 +358,11 @@ class AdminMutation:
         return await info.context.dataloaders.exam.load(exam.name)
 
     @s.field
-    async def edit_exam(self, info, exam_name: str) -> t.Optional[ExamMutation]:
+    async def edit_exam(
+        self,
+        info,
+        exam_name: str,
+    ) -> t.Optional[ExamMutation]:
         existing_exam = await info.context.dataloaders.exam.load(exam_name)
         if existing_exam is None:
             return None
@@ -333,7 +372,11 @@ class AdminMutation:
             )
 
     @s.field
-    async def bump(self, info, user_id: str) -> datetime:
+    async def bump(
+        self,
+        info,
+        user_id: str,
+    ) -> datetime:
         now = datetime.now(timezone.utc)
 
         info.context.event_store.push(
@@ -349,7 +392,11 @@ class AdminMutation:
         return now
 
     @s.field
-    async def disable_exams(self, info, flag: bool = True) -> bool:
+    async def disable_exams(
+        self,
+        info,
+        flag: bool = True,
+    ) -> bool:
         server_settings = info.context.store.load_server_settings()
         server_settings.exams_disabled = flag
         info.context.store.store_server_settings(server_settings)
