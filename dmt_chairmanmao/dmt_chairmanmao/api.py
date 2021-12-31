@@ -371,6 +371,16 @@ class Api:
             },
         )
 
+    async def get_bot_and_admin_usernames(self) -> t.Tuple[str, str]:
+        results = await self.client.named_query(
+            "getBotAndAdminUsernames",
+        )
+        server_settings = results["admin"]["serverSettings"]
+        return (
+            server_settings["botUsername"],
+            server_settings["adminUsername"],
+        )
+
     async def get_exam_names(self) -> t.List[str]:
         results = await self.client.named_query(
             "getExamNames",

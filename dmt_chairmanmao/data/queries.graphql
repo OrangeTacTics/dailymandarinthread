@@ -213,6 +213,15 @@ query lastBump {
     }
 }
 
+query getBotAndAdminUsernames {
+    admin {
+        serverSettings {
+            botUsername
+            adminUsername
+        }
+    }
+}
+
 mutation setLastBump($userId: String!) {
     admin {
         bump(userId: $userId}
