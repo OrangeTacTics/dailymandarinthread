@@ -112,17 +112,31 @@ mutation setDefected($userId: String!, $flag: Boolean!) {
     }
 }
 
-mutation jail($userId: String!) {
+mutation jail(
+    $userId: String!,
+    $jailerUserId: String!,
+    reason: String!,
+) {
     admin {
-        jail(userId: $userId) {
+        jail(
+            jaileeUserId: $userId,
+            jailerUserId: $jailerUserId,
+            reason: $reason,
+        ) {
             userId
         }
     }
 }
 
-mutation unjail($userId: String!) {
+mutation unjail(
+    $userId: String!,
+    $jailerUserId: String!,
+) {
     admin {
-        unjail(userId: $userId) {
+        unjail(
+            jaileeUserId: $userId,
+            jailerUserId: $jailerUserId,
+        ) {
             userId
         }
     }

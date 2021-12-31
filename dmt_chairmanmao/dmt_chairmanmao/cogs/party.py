@@ -21,7 +21,7 @@ class PartyCog(ChairmanMaoCog):
     @commands.command(name="jail")
     @commands.has_role("共产党员")
     async def cmd_jail(self, ctx, member: commands.MemberConverter, *, reason: t.Optional[str] = None):
-        await self.api.jail(member.id)
+        await self.api.jail(member.id, ctx.author.id, reason or '')
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()
@@ -50,7 +50,7 @@ class PartyCog(ChairmanMaoCog):
     @commands.command(name="unjail")
     @commands.has_role("共产党员")
     async def cmd_unjail(self, ctx, member: commands.MemberConverter):
-        await self.api.unjail(member.id)
+        await self.api.unjail(member.id, ctx.author.id)
         username = self.chairmanmao.member_to_username(member)
         self.chairmanmao.queue_member_update(member.id)
         constants = self.chairmanmao.constants()

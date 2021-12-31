@@ -192,19 +192,31 @@ class Api:
         )
         return datetime.fromisoformat(results["profile"]["lastSeen"])
 
-    async def jail(self, user_id: UserId) -> None:
+    async def jail(
+        self,
+        user_id: UserId,
+        jailer_user_id: UserId,
+        reason: str,
+    ) -> None:
         await self.client.named_query(
             "jail",
             {
                 "userId": str(user_id),
+                "jailerUserId": str(jailer_user_id),
+                "reason": reason,
             },
         )
 
-    async def unjail(self, user_id: UserId) -> None:
+    async def unjail(
+        self,
+        user_id: UserId,
+        jailer_user_id: UserId,
+    ) -> None:
         await self.client.named_query(
             "unjail",
             {
                 "userId": str(user_id),
+                "jailerUserId": str(jailer_user_id),
             },
         )
 
