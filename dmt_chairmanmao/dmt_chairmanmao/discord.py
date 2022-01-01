@@ -31,8 +31,6 @@ class DiscordConstants:
     diesofcringe_emoji: discord.Emoji
     rightist_emoji: discord.Emoji
     refold_emoji: discord.Emoji
-#    celx_emoji: discord.Emoji
-#    rchineselanguage_emoji: discord.Emoji
 
     @staticmethod
     def load(guild) -> DiscordConstants:
@@ -59,8 +57,6 @@ class DiscordConstants:
             diesofcringe_emoji=DiscordConstants._load_emoji(guild, "diesofcringe"),
             rightist_emoji=DiscordConstants._load_emoji(guild, "rightist"),
             refold_emoji=DiscordConstants._load_emoji(guild, "refold"),
-#            celx_emoji=DiscordConstants._load_emoji(guild, "celx"),
-#            rchineselanguage_emoji=DiscordConstants._load_emoji(guild, "rchineselanguage"),
         )
 
     @staticmethod
