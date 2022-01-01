@@ -2,7 +2,7 @@
 
 set -xe
 
-REGISTRY=${1:-"localhost"}
+REGISTRY=${REGISTRY:-"localhost"}
 DOCKER_BIN=${DOCKER_BIN:-"docker"}
 TAG=${TAG:-"local"}
 
