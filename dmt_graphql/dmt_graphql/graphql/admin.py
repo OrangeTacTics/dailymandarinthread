@@ -34,17 +34,6 @@ class AdminQuery:
 @s.type
 class AdminMutation:
     @s.field
-    async def register(
-        self,
-        info,
-        user_id: str,
-        discord_username: str,
-    ) -> Profile:
-        assert info.context.is_admin, "Must be admin"
-        info.context.store.create_profile(int(user_id), discord_username)
-        return await info.context.dataloaders.profile.load(user_id)
-
-    @s.field
     async def alert_activity(
         self,
         info,
@@ -63,22 +52,6 @@ class AdminMutation:
                 profile.defected = False
 
         return now
-
-    @s.field
-    async def set_defected(self, info, user_id: str, flag: bool = True) -> datetime:
-        now = datetime.now(timezone.utc).replace(microsecond=0)
-        with info.context.store.profile(int(user_id)) as profile:
-            profile.defected = flag
-
-        return now
-
-    @s.field
-    async def sync_users(self, info, user_ids: t.List[str]) -> bool:
-        for profile in info.context.store.get_all_profiles():
-            with info.context.store.profile(int(profile.user_id)) as p:
-                p.defected = str(profile.user_id) not in user_ids
-
-        return True
 
     @s.field
     async def honor(
@@ -166,18 +139,17 @@ class AdminMutation:
         jailer_user_id: str,
         reason: str,
     ) -> Profile:
+        info.context.event_store.push(
+            "ComradeJailed-1.0.0",
+            {
+                "jailee_user_id": jailee_user_id,
+                "jailer_user_id": jailer_user_id,
+                "reason": reason,
+            },
+        )
         with info.context.store.profile(int(jailee_user_id)) as profile:
             if not add_role(profile, types.Role.Jailed):
-                raise Exception("Already jailed")
-
-            info.context.event_store.push(
-                "ComradeJailed-1.0.0",
-                {
-                    "jailee_user_id": jailee_user_id,
-                    "jailer_user_id": jailer_user_id,
-                    "reason": reason,
-                },
-            )
+                return await info.context.dataloaders.profile.load(jailee_user_id)
 
         return await info.context.dataloaders.profile.load(jailee_user_id)
 
@@ -190,7 +162,7 @@ class AdminMutation:
     ) -> Profile:
         with info.context.store.profile(int(jailee_user_id)) as profile:
             if not remove_role(profile, types.Role.Jailed):
-                raise Exception("Not jailed")
+                return await info.context.dataloaders.profile.load(jailee_user_id)
 
             info.context.event_store.push(
                 "ComradeUnjailed-1.0.0",
@@ -401,3 +373,33 @@ class AdminMutation:
         server_settings.exams_disabled = flag
         info.context.store.store_server_settings(server_settings)
         return flag
+
+    @s.field
+    async def comrade_joined(self, info, user_id: str, discord_username: str, ) -> Profile:
+        info.context.event_store.push(
+            "ComradeJoined-1.0.0",
+            {
+                "user_id": user_id,
+                "discord_username": discord_username,
+            },
+        )
+        if not info.context.store.profile_exists(int(user_id)):
+            info.context.store.create_profile(int(user_id), discord_username)
+
+        with info.context.store.profile(int(user_id)) as profile:
+            profile.defected = False
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
+    async def comrade_defected(self, info, user_id: str, ) -> Profile:
+        with info.context.store.profile(int(user_id)) as profile:
+            profile.defected = True
+            info.context.event_store.push(
+                "ComradeDefected-1.0.0",
+                {
+                    "user_id": user_id,
+                },
+            )
+
+        return await info.context.dataloaders.profile.load(user_id)

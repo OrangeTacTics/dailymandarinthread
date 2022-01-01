@@ -41,9 +41,11 @@ class ActivityCog(ChairmanMaoCog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        await self.api.set_defected(member.id, False)
-        self.api.activity_queue.add(member.id)
+        await self.api.comrade_joined(member.id, member.name + '#' + member.discriminator)
+        self.activity_queue.add(member.id)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        await self.api.set_defected(member.id, True)
+        bot_user_id = await self.chairmanmao.bot_user_id()
+        await self.api.comrade_defected(member.id)
+        await self.api.jail(member.id, bot_user_id, "Defected.")

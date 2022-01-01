@@ -100,18 +100,6 @@ query lastSeen($userId: String!) {
     }
 }
 
-mutation syncUsers($userIds: [String!]!) {
-    admin {
-        syncUsers(userIds: $userIds)
-    }
-}
-
-mutation setDefected($userId: String!, $flag: Boolean!) {
-    admin {
-        setDefected(userId: $userId, flag: $flag)
-    }
-}
-
 mutation jail(
     $userId: String!,
     $jailerUserId: String!,
@@ -328,5 +316,35 @@ mutation examEnd(
             passed: $passed,
             score: $score,
         )
+    }
+}
+
+mutation comradeJoined(
+    $userId: String!,
+    $discordUsername: String!,
+) {
+    admin {
+        comradeJoined(
+            userId: $userId,
+            discordUsername: $discordUsername,
+        ) {
+            userId
+            roles
+            defected
+        }
+    }
+}
+
+mutation comradeDefected(
+    $userId: String!,
+) {
+    admin {
+        comradeDefected(
+            userId: $userId,
+        ) {
+            userId
+            roles
+            defected
+        }
     }
 }

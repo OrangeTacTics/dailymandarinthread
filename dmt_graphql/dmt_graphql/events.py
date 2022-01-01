@@ -203,8 +203,7 @@ def handler_ComradeJailed(store, event):
 
     jailee_user_id = event.payload["jailee_user_id"]
     with store.profile(int(jailee_user_id)) as profile:
-        if not add_role(profile, types.Role.Jailed):
-            raise Exception("Already jailed")
+        add_role(profile, types.Role.Jailed)
 
 
 def handler_ComradeUnjailed(store, event):

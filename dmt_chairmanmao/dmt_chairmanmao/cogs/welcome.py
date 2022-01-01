@@ -80,7 +80,6 @@ class WelcomeCog(ChairmanMaoCog):
         username = self.chairmanmao.member_to_username(member)
         self.logger.info(f"User left: {username}. Member ID: {member.id}.")
         constants = self.chairmanmao.constants()
-        await self.api.jail(member.id, await self.chairmanmao.bot_user_id(), "Defected.")
 
         embed = discord.Embed(
             title="A Comrade has defected!",

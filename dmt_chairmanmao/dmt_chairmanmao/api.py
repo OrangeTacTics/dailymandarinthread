@@ -87,11 +87,20 @@ class Api:
             hsk_level=profile["hsk"],
         )
 
-    async def sync_users(self, user_ids: t.List[UserId]) -> None:
+    async def comrade_joined(self, user_id: UserId, discord_username: str,) -> None:
         await self.client.named_query(
-            "syncUsers",
+            "comradeJoined",
             {
-                "userIds": user_ids,
+                "userId": str(user_id),
+                "discordUsername": discord_username,
+            },
+        )
+
+    async def comrade_defected(self, user_id: UserId,) -> None:
+        await self.client.named_query(
+            "comradeDefected",
+            {
+                "userId": str(user_id),
             },
         )
 
@@ -201,15 +210,6 @@ class Api:
                 "examName": exam_name,
                 "passed": passed,
                 "score": score,
-            },
-        )
-
-    async def set_defected(self, user_id: UserId, flag: bool) -> None:
-        await self.client.named_query(
-            "setDefected",
-            {
-                "userId": str(user_id),
-                "flag": flag,
             },
         )
 
