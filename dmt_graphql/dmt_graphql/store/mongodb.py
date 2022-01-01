@@ -13,9 +13,9 @@ from dmt_graphql.config import Configuration
 def create_mongodb_client(configuration: Configuration) -> Database:
     mongo_client = pymongo.MongoClient(
         host=configuration.MONGODB_URL,
-        #        username=configuration.MONGODB_USER,
-        #        password=configuration.MONGODB_PASS,
-        #        tlsCAFile=configuration.MONGODB_CERT,
+        username=configuration.MONGODB_USER,
+        password=configuration.MONGODB_PASS,
+        tlsCAFile=configuration.MONGODB_CERT,
     )
     return mongo_client[configuration.MONGODB_DB]
 
