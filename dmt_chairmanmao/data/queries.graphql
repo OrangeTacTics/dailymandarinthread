@@ -176,12 +176,13 @@ query yuan($userId: String!) {
     }
 }
 
-mutation transfer($fromUserId: String!, $toUserId: String!, $amount: Int!) {
+mutation transfer($fromUserId: String!, $toUserId: String!, $amount: Int!, $message: String) {
     admin {
         transfer(
             fromUserId: $fromUserId,
             toUserId: $toUserId,
             amount: $amount,
+            message: $message,
         )
     }
 }

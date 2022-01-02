@@ -110,6 +110,7 @@ class AdminMutation:
         from_user_id: str,
         to_user_id: str,
         amount: int,
+        message: t.Optional[str] = None,
     ) -> bool:
         assert amount > 0
 
@@ -119,6 +120,7 @@ class AdminMutation:
                 "from_user_id": from_user_id,
                 "to_user_id": to_user_id,
                 "amount": amount,
+                "message": message,
             },
         )
 
