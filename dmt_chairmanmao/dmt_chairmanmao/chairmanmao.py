@@ -30,8 +30,6 @@ from dmt_chairmanmao.cogs.exam import ExamCog
 from dmt_chairmanmao.cogs.moderation import ModerationCog
 from dmt_chairmanmao.cogs.tiananmen import TiananmenCog
 
-# from dmt_chairmanmao.cogs.invites import InvitesCog
-
 
 ################################################################################
 # Logging
@@ -114,7 +112,6 @@ class ChairmanMao:
         client.add_cog(ExamCog(client, self))
         client.add_cog(ModerationCog(client, self))
         client.add_cog(TiananmenCog(client, self))
-        # client.add_cog(InvitesCog(client, self))
 
         DISCORD_TOKEN = self.configuration.DISCORD_TOKEN
         client.run(DISCORD_TOKEN)
