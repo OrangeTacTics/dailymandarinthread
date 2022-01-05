@@ -38,14 +38,3 @@ class ActivityCog(ChairmanMaoCog):
             if constants.comrade_role in message.author.roles:
                 if not message.author.bot:
                     self.activity_queue.add(message.author.id)
-
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        await self.api.comrade_joined(member.id, member.name + '#' + member.discriminator)
-        self.activity_queue.add(member.id)
-
-    @commands.Cog.listener()
-    async def on_member_remove(self, member):
-        bot_user_id = await self.chairmanmao.bot_user_id()
-        await self.api.comrade_defected(member.id)
-        await self.api.jail(member.id, bot_user_id, "Defected.")
