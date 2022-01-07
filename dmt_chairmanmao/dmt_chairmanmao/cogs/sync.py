@@ -32,7 +32,7 @@ class SyncCog(ChairmanMaoCog):
         self.logger.info("Full member update complete")
 
     @commands.command(name="sync")
-    @commands.is_owner()
+#    @commands.is_owner()
     async def cmd_sync(self, ctx, member: commands.MemberConverter):
         self.chairmanmao.queue_member_update(member.id)
         await ctx.send("Sync complete")
