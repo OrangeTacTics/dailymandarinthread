@@ -1,6 +1,9 @@
 package main
 
 import (
+    "path/filepath"
+    "encoding/base64"
+    "io/ioutil"
     "time"
     "log"
     "os"
@@ -16,6 +19,8 @@ import (
 )
 
 type UserId = string
+type EmojiId = string
+type EmojiName = string
 
 type SyncBot struct {
     displayNames map[UserId]string
@@ -49,11 +54,13 @@ func New() *SyncBot {
         log.Println("ChairmanMao is online")
     })
 
+    guildId := os.Getenv("GUILD_ID")
+
     return &SyncBot {
         displayNames: make(map[UserId]string),
         session: discord,
         redis: redis,
-        guildId: "929462140727861269",
+        guildId: guildId,
         ctx: context.Background(),
     }
 }
@@ -66,7 +73,6 @@ func (bot *SyncBot) reloadFromRedis() {
     }
 
     for _, key := range keys {
-        fmt.Println(key)
         userId := strings.Split(key, ":")[2]
         displayName, err := bot.redis.Get(key).Result()
 
@@ -75,6 +81,64 @@ func (bot *SyncBot) reloadFromRedis() {
         }
 
         bot.displayNames[userId] = displayName
+    }
+}
+
+func bytesToUriString(data []byte) string {
+    return "data:image/png;base64," + base64.StdEncoding.EncodeToString(data)
+}
+
+func (bot *SyncBot) uploadEmoji(emojiName EmojiName) {
+    data, err := ioutil.ReadFile("emojis/" + emojiName + ".png")
+    if err != nil {
+        panic(err)
+    }
+
+    var roles []string = nil
+    fmt.Println("Uploading emoji:", emojiName)
+    _, err = bot.session.GuildEmojiCreate(bot.guildId, emojiName, bytesToUriString(data), roles)
+    if err != nil {
+        panic(err)
+    }
+}
+
+func contains(haystack []string, needle string) bool {
+    for _, element := range haystack {
+        if element == needle {
+            return true
+        }
+    }
+    return false
+}
+
+func (bot *SyncBot) syncEmojis() {
+    fmt.Println("Syncing Emojis")
+    files, err := ioutil.ReadDir("emojis")
+
+    if err != nil {
+        panic(err)
+    }
+
+    emojis, err := bot.session.GuildEmojis(bot.guildId)
+    if err != nil {
+        panic(err)
+    }
+    serverEmojiNames := make([]string, len(emojis))
+    for i, emoji := range emojis {
+        serverEmojiNames[i] = emoji.Name
+    }
+
+    for _, file := range files {
+        filename := file.Name()
+        fileExtension := filepath.Ext(filename)
+        if fileExtension == ".png" {
+            emojiName := strings.TrimSuffix(filename, fileExtension)
+
+            if !contains(serverEmojiNames, emojiName) {
+                fmt.Println("   ", emojiName)
+                bot.uploadEmoji(emojiName)
+            }
+        }
     }
 }
 
@@ -148,6 +212,7 @@ func main() {
     for {
         bot.reloadFromRedis()
         bot.SyncUserNicks()
+        bot.syncEmojis()
         time.Sleep(15 * time.Second)
     }
 
