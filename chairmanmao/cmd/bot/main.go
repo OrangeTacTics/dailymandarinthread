@@ -1,6 +1,7 @@
 package main
 
 import (
+    "encoding/json"
     "path/filepath"
     "encoding/base64"
     "io/ioutil"
@@ -23,7 +24,7 @@ type EmojiId = string
 type EmojiName = string
 
 type SyncBot struct {
-    displayNames map[UserId]string
+    users map[UserId]User
 
     session *discordgo.Session
     guildId string
@@ -57,7 +58,7 @@ func New() *SyncBot {
     guildId := os.Getenv("GUILD_ID")
 
     return &SyncBot {
-        displayNames: make(map[UserId]string),
+        users: make(map[UserId]User),
         session: discord,
         redis: redis,
         guildId: guildId,
@@ -66,21 +67,19 @@ func New() *SyncBot {
 }
 
 func (bot *SyncBot) reloadFromRedis() {
-    keys, err := bot.redis.Keys("syncbot:display_name:*").Result()
 
+    users_json, err := bot.redis.Get("syncbot:users").Result()
+    if err != nil {
+        panic(err)
+    }
+    var users []User
+    err = json.Unmarshal([]byte(users_json), &users)
     if err != nil {
         panic(err)
     }
 
-    for _, key := range keys {
-        userId := strings.Split(key, ":")[2]
-        displayName, err := bot.redis.Get(key).Result()
-
-        if err != nil {
-            panic(err)
-        }
-
-        bot.displayNames[userId] = displayName
+    for _, user := range users {
+        bot.users[user.Id] = user
     }
 }
 
@@ -125,6 +124,7 @@ func (bot *SyncBot) syncEmojis() {
     }
     serverEmojiNames := make([]string, len(emojis))
     for i, emoji := range emojis {
+        fmt.Println("   ", emoji.ID, emoji.Name)
         serverEmojiNames[i] = emoji.Name
     }
 
@@ -151,6 +151,11 @@ func findMemberByUserId(members []*discordgo.Member, userId UserId) *discordgo.M
     return nil
 }
 
+type User struct {
+    Id UserId `json:"user_id"`
+    DisplayName string `json:"display_name"`
+}
+
 func (bot *SyncBot) DirtyNickUsers() []UserId {
     members, err := bot.session.GuildMembers(bot.guildId, "", 1000)
 
@@ -161,7 +166,8 @@ func (bot *SyncBot) DirtyNickUsers() []UserId {
 
     results := make([]UserId, 0)
 
-    for userId, displayName := range bot.displayNames {
+    for userId, user := range bot.users {
+        displayName := user.DisplayName
         member := findMemberByUserId(members, userId)
 
         if member != nil {
@@ -180,6 +186,23 @@ func (bot *SyncBot) DirtyNickUsers() []UserId {
     return results
 }
 
+func (bot *SyncBot) DirtyRoles() {
+    roles, err := bot.session.GuildRoles(bot.guildId)
+    if err != nil {
+        panic(nil)
+    }
+
+    fmt.Println("DirtyRoles()")
+    for _, role := range roles {
+        fmt.Println("   ", role.ID, role.Name, role.Managed, role.Mentionable, role.Hoist, role.Color, role.Position, role.Permissions)
+    }
+
+//    func (s *Session) GuildRoleCreate(guildID string) (st *Role, err error)
+//    func (s *Session) GuildRoleDelete(guildID, roleID string) (err error)
+//    func (s *Session) GuildRoleEdit(guildID, roleID, name string, color int, hoist bool, perm int64, mention bool) (st *Role, err error)
+
+}
+
 func (bot *SyncBot) SyncUserNicks() {
     fmt.Println("Syncing")
 
@@ -187,7 +210,7 @@ func (bot *SyncBot) SyncUserNicks() {
     fmt.Printf("    %d dirty users found\n", len(dirtyUserIds))
 
     for _, userId := range dirtyUserIds {
-        displayName := bot.displayNames[userId]
+        displayName := bot.users[userId].DisplayName
         fmt.Printf("    " + userId + " => " + displayName + " ")
         bot.session.GuildMemberNickname(bot.guildId, userId, displayName)
         fmt.Println("OK")
@@ -208,6 +231,8 @@ func main() {
     for _, member := range members {
         fmt.Println("    " + member.User.ID + " " + member.User.Username)
     }
+
+    bot.DirtyRoles()
 
     for {
         bot.reloadFromRedis()
