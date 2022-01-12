@@ -7,12 +7,14 @@ import (
 
 type UserId = string
 type RoleId = string
+type RoleName = string
 type EmojiId = string
 type EmojiName = string
 
 type User struct {
     Id UserId `json:"user_id"`
     DisplayName string `json:"display_name"`
+    Roles []RoleName `json:"roles"`
 }
 
 type Emoji struct {

@@ -27,21 +27,15 @@ func main() {
         panic(err)
     }
 
-    bot.reloadFromRedis()
-    bot.syncEmojis()
-
-    return
-
     fmt.Println("Members:")
     for _, member := range members {
         fmt.Println("    " + member.User.ID + " " + member.User.Username)
     }
 
-    bot.DirtyRoles()
-
     for {
         bot.reloadFromRedis()
-        bot.SyncUserNicks()
+        bot.syncUsers()
+        bot.syncEmojis()
         bot.syncEmojis()
         time.Sleep(15 * time.Second)
     }

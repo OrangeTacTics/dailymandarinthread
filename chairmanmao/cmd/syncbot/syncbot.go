@@ -345,3 +345,58 @@ func (bot *SyncBot) SyncUserNicks() {
         fmt.Println("OK")
     }
 }
+
+func (bot *SyncBot) syncUsers() {
+    memberById := make(map[UserId]*discordgo.Member)
+    members, err := bot.session.GuildMembers(bot.guildId, "", 1000)
+    if err != nil {
+        panic(err)
+    }
+
+    for _, member := range members {
+        memberById[member.User.ID] = member
+    }
+
+    roleById := make(map[RoleId]*discordgo.Role)
+    roleByName := make(map[RoleName]*discordgo.Role)
+    roles, err := bot.session.GuildRoles(bot.guildId)
+    if err != nil {
+        panic(err)
+    }
+
+    for _, role := range roles {
+        roleById[role.ID] = role
+        roleByName[role.Name] = role
+    }
+
+    fmt.Println("Syncing Users")
+
+    for _, user := range bot.users {
+        userId := user.Id
+        displayName := user.DisplayName
+        fmt.Println("    " + userId + " => " + displayName + " ")
+        bot.session.GuildMemberNickname(bot.guildId, userId, displayName)
+
+        member := memberById[userId]
+        currentRoleNames := make([]RoleName, 0)
+        for _, roleId := range member.Roles {
+            role := roleById[roleId]
+            currentRoleNames = append(currentRoleNames, role.Name)
+        }
+        fmt.Println("Comparing:", user.Roles, currentRoleNames)
+        adds, mods, dels := addModDelOf(user.Roles, currentRoleNames)
+
+        for _, add := range adds {
+            role := roleByName[add]
+            if role != nil {
+                fmt.Println("Adding role", role.ID, role.Name)
+                bot.session.GuildMemberRoleAdd(bot.guildId, userId, role.ID)
+            } else {
+                fmt.Println("Role does not exist, cannot add", role.ID, role.Name)
+            }
+        }
+
+        fmt.Println("OK")
+        fmt.Println("=>", adds, mods, dels)
+    }
+}
