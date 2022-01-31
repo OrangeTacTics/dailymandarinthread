@@ -21,6 +21,7 @@ class ActivityCog(ChairmanMaoCog):
     async def activity_loop(self):
         user_ids = list(self.activity_queue)
         if len(user_ids) > 0:
+            self.logger.info(f"Syncing {len(user_ids)} users: {user_ids}")
             self.activity_queue = set()
             await self.api.alert_activity(user_ids)
 
@@ -59,6 +60,14 @@ class ActivityCog(ChairmanMaoCog):
             icon_url=member.avatar_url,
         )
         await constants.tiananmen_channel.send(embed=embed)
+        if await self.api.is_registered(member.id):
+            try:
+                await self.api.register(member.id, username)
+            except Exception as e:
+                self.logger.error(str(e))
+
+        self.logger.info(f"Adding new member to the queue: {member.id}")
+        self.activity_queue.add(member.id)
 
 #        if await self.api.is_registered(member.id):
 #            self.logger.info(f"A former Comrade rejoined us: {username}. Member ID: {member.id}.")

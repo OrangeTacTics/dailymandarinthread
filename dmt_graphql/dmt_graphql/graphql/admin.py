@@ -34,6 +34,21 @@ class AdminQuery:
 @s.type
 class AdminMutation:
     @s.field
+    async def register(
+        self,
+        info,
+        user_id: str,
+        discord_username: str,
+    ) -> Profile:
+        assert info.context.is_admin, "Must be admin"
+        try:
+            info.context.store.create_profile(int(user_id), discord_username)
+        except Exception:
+            print(f"Already registered ({user_id} {discord_username}). Supressing error")
+
+        return await info.context.dataloaders.profile.load(user_id)
+
+    @s.field
     async def alert_activity(
         self,
         info,
@@ -377,7 +392,12 @@ class AdminMutation:
         return flag
 
     @s.field
-    async def comrade_joined(self, info, user_id: str, discord_username: str, ) -> Profile:
+    async def comrade_joined(
+        self,
+        info,
+        user_id: str,
+        discord_username: str,
+    ) -> Profile:
         info.context.event_store.push(
             "ComradeJoined-1.0.0",
             {
@@ -394,7 +414,11 @@ class AdminMutation:
         return await info.context.dataloaders.profile.load(user_id)
 
     @s.field
-    async def comrade_defected(self, info, user_id: str, ) -> Profile:
+    async def comrade_defected(
+        self,
+        info,
+        user_id: str,
+    ) -> Profile:
         with info.context.store.profile(int(user_id)) as profile:
             profile.defected = True
             info.context.event_store.push(
