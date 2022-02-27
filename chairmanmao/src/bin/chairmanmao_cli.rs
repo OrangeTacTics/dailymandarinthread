@@ -16,6 +16,7 @@ enum CliCommand {
     ListEmojis,
     ListConstants,
     RenameUser { user_id: u64, nick: Option<String> },
+    ChannelHistory { channel_id: u64 },
 }
 
 
@@ -31,6 +32,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         CliCommand::ListEmojis => list_emojis().await,
         CliCommand::ListConstants => list_constants().await,
         CliCommand::RenameUser { user_id, nick } => rename_user(*user_id, nick.as_deref()).await,
+        CliCommand::ChannelHistory { channel_id } => channel_history(*channel_id).await,
     }
 }
 
@@ -121,6 +123,50 @@ async fn rename_user(user_id: u64, nick: Option<&str>) -> Result<(), Box<dyn Err
         .nick(nick.to_owned())?
         .exec().await?
         .model().await?;
+
+    Ok(())
+}
+
+async fn channel_history(channel_id: u64) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let channel_id = Id::new(channel_id);
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    let guilds = client.current_user_guilds().exec().await?.model().await?;
+    let guild_id = guilds[0].id;
+
+
+    let mut messages = client.channel_messages(channel_id)
+        .limit(100)?
+        .exec().await?
+        .model().await?;
+
+
+    loop {
+        if !messages.is_empty() {
+            for message in messages.iter() {
+                let author = format!(
+                    "{}({}#{:04})",
+                    message.author.id.to_string(),
+                    message.author.name,
+                    message.author.discriminator,
+                );
+
+                println!("    {}    {:50}    {}", message.id.to_string(), author, message.content);
+            }
+
+            let first_message_id = messages[0].id;
+            let last_message_id = messages[messages.len() - 1].id;
+            messages = client.channel_messages(channel_id)
+                .limit(100)?
+                .before(first_message_id)
+                .exec().await?
+                .model().await?;
+
+        } else {
+            break;
+        }
+    }
 
     Ok(())
 }
