@@ -14,6 +14,7 @@ enum CliCommand {
     ListUsers,
     ListRoles,
     ListEmojis,
+    ListConstants,
     RenameUser { user_id: u64, nick: Option<String> },
 }
 
@@ -28,6 +29,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         CliCommand::ListUsers => list_users().await,
         CliCommand::ListRoles => list_roles().await,
         CliCommand::ListEmojis => list_emojis().await,
+        CliCommand::ListConstants => list_constants().await,
         CliCommand::RenameUser { user_id, nick } => rename_user(*user_id, nick.as_deref()).await,
     }
 }
@@ -67,7 +69,7 @@ async fn list_roles() -> Result<(), Box<dyn Error + Send + Sync>> {
     let guilds = client.current_user_guilds().exec().await?.model().await?;
     let guild_id = guilds[0].id;
 
-    let mut roles = client.roles(guild_id).exec().await?.model().await?;
+    let roles = client.roles(guild_id).exec().await?.model().await?;
 
     println!("Roles:");
     for role in roles.iter() {
@@ -84,7 +86,7 @@ async fn list_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
     let guilds = client.current_user_guilds().exec().await?.model().await?;
     let guild_id = guilds[0].id;
 
-    let mut emojis = client.emojis(guild_id).exec().await?.model().await?;
+    let emojis = client.emojis(guild_id).exec().await?.model().await?;
 
     println!("Emojis:");
     for emoji in emojis.iter() {
@@ -96,6 +98,15 @@ async fn list_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
+async fn list_constants() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    let constants = chairmanmao::discord::DiscordConstants::load(&client).await?;
+    dbg!(constants);
+
+    Ok(())
+}
 
 async fn rename_user(user_id: u64, nick: Option<&str>) -> Result<(), Box<dyn Error + Send + Sync>> {
     let user_id = Id::new(user_id);
