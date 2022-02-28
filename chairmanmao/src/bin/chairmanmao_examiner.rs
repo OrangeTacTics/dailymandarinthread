@@ -12,7 +12,7 @@ use clap::Parser;
 use twilight_model::id::Id;
 use twilight_model::id::marker::{ChannelMarker, UserMarker};
 
-const MILLIS_PER_TICK: usize = 800;
+const MILLIS_PER_TICK: usize = 100;
 
 
 #[derive(Parser, Debug)]
@@ -132,18 +132,13 @@ async fn handle_message(
     message: &Message,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if message.content.starts_with("!exam ") {
-        handle_start_command(state_lock, client.clone(), message).await?;
+        handle_exam_command(state_lock, client.clone(), message).await;
     } else {
         let mut state = state_lock.lock().await;
         if let Some(active_exam) = state.active_exam_for(message.channel_id, message.author.id) {
             if let Some((question, answer)) = &active_exam.examiner.answer(&message.content) {
                 client.create_message(active_exam.channel_id)
-                    .content(&format!("{:?}", answer))?
-                    .exec()
-                    .await?;
-
-                client.create_message(active_exam.channel_id)
-                    .content(&format!("{} {:?} {}", question.question, question.valid_answers, question.meaning))?
+                    .content(&format!("{:?}\n{} {:?} {}", answer, question.question, question.valid_answers, question.meaning))?
                     .exec()
                     .await?;
             }
@@ -153,11 +148,11 @@ async fn handle_message(
     Ok(())
 }
 
-async fn handle_start_command(
+async fn handle_exam_command(
     state_lock: StateLock,
     _client: Arc<Client>,
     message: &Message,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+) {
     if message.content == "!exam start" {
         let mut state = state_lock.lock().await;
         let channel_busy_str = format!("{}", state.is_channel_busy(message.channel_id));
@@ -193,8 +188,6 @@ async fn handle_start_command(
             println!("No exam in progress?");
         }
     }
-
-    Ok(())
 }
 
 

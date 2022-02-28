@@ -274,7 +274,6 @@ impl Examiner {
             TickResult::Timeout
         } else {
             self.current_question_time_left -= self.millis_per_tick.min(self.current_question_time_left);
-            println!("self.current_question_time_left: {}", self.current_question_time_left);
             TickResult::Nothing
         }
     }
