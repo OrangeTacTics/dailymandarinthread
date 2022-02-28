@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use serde::{Deserialize};
 use serde_json;
-use chairmanmao::exams::{Exam, Examiner, TickResult, Question, Answer};
+use chairmanmao::exam::{Exam, Examiner, TickResult, Question, Answer};
 
 
 #[derive(Deserialize, Debug)]
@@ -147,4 +147,3 @@ fn main() {
     }
 
 }
-

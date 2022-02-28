@@ -93,7 +93,7 @@ impl Answer {
 /// The next call to [Examiner::tick()] will acknowledge the result.
 ///
 /// The exam ends once [Examiner::tick()] returns [TickResult::Finished].
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Examiner {
     // Constants
     questions: Vec<Question>,
@@ -262,7 +262,7 @@ impl Examiner {
         if self.finished() {
             TickResult::Finished(self.score())
         } else if self.pause_time > 0 {
-            self.pause_time -= self.millis_per_tick;
+            self.pause_time -= self.millis_per_tick.min(self.pause_time);
             TickResult::Pause
         } else if self.ready_for_next_question() {
             self.current_question_index += 1;
@@ -273,7 +273,8 @@ impl Examiner {
             self.pause_time = 1000;
             TickResult::Timeout
         } else {
-            self.current_question_time_left -= self.millis_per_tick;
+            self.current_question_time_left -= self.millis_per_tick.min(self.current_question_time_left);
+            println!("self.current_question_time_left: {}", self.current_question_time_left);
             TickResult::Nothing
         }
     }

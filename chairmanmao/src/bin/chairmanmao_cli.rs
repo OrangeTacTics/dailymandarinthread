@@ -14,6 +14,7 @@ enum CliCommand {
     ListUsers,
     ListRoles,
     ListEmojis,
+    ListChannels,
     ListConstants,
     RenameUser { user_id: u64, nick: Option<String> },
     ChannelHistory { channel_id: u64 },
@@ -30,6 +31,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         CliCommand::ListUsers => list_users().await,
         CliCommand::ListRoles => list_roles().await,
         CliCommand::ListEmojis => list_emojis().await,
+        CliCommand::ListChannels => list_channels().await,
         CliCommand::ListConstants => list_constants().await,
         CliCommand::RenameUser { user_id, nick } => rename_user(*user_id, nick.as_deref()).await,
         CliCommand::ChannelHistory { channel_id } => channel_history(*channel_id).await,
@@ -100,6 +102,23 @@ async fn list_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
+async fn list_channels() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    let guilds = client.current_user_guilds().exec().await?.model().await?;
+    let guild_id = guilds[0].id;
+
+    let channels = client.guild_channels(guild_id).exec().await?.model().await?;
+
+    println!("Channels:");
+    for channel in channels.iter() {
+        println!("    {}    {}", channel.id() , channel.name());
+    }
+
+    Ok(())
+}
+
 async fn list_constants() -> Result<(), Box<dyn Error + Send + Sync>> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
@@ -141,8 +160,10 @@ async fn channel_history(channel_id: u64) -> Result<(), Box<dyn Error + Send + S
         .exec().await?
         .model().await?;
 
+    let mut num_messages_fetched = messages.len();
 
-    loop {
+
+    while num_messages_fetched < 300 {
         if !messages.is_empty() {
             for message in messages.iter() {
                 let author = format!(
@@ -152,7 +173,7 @@ async fn channel_history(channel_id: u64) -> Result<(), Box<dyn Error + Send + S
                     message.author.discriminator,
                 );
 
-                println!("    {}    {:50}    {}", message.id.to_string(), author, message.content);
+                println!("    {}    {:50}    {:?}", message.id.to_string(), author, message.content);
             }
 
             let first_message_id = messages[0].id;
@@ -163,6 +184,7 @@ async fn channel_history(channel_id: u64) -> Result<(), Box<dyn Error + Send + S
                 .exec().await?
                 .model().await?;
 
+            num_messages_fetched += messages.len();
         } else {
             break;
         }

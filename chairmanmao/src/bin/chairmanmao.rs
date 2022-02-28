@@ -52,6 +52,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
                 let author = &message.author;
                 let timestamp = message.timestamp.as_secs();
                 println!("{}({}#{:04})    {}    {}", author.id.to_string(), author.name, author.discriminator, timestamp, message.content);
+                dbg!(&message);
             },
             Event::GatewayHeartbeatAck => (),
             Event::MemberAdd(e) => {

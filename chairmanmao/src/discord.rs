@@ -1,14 +1,15 @@
 use std::error::Error;
-use std::collections::HashMap;
 use twilight_http::Client;
-use twilight_model::id::{EmojiId, GuildId, UserId};
+use twilight_model::id::Id;
 use twilight_model::guild::{Role, Emoji};
 use twilight_model::user::CurrentUser;
 use twilight_model::channel::GuildChannel;
+use twilight_model::id::marker::GuildMarker;
+
 
 #[derive(Debug, Clone)]
 pub struct DiscordConstants {
-    pub guild_id: GuildId,
+    pub guild_id: Id<GuildMarker>,
     pub bot_user: CurrentUser,
 
     // ROLES
