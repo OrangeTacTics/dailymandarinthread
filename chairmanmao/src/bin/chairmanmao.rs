@@ -37,13 +37,14 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
 
     let guilds = client.current_user_guilds().exec().await?.model().await?;
-    let guild_id = guilds[0].id;
+    let guild = &guilds[0];
+    println!("Connected: {:?}", &guild.name);
+    let guild_id = guild.id;
 
     let roles = client.roles(guild_id).exec().await?.model().await?;
     let comrade_role_id = get_role_id(&roles, "同志");
 
     shard.start().await?;
-    println!("Created shard");
 
     while let Some(event) = events.next().await {
         match &event {
@@ -75,6 +76,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
                 ()
             },
         }
+        chairmanmao::cogs::welcome::on_event(&client, &event).await;
     }
 
     Ok(())
