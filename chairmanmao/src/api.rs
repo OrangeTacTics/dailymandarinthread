@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::error::Error;
 use serde::{Serialize, Deserialize};
 
@@ -6,7 +7,7 @@ use mongodb::bson::{doc, oid::ObjectId, DateTime, Bson};
 
 type ApiResult<T> = Result<T, Box<dyn Error + Sync + Send>>;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Profile {
     pub _id: ObjectId,
     pub user_id: u64,
@@ -23,7 +24,7 @@ pub struct Profile {
 }
 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct DictEntry {
     pub _id: ObjectId,
     pub simplified: String,
@@ -32,7 +33,7 @@ pub struct DictEntry {
     pub meanings: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct ServerSettings {
     pub _id: ObjectId,
     pub last_bump: DateTime,
@@ -41,7 +42,7 @@ pub struct ServerSettings {
     pub bot_username: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Exam {
     pub _id: ObjectId,
     pub name: String,
@@ -52,11 +53,39 @@ pub struct Exam {
     pub deck: Vec<Card>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Card {
     pub question: String,
     pub valid_answers: Vec<String>,
     pub meaning: String,
+}
+
+impl ServerSettings {
+    pub fn new() -> Self {
+        ServerSettings {
+            _id: ObjectId::new(),
+            last_bump: DateTime::now(),
+            exams_disabled: false,
+            admin_username: "".into(),
+            bot_username: "".into(),
+        }
+    }
+}
+
+impl Profile {
+    pub fn add_role(&mut self, role: &str) {
+        let mut roles: HashSet<String> = self.roles.iter().cloned().collect();
+        roles.insert(role.to_string());
+        self.roles = roles.into_iter().collect();
+        self.roles.sort();
+    }
+
+    pub fn remove_role(&mut self, role: &str) {
+        let mut roles: HashSet<String> = self.roles.iter().cloned().collect();
+        roles.remove(role);
+        self.roles = roles.into_iter().collect();
+        self.roles.sort();
+    }
 }
 
 #[derive(Clone)]
@@ -75,10 +104,6 @@ impl Api {
         let client_options = ClientOptions::parse("mongodb://localhost:27017/").await.unwrap();
         let client = Client::with_options(client_options).unwrap();
         let db = client.database("DailyMandarinThread");
-
-        for collection_name in db.list_collection_names(None).await.unwrap() {
-            println!("{}", collection_name);
-        }
 
         let profiles_collection = db.collection::<Profile>("Profiles");
         let serversettings_collection = db.collection::<ServerSettings>("ServerSettings");
@@ -126,70 +151,92 @@ impl Api {
         Ok(profile)
     }
 
-    pub async fn profile(
-        &self,
-        user_id: u64,
-    ) -> ApiResult<Option<Profile>> {
-        dbg!(&user_id);
+    pub async fn serversettings (&self) -> ApiResult<ServerSettings> {
+        let serversettings = self.serversettings_collection.find_one(None, None).await?;
+        match serversettings {
+            None => Ok(ServerSettings::new()),
+            Some(serversettings) => Ok(serversettings),
+        }
+    }
+
+    pub async fn profile(&self, user_id: u64) -> ApiResult<Option<Profile>> {
         let profile = self.profiles_collection.find_one(doc! { "user_id": Bson::Int64(user_id as i64) }, None).await?;
         Ok(profile)
     }
-/*
-    pub fn jail(
-        &self,
-        to_user_id: u64,
-    ) -> ApiResult<Profile> {}
 
-    pub fn unjail(
-        &self,
-        to_user_id: UserId,
-    ) {}
+    async fn set_profile(&self, user_id: u64, profile: Profile) -> ApiResult<()> {
+        self.profiles_collection.replace_one(doc! { "user_id": Bson::Int64(user_id as i64) }, profile, None).await?;
+        Ok(())
+    }
 
-    pub fn honor(
+    async fn update_profile(
         &self,
-        to_user_id: UserId,
+        user_id: u64,
+        update: impl FnOnce(&mut Profile),
+    ) -> ApiResult<Profile> {
+
+        let profile = self.profile(user_id).await?;
+        match profile {
+            None => return Err(format!("Profile does not exist with user_id: {user_id}").into()),
+            Some(mut profile) => {
+                update(&mut profile);
+                self.set_profile(user_id, profile.clone()).await?;
+                Ok(profile)
+            },
+        }
+    }
+
+    pub async fn jail(
+        &self,
+        user_id: u64,
+    ) -> ApiResult<Profile> {
+        self.update_profile(
+            user_id,
+            |profile| {
+                profile.add_role("Jailed");
+            },
+        ).await
+    }
+
+    pub async fn unjail(
+        &self,
+        user_id: u64,
+    ) -> ApiResult<Profile> {
+        self.update_profile(
+            user_id,
+            |profile| {
+                profile.remove_role("Jailed");
+            },
+        ).await
+    }
+
+    pub async fn honor(
+        &self,
+        user_id: u64,
         amount: i32,
-    ) {}
-
-    pub fn dishonor(
-        &self,
-        to_user_id: UserId,
-        amount: i32,
-    ) {}
-*/
+    ) -> ApiResult<Profile> {
+        self.update_profile(
+            user_id,
+            |profile| {
+                profile.credit = (profile.credit as i32 + amount).max(0) as u32;
+            },
+        ).await
+    }
 }
 
 #[tokio::test]
-async fn foo() -> ApiResult<()> {
-    println!("*****************************");
+async fn test_jail_unjail() -> ApiResult<()> {
     let api = Api::new().await;
-    println!("*****************************");
-//    api.register(1234).await?;
-//    dbg!(api.profile(1234).await.unwrap());
+
+    let user_id = 883529933480144958;
+
+    api.jail(user_id).await.unwrap();
+    let profile = api.profile(user_id).await.unwrap().unwrap();
+    assert!(profile.roles.contains(&"Jailed".to_string()));
+
+    api.unjail(user_id).await.unwrap();
+    let profile = api.profile(user_id).await.unwrap().unwrap();
+    assert!(!profile.roles.contains(&"Jailed".to_string()));
 
     Ok(())
 }
-
-
-
-/*
-        let mut conn = self.conn();
-        let key = format!("profile:{}", user_id);
-
-        let result: bool = conn.keys(&key)?;
-        if result {
-            return Err(format!("User {} already registered.", user_id).into());
-        }
-
-        let profile = Profile {
-            user_id,
-            display_name: None,
-            credit: 1000,
-            hsk: 0,
-            party: false,
-            jailed: false,
-        };
-        let val = serde_json::to_string(&profile).unwrap();
-        conn.set(key, val)?;
-        Ok(profile)
-*/
