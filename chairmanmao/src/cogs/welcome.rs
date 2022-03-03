@@ -1,7 +1,7 @@
 use twilight_model::gateway::event::Event;
 use twilight_http::Client;
 use twilight_model::id::{Id};
-use twilight_model::id::marker::{UserMarker, ChannelMarker};
+use twilight_model::id::marker::{UserMarker};
 use twilight_model::channel::PrivateChannel;
 
 pub async fn on_event(client: &Client, event: &Event) {

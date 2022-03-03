@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use chairmanmao::exam::{Examiner, Exam, TickResult};
-use twilight_embed_builder::{EmbedBuilder, EmbedFieldBuilder};
 use futures_util::StreamExt;
 use std::error::Error;
 use twilight_gateway::{Intents, Shard};
@@ -85,6 +84,10 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     let args = Cli::parse();
 
     let channel_ids: Vec<Id<ChannelMarker>> = args.channel_ids.iter().map(|id| Id::new(id.parse().unwrap())).collect();
+    if channel_ids.is_empty() {
+        return Err("No channel ids provided".into());
+    }
+
     run_examiner(&channel_ids).await?;
 
     Ok(())
@@ -150,7 +153,7 @@ async fn handle_message(
 
 async fn handle_exam_command(
     state_lock: StateLock,
-    _client: Arc<Client>,
+    client: Arc<Client>,
     message: &Message,
 ) {
     if message.content == "!exam start" {
@@ -169,13 +172,16 @@ async fn handle_exam_command(
             let exam = chairmanmao::exam::loader::load_exam("hsk1");
             let examiner = chairmanmao::exam::Examiner::make(&exam, MILLIS_PER_TICK, seed);
 
-            state.active_exams.push(ActiveExam {
+            let active_exam = ActiveExam {
                 user_id: message.author.id,
                 channel_id: message.channel_id,
                 examiner,
                 exam,
                 seed,
-            });
+            };
+            message::exam_start(&client, &active_exam).await.unwrap();
+            state.active_exams.push(active_exam);
+
         }
     } else if message.content == "!exam quit" {
         let mut state = state_lock.lock().await;
@@ -249,21 +255,46 @@ pub struct ActiveExam {
     pub seed: u64,
 }
 
-/*
+pub mod message {
+    use std::error::Error;
+    use twilight_http::Client;
+    use super::ActiveExam;
+    use twilight_embed_builder::{EmbedBuilder, EmbedFieldBuilder, EmbedAuthorBuilder, ImageSource};
 
-    let channel_busy_str = format!("{}", state.is_channel_busy(message.channel_id));
-    let user_busy_str = format!("{}", state.is_user_busy(message.author.id));
-    let embed = EmbedBuilder::new()
-        .description("Here's a list of reasons why Mao is the best chairman:")
-        .field(EmbedFieldBuilder::new("Channel Busy?", channel_busy_str).inline())
-        .field(EmbedFieldBuilder::new("User Busy?", user_busy_str).inline())
-        .build()?;
+    pub async fn exam_start(client: &Client, active_exam: &ActiveExam) -> Result<(), Box<dyn Error>> {
+        let user = client.user(active_exam.user_id).exec().await?.model().await?;
 
-    let timestamp = message.timestamp.as_secs();
+        // TODO handle users with no avatar
+        // cf https://github.com/Pycord-Development/pycord/blob/36a59259084fbfb44050c8c0119f45d956d8c972/discord/user.py#L138
+        let avatar_url = format!("https://cdn.discordapp.com/avatars/{}/{}.png", user.id, user.avatar.unwrap().to_string());
 
-    client.create_message(message.channel_id)
-        .content("Hello")?
-        .embeds(&[embed])?
-        .exec()
-        .await?;
-*/
+        let author_name = format!("{}#{}", user.name, user.discriminator());
+
+        let author = EmbedAuthorBuilder::new(author_name)
+            .icon_url(ImageSource::url(avatar_url)?)
+            .build();
+
+        let max_wrong = match active_exam.exam.max_wrong {
+            Some(n) => n.to_string(),
+            None => "∞".to_string(),
+        };
+
+        let timelimit = format!("{} seconds", active_exam.exam.timelimit as f32 / 1000.0);
+
+        let embed = EmbedBuilder::new()
+            .author(author)
+            .field(EmbedFieldBuilder::new("Deck", active_exam.exam.name.clone()).inline())
+            .field(EmbedFieldBuilder::new("Questions", active_exam.exam.num_questions.to_string()).inline())
+            .field(EmbedFieldBuilder::new("Time Limit", timelimit))
+            .field(EmbedFieldBuilder::new("Mistakes Allowed", max_wrong))
+            .color(0xFFA500)
+            .build()?;
+
+        client.create_message(active_exam.channel_id)
+            .embeds(&[embed])?
+            .exec()
+            .await?;
+
+        Ok(())
+    }
+}
