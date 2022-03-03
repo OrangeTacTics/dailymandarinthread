@@ -77,6 +77,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
             },
         }
         chairmanmao::cogs::welcome::on_event(&client, &event).await;
+        chairmanmao::cogs::social_credit::on_event(&client, &event).await;
     }
 
     Ok(())
