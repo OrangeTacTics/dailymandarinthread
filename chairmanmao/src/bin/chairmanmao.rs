@@ -3,19 +3,7 @@ use std::{env, error::Error};
 use twilight_gateway::{Intents, Shard};
 use twilight_model::gateway::event::Event;
 use twilight_http::Client;
-
-use twilight_model::id::Id;
-use twilight_model::id::marker::RoleMarker;
-use twilight_model::guild::Role;
-
-fn get_role_id(roles: &[Role], role_name: &str) -> Id<RoleMarker> {
-    for role in roles {
-        if role.name == role_name {
-            return role.id;
-        }
-    }
-    panic!("Role {} not found", &role_name);
-}
+use chairmanmao::discord::DiscordConstants;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -30,21 +18,13 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         Intents::GUILDS |
         Intents::GUILD_MEMBERS;
 
-
     let token = env::var("DISCORD_TOKEN")?;
     let (shard, mut events) = Shard::new(token.clone(), intents);
     let client = Client::new(token);
-
-
-    let guilds = client.current_user_guilds().exec().await?.model().await?;
-    let guild = &guilds[0];
-    println!("Connected: {:?}", &guild.name);
-    let guild_id = guild.id;
-
-    let roles = client.roles(guild_id).exec().await?.model().await?;
-    let comrade_role_id = get_role_id(&roles, "同志");
+    let constants = DiscordConstants::load(&client).await?;
 
     shard.start().await?;
+    println!("Connected: {:?}", &constants.guild.name);
 
     while let Some(event) = events.next().await {
         match &event {
@@ -57,8 +37,8 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
             Event::GatewayHeartbeatAck => (),
             Event::MemberAdd(e) => {
                 let member = &e.0;
-                println!("Attempting to add role {} to user {} in guild {}", comrade_role_id, member.user.id, guild_id);
-                client.add_guild_member_role(guild_id, member.user.id, comrade_role_id).exec().await?;
+                println!("Attempting to add role {} to user {} in guild {}", constants.comrade_role.id, member.user.id, constants.guild.id);
+                client.add_guild_member_role(constants.guild.id, member.user.id, constants.comrade_role.id).exec().await?;
             },
             Event::ReactionAdd(e) => {
                 let reaction = &e.0;

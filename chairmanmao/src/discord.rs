@@ -1,15 +1,13 @@
 use std::error::Error;
 use twilight_http::Client;
-use twilight_model::id::Id;
 use twilight_model::guild::{Role, Emoji};
-use twilight_model::user::CurrentUser;
+use twilight_model::user::{CurrentUser, CurrentUserGuild};
 use twilight_model::channel::GuildChannel;
-use twilight_model::id::marker::GuildMarker;
 
 
 #[derive(Debug, Clone)]
 pub struct DiscordConstants {
-    pub guild_id: Id<GuildMarker>,
+    pub guild: CurrentUserGuild,
     pub bot_user: CurrentUser,
 
     // ROLES
@@ -42,7 +40,8 @@ pub struct DiscordConstants {
 impl DiscordConstants {
     pub async fn load(client: &Client) -> Result<DiscordConstants, Box<dyn Error + Send + Sync>> {
         let guilds = client.current_user_guilds().exec().await?.model().await?;
-        let guild_id = guilds[0].id;
+        let guild = guilds[0].clone();
+        let guild_id = guild.id;
 
         let bot_user = client.current_user().exec().await?.model().await?;
         let roles = client.roles(guild_id).exec().await?.model().await?;
@@ -74,7 +73,7 @@ impl DiscordConstants {
 //        let refold_emoji = find_emoji(&guild.emojis, "refold");
 
         Ok(DiscordConstants {
-            guild_id,
+            guild,
             bot_user,
 
             comrade_role,
