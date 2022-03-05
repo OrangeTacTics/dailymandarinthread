@@ -222,6 +222,19 @@ impl Api {
             },
         ).await
     }
+
+    pub async fn set_display_name(
+        &self,
+        user_id: u64,
+        display_name: Option<String>,
+    ) -> ApiResult<Profile> {
+        self.update_profile(
+            user_id,
+            |profile| {
+                profile.display_name = display_name.into();
+            },
+        ).await
+    }
 }
 
 #[tokio::test]

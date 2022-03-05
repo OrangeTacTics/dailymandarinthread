@@ -3,9 +3,16 @@ use twilight_http::Client;
 use clap::{Parser, Subcommand};
 use twilight_model::id::Id;
 use twilight_model::application::command::CommandOption;
-use twilight_model::application::command::{NumberCommandOptionData, BaseCommandOptionData, CommandOptionChoice};
-use twilight_model::application::command::permissions::CommandPermissions;
-use twilight_model::application::command::permissions::CommandPermissionsType;
+use twilight_model::application::command::{
+    NumberCommandOptionData,
+    BaseCommandOptionData,
+    CommandOptionChoice,
+    ChoiceCommandOptionData,
+};
+use twilight_model::application::command::permissions::{
+    CommandPermissions,
+    CommandPermissionsType,
+};
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -328,6 +335,27 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
         .model()
         .await?;
 
+    let name_command = interaction_client
+        .create_guild_command(guild_id)
+        .chat_input("name", "Change your username.")?
+        .command_options(
+            &[
+                CommandOption::String(
+                    ChoiceCommandOptionData {
+                        autocomplete: false,
+                        choices: vec![],
+                        name: "name".into(),
+                        required: false,
+                        description: "Your new username (max 32 characters)".into(),
+                    },
+                ),
+            ],
+        )?
+        .exec()
+        .await?
+        .model()
+        .await?;
+
     let commands = interaction_client
         .set_guild_commands(
             guild_id,
@@ -335,6 +363,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
                 jail_command,
                 honor_command,
                 dishonor_command,
+                name_command,
             ],
         )
         .exec()
@@ -348,6 +377,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
             (commands[0].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
             (commands[1].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
             (commands[2].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
+            //(commands[3].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
         ],
     )
         .unwrap()

@@ -3,13 +3,6 @@ use twilight_http::Client;
 
 pub async fn on_event(client: &Client, event: &Event) {
     match event {
-        Event::MessageCreate(payload) => {
-            let message = &payload.0;
-
-            if message.content.starts_with("~honor") {
-                println!("HONORING");
-            }
-        },
         Event::ReactionAdd(payload) => {
             let reaction = &payload.0;
 
