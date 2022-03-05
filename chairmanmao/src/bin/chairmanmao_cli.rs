@@ -4,6 +4,8 @@ use clap::{Parser, Subcommand};
 use twilight_model::id::Id;
 use twilight_model::application::command::CommandOption;
 use twilight_model::application::command::{NumberCommandOptionData, BaseCommandOptionData, CommandOptionChoice};
+use twilight_model::application::command::permissions::CommandPermissions;
+use twilight_model::application::command::permissions::CommandPermissionsType;
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -233,6 +235,8 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
     let guilds = client.current_user_guilds().exec().await?.model().await?;
     let guild_id = guilds[0].id;
 
+    let constants = chairmanmao::discord::DiscordConstants::load(&client).await?;
+
     let application_id = {
         let response = client.current_user_application().exec().await?;
         response.model().await?.id
@@ -246,6 +250,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
     let jail_command = interaction_client
         .create_guild_command(guild_id)
         .user("jail")?
+        .default_permission(false)
         .exec()
         .await?
         .model()
@@ -254,6 +259,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
     let honor_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("honor", "Honor a user.")?
+        .default_permission(false)
         .command_options(
             &[
                 CommandOption::User(
@@ -289,6 +295,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
     let dishonor_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("dishonor", "Dishonor a user.")?
+        .default_permission(false)
         .command_options(
             &[
                 CommandOption::User(
@@ -333,6 +340,18 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
         .exec()
         .await?
         .models()
+        .await?;
+
+    interaction_client.set_command_permissions(
+        guild_id,
+        &[
+            (commands[0].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
+            (commands[1].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
+            (commands[2].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
+        ],
+    )
+        .unwrap()
+        .exec()
         .await?;
 
     println!("Commands:");
