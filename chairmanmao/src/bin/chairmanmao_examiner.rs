@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use chairmanmao::exam::{Examiner, Exam, TickResult};
+use chairmanmao::exam::{Examiner, Exam, TickResult, ExamScore, Answer};
 use futures_util::StreamExt;
 use std::error::Error;
 use twilight_gateway::{Intents, Shard};
@@ -227,11 +227,8 @@ async fn tick_loop(client: Arc<Client>, state_lock: StateLock) -> Result<(), Box
                 },
                 TickResult::Pause => (),
                 TickResult::Finished(exam_score) => {
-                    client.create_message(active_exam.channel_id)
-                        .content(&format!("{:?}", exam_score))?
-                        .exec()
-                        .await?;
                     remove_user_id = Some(active_exam.user_id.clone());
+                    message::exam_end(&client, &active_exam, exam_score).await.unwrap();
                 },
             }
 
@@ -258,7 +255,11 @@ pub struct ActiveExam {
 pub mod message {
     use std::error::Error;
     use twilight_http::Client;
-    use super::ActiveExam;
+    use super::{
+        ActiveExam,
+        ExamScore,
+        Answer,
+    };
     use twilight_embed_builder::{EmbedBuilder, EmbedFieldBuilder, EmbedAuthorBuilder, ImageSource};
 
     pub async fn exam_start(client: &Client, active_exam: &ActiveExam) -> Result<(), Box<dyn Error>> {
@@ -296,5 +297,58 @@ pub mod message {
             .await?;
 
         Ok(())
+    }
+
+    pub async fn exam_end(client: &Client, active_exam: &ActiveExam, exam_score: ExamScore) -> Result<(), Box<dyn Error>> {
+        let user = client.user(active_exam.user_id).exec().await?.model().await?;
+
+        // TODO handle users with no avatar
+        // cf https://github.com/Pycord-Development/pycord/blob/36a59259084fbfb44050c8c0119f45d956d8c972/discord/user.py#L138
+        let avatar_url = format!("https://cdn.discordapp.com/avatars/{}/{}.png", user.id, user.avatar.unwrap().to_string());
+        let author_name = format!("{}#{}", user.name, user.discriminator());
+
+        let author = EmbedAuthorBuilder::new(author_name)
+            .icon_url(ImageSource::url(avatar_url)?)
+            .build();
+
+        let color = if exam_score.passed {
+            0x00FF00
+        } else {
+            0xFF0000
+        };
+
+        let mut description = String::new();
+        for (question, answer) in &exam_score.graded_questions {
+            let correct = answer.is_correct();
+            let emoji = if correct { "✅" } else { "❌" };
+            let correct_answer = &question.valid_answers[0];
+            let question_str = &question.question;  // (question.question).ljust(longest_answer + 2, "　")
+
+            let answer_str = format!("{} → {}", answer_to_str(&answer), correct_answer);
+            description.push_str(&format!("{emoji}　{question_str} {answer_str}　*{}*\n", question.meaning));
+        }
+
+        let embed = EmbedBuilder::new()
+            .author(author)
+            .description(description)
+//            .field(EmbedFieldBuilder::new("Mistakes Allowed", max_wrong))
+            .color(color)
+            .build()?;
+
+        client.create_message(active_exam.channel_id)
+            .embeds(&[embed])?
+            .exec()
+            .await?;
+
+        Ok(())
+    }
+
+    fn answer_to_str(answer: &Answer) -> &str {
+        match answer {
+            Answer::Correct(s) => s,
+            Answer::Incorrect(s) => s,
+            Answer::Timeout => "\\*timeout\\*",
+            Answer::Quit => "\\*quit\\*",
+        }
     }
 }
