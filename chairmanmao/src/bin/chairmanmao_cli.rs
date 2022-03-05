@@ -2,6 +2,8 @@ use std::error::Error;
 use twilight_http::Client;
 use clap::{Parser, Subcommand};
 use twilight_model::id::Id;
+use twilight_model::application::command::CommandOption;
+use twilight_model::application::command::{NumberCommandOptionData, BaseCommandOptionData, CommandOptionChoice};
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -19,6 +21,7 @@ enum CliCommand {
     ListConstants,
     RenameUser { user_id: u64, nick: Option<String> },
     ChannelHistory { channel_id: u64 },
+    CreateCommands,
 }
 
 
@@ -37,6 +40,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         CliCommand::ListConstants => list_constants().await,
         CliCommand::RenameUser { user_id, nick } => rename_user(*user_id, nick.as_deref()).await,
         CliCommand::ChannelHistory { channel_id } => channel_history(*channel_id).await,
+        CliCommand::CreateCommands => create_commands().await,
     }
 }
 
@@ -105,7 +109,10 @@ async fn list_roles() -> Result<(), Box<dyn Error + Send + Sync>> {
     let guilds = client.current_user_guilds().exec().await?.model().await?;
     let guild_id = guilds[0].id;
 
-    let roles = client.roles(guild_id).exec().await?.model().await?;
+    let mut roles = client.roles(guild_id).exec().await?.model().await?;
+    roles.sort_by(|role1, role2| {
+        role2.position.cmp(&role1.position)
+    });
 
     println!("Roles:");
     for role in roles.iter() {
@@ -215,6 +222,124 @@ async fn channel_history(channel_id: u64) -> Result<(), Box<dyn Error + Send + S
             break;
         }
     }
+
+    Ok(())
+}
+
+async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    let guilds = client.current_user_guilds().exec().await?.model().await?;
+    let guild_id = guilds[0].id;
+
+    let application_id = {
+        let response = client.current_user_application().exec().await?;
+        response.model().await?.id
+    };
+
+    println!("Application ID: {application_id}");
+
+    let interaction_client = client
+        .interaction(application_id);
+
+    let jail_command = interaction_client
+        .create_guild_command(guild_id)
+        .user("jail")?
+        .exec()
+        .await?
+        .model()
+        .await?;
+
+    let honor_command = interaction_client
+        .create_guild_command(guild_id)
+        .chat_input("honor", "Honor a user.")?
+        .command_options(
+            &[
+                CommandOption::User(
+                    BaseCommandOptionData {
+                        name: "honoree".to_string(),
+                        description: "User to be honored".to_string(),
+                        required: true,
+                    },
+                ),
+                CommandOption::Integer(
+                    NumberCommandOptionData {
+                        autocomplete: false,
+                        choices: vec![
+                            CommandOptionChoice::Int{name: "1".into(), value: 1},
+                            CommandOptionChoice::Int{name: "5".into(), value: 5},
+                            CommandOptionChoice::Int{name: "10".into(), value: 10},
+                            CommandOptionChoice::Int{name: "25".into(), value: 25},
+                        ],
+                        description: "Amount of social credit to honor".into(),
+                        max_value: None,
+                        min_value: None,
+                        name: "amount".into(),
+                        required: false,
+                    },
+                ),
+            ],
+        )?
+        .exec()
+        .await?
+        .model()
+        .await?;
+
+    let dishonor_command = interaction_client
+        .create_guild_command(guild_id)
+        .chat_input("dishonor", "Dishonor a user.")?
+        .command_options(
+            &[
+                CommandOption::User(
+                    BaseCommandOptionData {
+                        name: "dishonoree".to_string(),
+                        description: "User to be dishonored".to_string(),
+                        required: true,
+                    },
+                ),
+                CommandOption::Integer(
+                    NumberCommandOptionData {
+                        autocomplete: false,
+                        choices: vec![
+                            CommandOptionChoice::Int{name: "1".into(), value: 1},
+                            CommandOptionChoice::Int{name: "5".into(), value: 5},
+                            CommandOptionChoice::Int{name: "10".into(), value: 10},
+                            CommandOptionChoice::Int{name: "25".into(), value: 25},
+                        ],
+                        description: "Amount of social credit to dishonor".into(),
+                        max_value: None,
+                        min_value: None,
+                        name: "amount".into(),
+                        required: false,
+                    },
+                ),
+            ],
+        )?
+        .exec()
+        .await?
+        .model()
+        .await?;
+
+    let commands = interaction_client
+        .set_guild_commands(
+            guild_id,
+            &[
+                jail_command,
+                honor_command,
+                dishonor_command,
+            ],
+        )
+        .exec()
+        .await?
+        .models()
+        .await?;
+
+    println!("Commands:");
+    for command in &commands {
+        println!("    {:20} {}", command.name, command.description);
+    }
+
 
     Ok(())
 }

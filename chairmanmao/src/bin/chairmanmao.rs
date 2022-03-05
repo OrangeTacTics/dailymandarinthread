@@ -53,7 +53,6 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
                 let author = &message.author;
                 let timestamp = message.timestamp.as_secs();
                 println!("{}({}#{:04})    {}    {}", author.id.to_string(), author.name, author.discriminator, timestamp, message.content);
-                dbg!(&message);
             },
             Event::GatewayHeartbeatAck => (),
             Event::MemberAdd(e) => {
@@ -78,6 +77,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         }
         chairmanmao::cogs::welcome::on_event(&client, &event).await;
         chairmanmao::cogs::social_credit::on_event(&client, &event).await;
+        chairmanmao::cogs::jail::on_event(&client, &event).await;
     }
 
     Ok(())
