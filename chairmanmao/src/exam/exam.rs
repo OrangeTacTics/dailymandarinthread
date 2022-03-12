@@ -147,7 +147,7 @@ impl Examiner {
 //    # Queries
 //    ####################################################################
 
-    fn current_question(&self) -> &Question {
+    pub fn current_question(&self) -> &Question {
         assert!(self.current_question_index >= 0, "You must call tick() before the first question.");
         // TODO Handle case where current_question_index > len(self.questions)
         &self.questions[self.current_question_index as usize]

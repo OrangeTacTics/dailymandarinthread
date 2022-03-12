@@ -78,7 +78,6 @@ fn load_exam(exam_name: &str) -> Exam {
     for exam in exam_data["data"]["exams"].as_array().unwrap().iter() {
         let json_exam: JsonExam = JsonExam::deserialize(exam).unwrap();
         let exam_name = json_exam.name.clone();
-        println!("Exam found: {}", json_exam.name);
         let exam = convert_exam(&json_exam);
         exams.insert(exam_name, exam);
     }

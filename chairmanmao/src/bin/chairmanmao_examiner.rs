@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use chairmanmao::exam::{Examiner, Exam, TickResult, ExamScore, Answer};
+use chairmanmao::exam::{Examiner, Exam, TickResult, ExamScore, Answer, Question};
 use futures_util::StreamExt;
 use std::error::Error;
 use twilight_gateway::{Intents, Shard};
@@ -140,10 +140,7 @@ async fn handle_message(
         let mut state = state_lock.lock().await;
         if let Some(active_exam) = state.active_exam_for(message.channel_id, message.author.id) {
             if let Some((question, answer)) = &active_exam.examiner.answer(&message.content) {
-                client.create_message(active_exam.channel_id)
-                    .content(&format!("{:?}\n{} {:?} {}", answer, question.question, question.valid_answers, question.meaning))?
-                    .exec()
-                    .await?;
+                message::show_answer(&client, &active_exam, &question, &answer).await?
             }
         }
     }
@@ -158,16 +155,9 @@ async fn handle_exam_command(
 ) {
     if message.content == "!exam start" {
         let mut state = state_lock.lock().await;
-        let channel_busy_str = format!("{}", state.is_channel_busy(message.channel_id));
-        let user_busy_str = format!("{}", state.is_user_busy(message.author.id));
-
-        println!("chan busy: {channel_busy_str}");
-        println!("user busy: {user_busy_str}");
-
         if state.is_channel_busy(message.channel_id) || state.is_user_busy(message.author.id) {
-            println!("Can't start exam");
+            // TODO: Can't start exam
         } else {
-            println!("Starting new exam!");
             let seed = 1;
             let exam = chairmanmao::exam::loader::load_exam("hsk1");
             let examiner = chairmanmao::exam::Examiner::make(&exam, MILLIS_PER_TICK, seed);
@@ -186,12 +176,10 @@ async fn handle_exam_command(
     } else if message.content == "!exam quit" {
         let mut state = state_lock.lock().await;
         if state.is_user_busy(message.author.id) {
-            println!("Stopping exam!");
-
             let active_exam = state.active_exam_for(message.channel_id, message.author.id).unwrap();
             active_exam.examiner.give_up();
         } else {
-            println!("No exam in progress?");
+            // TODO: No exam in progress?
         }
     }
 }
@@ -199,7 +187,6 @@ async fn handle_exam_command(
 
 async fn tick_loop(client: Arc<Client>, state_lock: StateLock) -> Result<(), Box<dyn Error + Send + Sync>> {
     loop {
-//        println!("TICK");
         let mut state = state_lock.lock().await;
 
         let mut remove_user_id: Option<Id<UserMarker>> = None;
@@ -209,23 +196,14 @@ async fn tick_loop(client: Arc<Client>, state_lock: StateLock) -> Result<(), Box
 
             match examiner.tick() {
                 TickResult::Nothing => (),
+                TickResult::Pause => (),
                 TickResult::Timeout => {
-                    println!("Timeout");
-
-                    client.create_message(active_exam.channel_id)
-                        .content("Timeout")?
-                        .exec()
-                        .await?;
+                    let question = &examiner.current_question().clone();
+                    message::timeout(&client, active_exam, &question).await?;
                 },
                 TickResult::NextQuestion(question) => {
-                    println!("{}", &question.question);
-
-                    client.create_message(active_exam.channel_id)
-                        .content(&question.question)?
-                        .exec()
-                        .await?;
+                    message::pose_question(&client, active_exam, &question).await?;
                 },
-                TickResult::Pause => (),
                 TickResult::Finished(exam_score) => {
                     remove_user_id = Some(active_exam.user_id.clone());
                     message::exam_end(&client, &active_exam, exam_score).await.unwrap();
@@ -255,10 +233,12 @@ pub struct ActiveExam {
 pub mod message {
     use std::error::Error;
     use twilight_http::Client;
+    use twilight_http::request::AttachmentFile;
     use super::{
         ActiveExam,
         ExamScore,
         Answer,
+        Question,
     };
     use twilight_embed_builder::{EmbedBuilder, EmbedFieldBuilder, EmbedAuthorBuilder, ImageSource};
 
@@ -299,6 +279,53 @@ pub mod message {
         Ok(())
     }
 
+    pub async fn pose_question(client: &Client, active_exam: &ActiveExam, question: &Question) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let image_bytes = chairmanmao::draw::draw(&question.question);
+        let image_name = "image";
+        let filename = &format!("{image_name}.png");
+        let attachment = AttachmentFile::from_bytes(filename, &image_bytes);
+
+        client.create_message(active_exam.channel_id)
+            .attach(&[attachment])
+            .exec()
+            .await?;
+        Ok(())
+    }
+
+    pub async fn show_answer(client: &Client, active_exam: &ActiveExam, question: &Question, answer: &Answer) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let (emoji, color) = match answer {
+            Answer::Correct(_s) => ("✅", 0x00FF00),
+            Answer::Incorrect(_s) => ("❌", 0x00FF00),
+            Answer::Timeout => ("⏲️", 0x00FF00),
+            Answer::Quit => ("❌", 0x00FF00), // TODO: Use buneng emoji instead.
+        };
+
+        let correct_answer = format!("{} →  {}", answer_to_str(&answer), question.valid_answers[0]);
+
+        let description = &format!("{emoji} {correct_answer}");
+
+        let embed = EmbedBuilder::new()
+            .description(description)
+            .color(color)
+            .build()?;
+
+        client.create_message(active_exam.channel_id)
+            .embeds(&[embed])?
+            .exec()
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn timeout(client: &Client, active_exam: &ActiveExam, question: &Question) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let correct_answer = &question.valid_answers[0];
+        client.create_message(active_exam.channel_id)
+            .content(&format!("Timeout: {correct_answer}"))?
+            .exec()
+            .await?;
+        Ok(())
+    }
+
     pub async fn exam_end(client: &Client, active_exam: &ActiveExam, exam_score: ExamScore) -> Result<(), Box<dyn Error>> {
         let user = client.user(active_exam.user_id).exec().await?.model().await?;
 
@@ -331,7 +358,7 @@ pub mod message {
         let embed = EmbedBuilder::new()
             .author(author)
             .description(description)
-//            .field(EmbedFieldBuilder::new("Mistakes Allowed", max_wrong))
+//            .field(EmbedFieldBuilder::new("Mistakes Allowed", max_wrong)) // TODO
             .color(color)
             .build()?;
 

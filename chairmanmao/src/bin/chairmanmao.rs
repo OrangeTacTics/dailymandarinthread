@@ -26,6 +26,8 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     shard.start().await?;
     println!("Connected: {:?}", &constants.guild.name);
 
+    tokio::spawn(sync_loop());
+
     while let Some(event) = events.next().await {
         match &event {
             Event::MessageCreate(e) => {
@@ -61,4 +63,12 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     }
 
     Ok(())
+}
+
+
+async fn sync_loop() -> Result<(), Box<dyn Error + Send + Sync>> {
+    loop {
+        println!("TICK");
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+    }
 }

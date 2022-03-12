@@ -1,3 +1,5 @@
+use std::io::Cursor;
+
 use image::{DynamicImage, Rgba};
 use rusttype::{point, Font, Scale};
 
@@ -8,7 +10,7 @@ pub fn load_font(font_name: &str) -> Font {
     font
 }
 
-pub fn draw(text: &str) {
+pub fn draw(text: &str) -> Vec<u8> {
     let font = load_font("ZCOOL_KuaiLe.ttf");
 
     // The font size to use
@@ -57,7 +59,7 @@ pub fn draw(text: &str) {
         }
     }
 
-    // Save the image to a png file
-    image.save("out.png").unwrap();
-    println!("Generated: out.png");
+    let mut result = Cursor::new(Vec::new());
+    image.write_to(&mut result, image::ImageOutputFormat::Png).unwrap();
+    result.into_inner()
 }
