@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::error::Error;
 use twilight_http::Client;
 use clap::{Parser, Subcommand};
@@ -31,6 +32,7 @@ enum CliCommand {
     RenameUser { user_id: u64, nick: Option<String> },
     ChannelHistory { channel_id: u64 },
     CreateCommands,
+    DownloadEmojis,
 }
 
 
@@ -50,6 +52,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         CliCommand::RenameUser { user_id, nick } => rename_user(*user_id, nick.as_deref()).await,
         CliCommand::ChannelHistory { channel_id } => channel_history(*channel_id).await,
         CliCommand::CreateCommands => create_commands().await,
+        CliCommand::DownloadEmojis => download_emojis().await,
     }
 }
 
@@ -145,6 +148,39 @@ async fn list_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
         let emoji_id = &emoji.id.to_string();
         let url = format!("https://cdn.discordapp.com/emojis/{emoji_id}.png");
         println!("    {}    {:30}    {}", emoji_id , emoji.name, url);
+    }
+
+    Ok(())
+}
+
+async fn download_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    let guilds = client.current_user_guilds().exec().await?.model().await?;
+    let guild_id = guilds[0].id;
+
+    let emojis = client.emojis(guild_id).exec().await?.model().await?;
+
+    let dirname = std::path::Path::new("./data/emojis/");
+    std::fs::create_dir_all(&dirname)?;
+
+    println!("Emojis:");
+    for emoji in emojis.iter() {
+        let emoji_id = &emoji.id.to_string();
+        let url = format!("https://cdn.discordapp.com/emojis/{emoji_id}.png");
+
+        let body = reqwest::get(&url)
+            .await?
+            .bytes()
+            .await?;
+
+
+        let filename = dirname.join(&format!("{}_{}.png", emoji_id, emoji.name));
+        let mut file = std::fs::File::create(&filename)?;
+        file.write(&body)?;
+
+        println!("    {}    {:30}    {}", emoji_id , emoji.name, filename.to_str().ok_or("")?);
     }
 
     Ok(())
