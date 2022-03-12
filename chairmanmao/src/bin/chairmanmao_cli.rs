@@ -28,6 +28,7 @@ enum CliCommand {
     ListRoles,
     ListEmojis,
     ListChannels,
+    ListActiveThreads,
     ListConstants,
     RenameUser { user_id: u64, nick: Option<String> },
     ChannelHistory { channel_id: u64 },
@@ -48,6 +49,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         CliCommand::ListRoles => list_roles().await,
         CliCommand::ListEmojis => list_emojis().await,
         CliCommand::ListChannels => list_channels().await,
+        CliCommand::ListActiveThreads => list_threads().await,
         CliCommand::ListConstants => list_constants().await,
         CliCommand::RenameUser { user_id, nick } => rename_user(*user_id, nick.as_deref()).await,
         CliCommand::ChannelHistory { channel_id } => channel_history(*channel_id).await,
@@ -198,6 +200,23 @@ async fn list_channels() -> Result<(), Box<dyn Error + Send + Sync>> {
     println!("Channels:");
     for channel in channels.iter() {
         println!("    {}    {}", channel.id() , channel.name());
+    }
+
+    Ok(())
+}
+
+async fn list_threads() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    let guilds = client.current_user_guilds().exec().await?.model().await?;
+    let guild_id = guilds[0].id;
+
+    let threads = client.active_threads(guild_id).exec().await?.model().await?;
+
+    println!("Threads:");
+    for thread in threads.threads.iter() {
+        println!("    {}    {}", thread.id() , thread.name().unwrap_or_default());
     }
 
     Ok(())
