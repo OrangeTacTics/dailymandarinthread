@@ -8,10 +8,11 @@ use twilight_model::application::interaction::ApplicationCommand;
 use twilight_model::application::callback::CallbackData;
 use twilight_model::application::interaction::application_command::CommandOptionValue;
 
-use crate::api::Api;
+use crate::ChairmanMao;
 
 
-pub async fn on_event(client: &Client, event: &Event) {
+pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) {
+    let client = chairmanmao.client();
     match event {
         Event::InteractionCreate(payload) => {
             let interaction: &Interaction = &payload.0;
@@ -33,12 +34,32 @@ pub async fn on_event(client: &Client, event: &Event) {
 
                             send_response(client, app_command, callback_data).await;
                         },
+                        "sync" => {
+                            // let user_id = app_command.member.as_ref().unwrap().user.as_ref().unwrap().id.into();
+                            let user_id = match get_option_value(&app_command, "syncee") {
+                                None => None,
+                                Some(CommandOptionValue::User(user_id)) => Some(user_id),
+                                _ => unreachable!(),
+                            };
+
+                            match user_id {
+                                Some(user_id) => chairmanmao.push_nick_change(*user_id).await,
+                                None => (),
+                            }
+
+//                            chairmanmao.push_nick_change(author.id).await;
+                            let callback_data = CallbackDataBuilder::new()
+                                .content("Synced".to_string())
+                                .flags(MessageFlags::EPHEMERAL)
+                                .build();
+
+                            send_response(client, app_command, callback_data).await;
+                        }
                         "name" => {
-                            let api = Api::new().await;
                             let user_id = app_command.member.as_ref().unwrap().user.as_ref().unwrap().id.into();
                             let new_display_name = get_name(&app_command);
 
-                            api.set_display_name(
+                            chairmanmao.api().set_display_name(
                                 user_id,
                                 new_display_name.map(|n| n.to_string()),
                             ).await.unwrap();
@@ -102,6 +123,18 @@ fn get_name(app_command: &ApplicationCommand) -> Option<&str> {
             if let CommandOptionValue::String(value) = &option.value {
                 return Some(&value);
             }
+        }
+    }
+    None
+}
+
+fn get_option_value<'a>(
+    app_command: &'a ApplicationCommand,
+    option_name: &str,
+) -> Option<&'a CommandOptionValue> {
+    for option in &app_command.data.options {
+        if option.name == option_name {
+            return Some(&option.value);
         }
     }
     None

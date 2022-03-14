@@ -23,7 +23,7 @@ pub async fn on_event(client: &Client, event: &Event) {
 
 
 pub async fn send_welcome(client: &Client, user_id: Id<UserMarker>) {
-    let welcome_text = &include_str!("../../data/welcome.md");
+    let welcome_text = &include_str!("../../../data/welcome.md");
 
     let channel_result = client.create_private_channel(user_id).exec().await;
 

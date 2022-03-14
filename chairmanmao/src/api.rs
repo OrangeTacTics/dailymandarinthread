@@ -88,7 +88,7 @@ impl Profile {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Api {
     pub client: Client,
     pub db: Database,
@@ -234,6 +234,29 @@ impl Api {
                 profile.display_name = display_name.into();
             },
         ).await
+    }
+
+    pub async fn get_nick(
+        &self,
+        user_id: u64,
+    ) -> ApiResult<Option<String>> {
+        match self.profile(user_id).await? {
+            None => Ok(None),
+            Some(profile) => {
+                let display_name = profile.display_name.unwrap_or_else(|| profile.discord_username.unwrap_or_else(|| "unknown".to_string()));
+
+                let suffix = format!(" [{}]", profile.credit);
+
+                let len_display_name = display_name.chars().collect::<Vec<char>>().len();
+                let len_suffix = suffix.chars().collect::<Vec<char>>().len();
+                let chars_to_keep = (len_display_name + len_suffix).min(32) - len_suffix;
+
+                let display_name_trimmed = display_name.chars().take(chars_to_keep).collect::<String>();
+
+                let nick = format!("{}{}", display_name_trimmed, suffix);
+                Ok(Some(nick))
+            },
+        }
     }
 }
 

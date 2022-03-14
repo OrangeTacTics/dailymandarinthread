@@ -309,6 +309,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
     let interaction_client = client
         .interaction(application_id);
 
+    // [0]
     let jail_command = interaction_client
         .create_guild_command(guild_id)
         .user("jail")?
@@ -318,6 +319,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
         .model()
         .await?;
 
+    // [1]
     let honor_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("honor", "Honor a user.")?
@@ -354,6 +356,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
         .model()
         .await?;
 
+    // [2]
     let dishonor_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("dishonor", "Dishonor a user.")?
@@ -390,6 +393,29 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
         .model()
         .await?;
 
+
+    // [3]
+    let sync_command = interaction_client
+        .create_guild_command(guild_id)
+        .chat_input("sync", "Sync a user.")?
+        .default_permission(false)
+        .command_options(
+            &[
+                CommandOption::User(
+                    BaseCommandOptionData {
+                        name: "syncee".to_string(),
+                        description: "User to be synced".to_string(),
+                        required: false,
+                    },
+                ),
+            ],
+        )?
+        .exec()
+        .await?
+        .model()
+        .await?;
+
+    // [4]
     let name_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("name", "Change your username.")?
@@ -418,6 +444,7 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
                 jail_command,
                 honor_command,
                 dishonor_command,
+                sync_command,
                 name_command,
             ],
         )
@@ -432,7 +459,8 @@ async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
             (commands[0].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
             (commands[1].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
             (commands[2].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
-            //(commands[3].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
+            (commands[3].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
+            //(commands[4].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
         ],
     )
         .unwrap()
