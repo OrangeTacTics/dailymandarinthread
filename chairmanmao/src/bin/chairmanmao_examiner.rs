@@ -282,6 +282,11 @@ pub mod message {
 
     pub async fn pose_question(client: &Client, active_exam: &ActiveExam, question: &Question) -> Result<(), Box<dyn Error + Send + Sync>> {
         let image_bytes = chairmanmao::draw::draw(&question.question);
+        if let Err(e) = &image_bytes {
+            println!("Error: {:?}", &e);
+            return Err(format!("Error: {:?}", e).into());
+        }
+        let image_bytes = image_bytes.unwrap();
         let image_name = "image";
         let filename = &format!("{image_name}.png");
         let attachment = AttachmentFile::from_bytes(filename, &image_bytes);
