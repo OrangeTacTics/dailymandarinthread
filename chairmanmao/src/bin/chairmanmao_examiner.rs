@@ -108,6 +108,7 @@ async fn run_examiner(channel_ids: &[Id<ChannelMarker>]) -> Result<(), Box<dyn E
     let (shard, mut events) = Shard::new(token.clone(), intents);
     let client = Arc::new(Client::new(token));
     shard.start().await?;
+    println!("Running");
 
     tokio::spawn(tick_loop(client.clone(), state.clone()));
 
