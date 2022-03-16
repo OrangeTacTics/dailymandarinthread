@@ -7,6 +7,7 @@ use twilight_model::channel::message::MessageFlags;
 use twilight_model::application::interaction::ApplicationCommand;
 use twilight_model::application::callback::CallbackData;
 use twilight_model::application::interaction::application_command::CommandOptionValue;
+use twilight_model::id::{Id, marker::UserMarker};
 
 use crate::ChairmanMao;
 
@@ -38,42 +39,17 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) {
                             // let user_id = app_command.member.as_ref().unwrap().user.as_ref().unwrap().id.into();
                             let user_id = match get_option_value(&app_command, "syncee") {
                                 None => None,
-                                Some(CommandOptionValue::User(user_id)) => Some(user_id),
+                                Some(CommandOptionValue::User(user_id)) => Some(*user_id),
                                 _ => unreachable!(),
                             };
 
-                            match user_id {
-                                Some(user_id) => {
-                                    chairmanmao.push_nick_change(*user_id).await;
-                                    chairmanmao.push_role_change(*user_id).await;
-                                },
-                                None => (),
-                            }
-
-//                            chairmanmao.push_nick_change(author.id).await;
-                            let callback_data = CallbackDataBuilder::new()
-                                .content("Synced".to_string())
-                                .flags(MessageFlags::EPHEMERAL)
-                                .build();
-
-                            send_response(client, app_command, callback_data).await;
+                            cmd_sync(chairmanmao.clone(), &app_command, user_id).await;
                         }
                         "name" => {
                             let user_id = app_command.member.as_ref().unwrap().user.as_ref().unwrap().id.into();
                             let new_display_name = get_name(&app_command);
-
-                            chairmanmao.api().set_display_name(
-                                user_id,
-                                new_display_name.map(|n| n.to_string()),
-                            ).await.unwrap();
-
-                            let callback_data = CallbackDataBuilder::new()
-                                .content(format!("Your name has been changed to: {:?}", &new_display_name))
-                                .flags(MessageFlags::EPHEMERAL)
-                                .build();
-
-                            send_response(client, app_command, callback_data).await;
-                        }
+                            cmd_name(chairmanmao.clone(), app_command, user_id, new_display_name).await;
+                        },
                         command_name => {
                             let callback_data = CallbackDataBuilder::new()
                                 .content(format!("Not implemented: {command_name}"))
@@ -98,6 +74,46 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) {
         },
         _ => (),
     }
+}
+
+async fn cmd_sync(
+    chairmanmao: ChairmanMao,
+    app_command: &ApplicationCommand,
+    user_id: Option<Id<UserMarker>>,
+) {
+    match user_id {
+        Some(user_id) => {
+            chairmanmao.push_nick_change(user_id).await;
+            chairmanmao.push_role_change(user_id).await;
+        },
+        None => (),
+    }
+
+    let callback_data = CallbackDataBuilder::new()
+        .content("Synced".to_string())
+        .flags(MessageFlags::EPHEMERAL)
+        .build();
+
+    send_response(chairmanmao.client(), app_command, callback_data).await;
+}
+
+async fn cmd_name(
+    chairmanmao: ChairmanMao,
+    app_command: &ApplicationCommand,
+    user_id: u64,
+    new_display_name: Option<&str>,
+) {
+    chairmanmao.api().set_display_name(
+        user_id,
+        new_display_name.map(|n| n.to_string()),
+    ).await.unwrap();
+
+    let callback_data = CallbackDataBuilder::new()
+        .content(format!("Your name has been changed to: {:?}", &new_display_name))
+        .flags(MessageFlags::EPHEMERAL)
+        .build();
+
+    send_response(chairmanmao.client(), app_command, callback_data).await;
 }
 
 async fn send_response(client: &Client, application_command: &ApplicationCommand, callback_data: CallbackData) {
