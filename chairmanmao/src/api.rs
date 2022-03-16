@@ -23,7 +23,6 @@ pub struct Profile {
     pub defected: bool,
 }
 
-
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct DictEntry {
     pub _id: ObjectId,
@@ -256,6 +255,16 @@ impl Api {
                 let nick = format!("{}{}", display_name_trimmed, suffix);
                 Ok(Some(nick))
             },
+        }
+    }
+
+    pub async fn get_roles(
+        &self,
+        user_id: u64,
+    ) -> ApiResult<Vec<String>> {
+        match self.profile(user_id).await? {
+            None => Ok(Vec::new()),
+            Some(profile) => Ok(profile.roles.clone()),
         }
     }
 }

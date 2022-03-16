@@ -43,7 +43,10 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) {
                             };
 
                             match user_id {
-                                Some(user_id) => chairmanmao.push_nick_change(*user_id).await,
+                                Some(user_id) => {
+                                    chairmanmao.push_nick_change(*user_id).await;
+                                    chairmanmao.push_role_change(*user_id).await;
+                                },
                                 None => (),
                             }
 

@@ -100,6 +100,38 @@ impl DiscordConstants {
             mao_emoji,
         })
     }
+
+    pub fn get_role_by_name(&self, role_name: &str) -> Option<&Role> {
+        println!("Looking up role: {:?}", role_name);
+
+        let roles_by_name: std::collections::HashMap<&str, &Role> = vec![
+            ("Comrade", &self.comrade_role),
+            ("Party", &self.party_role),
+            ("Jailed", &self.jailed_role),
+        ].iter().cloned().collect();
+
+        if let Some(role) = roles_by_name.get(role_name) {
+            println!("Found shortname role: {:?}", role);
+            return Some(role);
+        }
+
+        let roles = vec![
+            &self.comrade_role,
+            &self.party_role,
+            &self.jailed_role,
+            &self.learner_role,
+            &self.bumpers_role,
+        ];
+
+        for role in &roles {
+            if role.name == role_name {
+                println!("Found role: {:?}", role);
+                return Some(&role);
+            }
+        }
+        println!("Found no matching role...");
+        None
+    }
 }
 
 async fn find_role(

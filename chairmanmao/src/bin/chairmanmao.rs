@@ -11,13 +11,14 @@ use twilight_http::Client;
 use chairmanmao::discord::DiscordConstants;
 use twilight_gateway::shard::Events;
 use twilight_model::gateway::event::Event;
-use twilight_model::id::{Id, marker::UserMarker};
+use twilight_model::id::{Id, marker::UserMarker, marker::RoleMarker};
 
 use chairmanmao::api::Api;
 
 #[derive(Debug)]
 pub enum PendingSync {
     UpdateNick(Id<UserMarker>),
+    UpdateRoles(Id<UserMarker>),
 }
 
 #[derive(Debug, Clone)]
@@ -79,7 +80,12 @@ impl ChairmanMao {
         let mut pending_syncs = self.pending_syncs.lock().await;
         let sync = PendingSync::UpdateNick(user_id);
         pending_syncs.push(sync);
+    }
 
+    pub async fn push_role_change(&self, user_id: Id<UserMarker>) {
+        let mut pending_syncs = self.pending_syncs.lock().await;
+        let sync = PendingSync::UpdateRoles(user_id);
+        pending_syncs.push(sync);
     }
 
     pub async fn has_pending_syncs(&self) -> bool {
@@ -137,6 +143,7 @@ async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Box<
         Event::MemberAdd(e) => {
             let member = &e.0;
             chairmanmao.push_nick_change(member.user.id).await;
+            chairmanmao.push_role_change(member.user.id).await;
 //                println!("Attempting to add role {} to user {} in guild {}", constants.comrade_role.id, member.user.id, constants.guild.id);
 //                chairmanmao.client().add_guild_member_role(constants.guild.id, member.user.id, constants.comrade_role.id).exec().await?;
         },
@@ -189,22 +196,47 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Box<dyn Error + Send + 
         println!("Has pending syncs:");
         for pending_sync in &chairmanmao.pop_all_syncs().await {
             println!("{:?}", pending_sync);
+                let guild_id = chairmanmao.constants().guild.id;
             match pending_sync {
                 PendingSync::UpdateNick(user_id) => {
-                    let guild_id = chairmanmao.constants().guild.id;
                     let nick: Option<String> = chairmanmao.api().get_nick(user_id.get()).await?;
-
                     chairmanmao.client().update_guild_member(guild_id, *user_id)
                         .nick(nick.as_deref())?
                         .exec()
                         .await?;
                     println!("Update user {} to {:?}", user_id.to_string(), nick);
+                },
+                PendingSync::UpdateRoles(user_id) => {
+                    let dmt_roles = chairmanmao.api().get_roles(user_id.get()).await?;
+                    let role_ids = dmt_roles_to_discord_role_ids(chairmanmao.clone(), &dmt_roles);
 
-                    // TODO: This is a hack to prevent rate-limiting.
-                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                    println!("Update roles for {} => {:?} = {:?}", user_id.get(), &dmt_roles, &role_ids);
+                    chairmanmao.client().update_guild_member(guild_id, *user_id)
+                        .roles(&role_ids)
+                        .exec()
+                        .await?;
                 },
             }
+
+            // TODO: This is a hack to prevent rate-limiting.
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         }
     }
     Ok(())
+}
+
+fn dmt_roles_to_discord_role_ids(chairmanmao: ChairmanMao, role_names: &[String]) -> Vec<Id<RoleMarker>> {
+    let mut role_ids = std::collections::HashSet::new();
+
+    let constants = chairmanmao.constants();
+    for role_name in role_names {
+        println!("Is there a role for this?: {:?}", role_name);
+        if let Some(role) = constants.get_role_by_name(role_name) {
+            println!("Yes: {:?}", &role);
+            role_ids.insert(role.id);
+        } else {
+            println!("No");
+        }
+    }
+    role_ids.iter().cloned().collect()
 }
