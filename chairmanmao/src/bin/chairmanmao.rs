@@ -230,12 +230,8 @@ fn dmt_roles_to_discord_role_ids(chairmanmao: ChairmanMao, role_names: &[String]
 
     let constants = chairmanmao.constants();
     for role_name in role_names {
-        println!("Is there a role for this?: {:?}", role_name);
         if let Some(role) = constants.get_role_by_name(role_name) {
-            println!("Yes: {:?}", &role);
             role_ids.insert(role.id);
-        } else {
-            println!("No");
         }
     }
     role_ids.iter().cloned().collect()
