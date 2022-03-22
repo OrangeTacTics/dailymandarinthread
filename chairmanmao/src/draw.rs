@@ -1,4 +1,4 @@
-use std::error::Error;
+use crate::Error;
 use std::io::Cursor;
 
 use image::{DynamicImage, Rgba};
@@ -11,7 +11,7 @@ pub fn load_font(font_name: &str) -> Font {
     font
 }
 
-pub fn draw(text: &str) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>>  {
+pub fn draw(text: &str) -> Result<Vec<u8>, Error>  {
     let font = load_font("ZCOOL_KuaiLe.ttf");
 
     // Use a dark red colour

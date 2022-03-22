@@ -1,4 +1,4 @@
-use std::error::Error;
+use crate::Error;
 use twilight_http::Client;
 use twilight_model::guild::{Role, Emoji};
 use twilight_model::user::{CurrentUser, CurrentUserGuild};
@@ -39,7 +39,7 @@ pub struct DiscordConstants {
 }
 
 impl DiscordConstants {
-    pub async fn load(client: &Client) -> Result<DiscordConstants, Box<dyn Error + Send + Sync>> {
+    pub async fn load(client: &Client) -> Result<DiscordConstants, Error> {
         let guilds = client.current_user_guilds().exec().await?.model().await?;
         let guild = guilds[0].clone();
         let guild_id = guild.id;
@@ -136,7 +136,7 @@ async fn find_role(
     guild_id: Id<GuildMarker>,
     roles: &[Role],
     name: &str,
-) -> Result<Role, Box<dyn Error + Send + Sync>> {
+) -> Result<Role, Error> {
     for role in roles.iter() {
         if role.name.contains(name) {
             return Ok(role.clone());
@@ -161,7 +161,7 @@ async fn find_channel(
     guild_id: Id<GuildMarker>,
     channels: &[GuildChannel],
     name: &str,
-) -> Result<GuildChannel, Box<dyn Error + Send + Sync>> {
+) -> Result<GuildChannel, Error> {
     for channel in channels {
         if channel.name().contains(name) {
             return Ok(channel.clone());
@@ -179,7 +179,7 @@ async fn find_channel(
     Ok(channel)
 }
 
-fn find_emoji(emojis: &[Emoji], name: &str) -> Result<Emoji, Box<dyn Error + Send + Sync>> {
+fn find_emoji(emojis: &[Emoji], name: &str) -> Result<Emoji, Error> {
     for emoji in emojis {
         if emoji.name.contains(name) {
             return Ok(emoji.clone());

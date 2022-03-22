@@ -1,5 +1,5 @@
 use std::io::Write;
-use std::error::Error;
+use chairmanmao::Error;
 use twilight_http::Client;
 use clap::{Parser, Subcommand};
 use twilight_model::id::Id;
@@ -38,7 +38,7 @@ enum CliCommand {
 
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn main() -> Result<(), Error> {
     // Initialize the tracing subscriber.
     tracing_subscriber::fmt::init();
     let command = Cli::parse().command;
@@ -58,7 +58,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     }
 }
 
-async fn list_users() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn list_users() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -86,7 +86,7 @@ async fn list_users() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn list_no_role_users() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn list_no_role_users() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -116,7 +116,7 @@ async fn list_no_role_users() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn list_roles() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn list_roles() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -136,7 +136,7 @@ async fn list_roles() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn list_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn list_emojis() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -155,7 +155,7 @@ async fn list_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn download_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn download_emojis() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -188,7 +188,7 @@ async fn download_emojis() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn list_channels() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn list_channels() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -205,7 +205,7 @@ async fn list_channels() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn list_threads() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn list_threads() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -222,7 +222,7 @@ async fn list_threads() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn list_constants() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn list_constants() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 
@@ -232,7 +232,7 @@ async fn list_constants() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-async fn rename_user(user_id: u64, nick: Option<&str>) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn rename_user(user_id: u64, nick: Option<&str>) -> Result<(), Error> {
     let user_id = Id::new(user_id);
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
@@ -249,7 +249,7 @@ async fn rename_user(user_id: u64, nick: Option<&str>) -> Result<(), Box<dyn Err
     Ok(())
 }
 
-async fn channel_history(channel_id: u64) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn channel_history(channel_id: u64) -> Result<(), Error> {
     let channel_id = Id::new(channel_id);
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
@@ -290,7 +290,7 @@ async fn channel_history(channel_id: u64) -> Result<(), Box<dyn Error + Send + S
     Ok(())
 }
 
-async fn create_commands() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn create_commands() -> Result<(), Error> {
     let token = std::env::var("DISCORD_TOKEN")?.to_owned();
     let client = Client::new(token);
 

@@ -1,11 +1,11 @@
 use std::collections::HashSet;
-use std::error::Error;
+use crate::Error;
 use serde::{Serialize, Deserialize};
 
 use mongodb::{Client, options::ClientOptions, Database, Collection};
 use mongodb::bson::{doc, oid::ObjectId, DateTime, Bson};
 
-type ApiResult<T> = Result<T, Box<dyn Error + Sync + Send>>;
+type ApiResult<T> = Result<T, Error>;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Profile {

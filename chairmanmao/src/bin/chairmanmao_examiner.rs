@@ -2,7 +2,7 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use chairmanmao::exam::{Examiner, Exam, TickResult, ExamScore, Answer, Question};
 use futures_util::StreamExt;
-use std::error::Error;
+use chairmanmao::Error;
 use twilight_gateway::{Intents, Shard};
 use twilight_model::gateway::event::Event;
 use twilight_model::channel::message::Message;
@@ -79,7 +79,7 @@ impl State {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn main() -> Result<(), Error> {
     let args = Cli::parse();
     let mut channel_ids: Vec<Id<ChannelMarker>> = args.channel_ids
         .iter()
@@ -130,7 +130,7 @@ async fn handle_message(
     state_lock: StateLock,
     client: Arc<Client>,
     message: &Message,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+) -> Result<(), Error> {
     if message.content.starts_with("!exam ") {
         handle_exam_command(state_lock, client.clone(), message).await;
     } else {
@@ -182,7 +182,7 @@ async fn handle_exam_command(
 }
 
 
-async fn tick_loop(client: Arc<Client>, state_lock: StateLock) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn tick_loop(client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
     loop {
         let mut state = state_lock.lock().await;
 
@@ -228,7 +228,7 @@ pub struct ActiveExam {
 }
 
 pub mod message {
-    use std::error::Error;
+    use chairmanmao::Error;
     use twilight_http::Client;
     use twilight_http::request::AttachmentFile;
     use super::{
@@ -239,7 +239,7 @@ pub mod message {
     };
     use twilight_embed_builder::{EmbedBuilder, EmbedFieldBuilder, EmbedAuthorBuilder, ImageSource};
 
-    pub async fn exam_start(client: &Client, active_exam: &ActiveExam) -> Result<(), Box<dyn Error>> {
+    pub async fn exam_start(client: &Client, active_exam: &ActiveExam) -> Result<(), Error> {
         let user = client.user(active_exam.user_id).exec().await?.model().await?;
 
         // TODO handle users with no avatar
@@ -276,7 +276,7 @@ pub mod message {
         Ok(())
     }
 
-    pub async fn pose_question(client: &Client, active_exam: &ActiveExam, question: &Question) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn pose_question(client: &Client, active_exam: &ActiveExam, question: &Question) -> Result<(), Error> {
         let image_bytes = chairmanmao::draw::draw(&question.question);
         if let Err(e) = &image_bytes {
             println!("Error: {:?}", &e);
@@ -294,7 +294,7 @@ pub mod message {
         Ok(())
     }
 
-    pub async fn show_answer(client: &Client, active_exam: &ActiveExam, question: &Question, answer: &Answer) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn show_answer(client: &Client, active_exam: &ActiveExam, question: &Question, answer: &Answer) -> Result<(), Error> {
         let (emoji, color) = match answer {
             Answer::Correct(_s) => ("✅", 0x00FF00),
             Answer::Incorrect(_s) => ("❌", 0x00FF00),
@@ -319,7 +319,7 @@ pub mod message {
         Ok(())
     }
 
-    pub async fn timeout(client: &Client, active_exam: &ActiveExam, question: &Question) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn timeout(client: &Client, active_exam: &ActiveExam, question: &Question) -> Result<(), Error> {
         let correct_answer = &question.valid_answers[0];
         client.create_message(active_exam.channel_id)
             .content(&format!("Timeout: {correct_answer}"))?
@@ -328,7 +328,7 @@ pub mod message {
         Ok(())
     }
 
-    pub async fn exam_end(client: &Client, active_exam: &ActiveExam, exam_score: ExamScore) -> Result<(), Box<dyn Error>> {
+    pub async fn exam_end(client: &Client, active_exam: &ActiveExam, exam_score: ExamScore) -> Result<(), Error> {
         let user = client.user(active_exam.user_id).exec().await?.model().await?;
 
         // TODO handle users with no avatar
