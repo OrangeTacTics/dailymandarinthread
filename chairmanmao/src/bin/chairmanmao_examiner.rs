@@ -10,6 +10,7 @@ use twilight_http::Client;
 use clap::Parser;
 use twilight_model::id::Id;
 use twilight_model::id::marker::{ChannelMarker, UserMarker};
+use chairmanmao::discord::DiscordConstants;
 
 const MILLIS_PER_TICK: usize = 100;
 
@@ -79,21 +80,12 @@ impl State {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
-    // Initialize the tracing subscriber.
-    tracing_subscriber::fmt::init();
     let args = Cli::parse();
+    let mut channel_ids: Vec<Id<ChannelMarker>> = args.channel_ids
+        .iter()
+        .map(|id| Id::new(id.parse().unwrap()))
+        .collect();
 
-    let channel_ids: Vec<Id<ChannelMarker>> = args.channel_ids.iter().map(|id| Id::new(id.parse().unwrap())).collect();
-    if channel_ids.is_empty() {
-        return Err("No channel ids provided".into());
-    }
-
-    run_examiner(&channel_ids).await?;
-
-    Ok(())
-}
-
-async fn run_examiner(channel_ids: &[Id<ChannelMarker>]) -> Result<(), Box<dyn Error + Send + Sync>> {
     let intents =
         Intents::GUILD_MESSAGES |
         Intents::GUILD_MESSAGE_REACTIONS |
@@ -102,6 +94,7 @@ async fn run_examiner(channel_ids: &[Id<ChannelMarker>]) -> Result<(), Box<dyn E
         Intents::GUILDS |
         Intents::GUILD_MEMBERS;
 
+
     let state = State::new();
 
     let token = std::env::var("DISCORD_TOKEN")?;
@@ -109,6 +102,9 @@ async fn run_examiner(channel_ids: &[Id<ChannelMarker>]) -> Result<(), Box<dyn E
     let client = Arc::new(Client::new(token));
     shard.start().await?;
     println!("Running");
+
+    let constants = DiscordConstants::load(&client).await?;
+    channel_ids.push(constants.exam_channel.id());
 
     tokio::spawn(tick_loop(client.clone(), state.clone()));
 
