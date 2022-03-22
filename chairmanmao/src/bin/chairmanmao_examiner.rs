@@ -132,7 +132,7 @@ async fn handle_message(
     message: &Message,
 ) -> Result<(), Error> {
     if message.content.starts_with("!exam ") {
-        handle_exam_command(state_lock, client.clone(), message).await;
+        handle_exam_command(state_lock, client.clone(), message).await?;
     } else {
         let mut state = state_lock.lock().await;
         if let Some(active_exam) = state.active_exam_for(message.channel_id, message.author.id) {
@@ -149,36 +149,57 @@ async fn handle_exam_command(
     state_lock: StateLock,
     client: Arc<Client>,
     message: &Message,
-) {
+) -> Result<(), Error> {
     if message.content == "!exam start" {
         let mut state = state_lock.lock().await;
-        if state.is_channel_busy(message.channel_id) || state.is_user_busy(message.author.id) {
-            // TODO: Can't start exam
-        } else {
-            let seed = 1;
-            let exam = chairmanmao::exam::loader::load_exam("hsk1");
-            let examiner = chairmanmao::exam::Examiner::make(&exam, MILLIS_PER_TICK, seed);
-
-            let active_exam = ActiveExam {
-                user_id: message.author.id,
-                channel_id: message.channel_id,
-                examiner,
-                exam,
-                seed,
-            };
-            message::exam_start(&client, &active_exam).await.unwrap();
-            state.active_exams.push(active_exam);
-
-        }
+        exam_start(&mut state, client, message.channel_id, message.author.id).await?;
     } else if message.content == "!exam quit" {
         let mut state = state_lock.lock().await;
-        if state.is_user_busy(message.author.id) {
-            let active_exam = state.active_exam_for(message.channel_id, message.author.id).unwrap();
-            active_exam.examiner.give_up();
-        } else {
-            // TODO: No exam in progress?
-        }
+        exam_stop(&mut state, client, message.channel_id, message.author.id).await?;
     }
+
+    Ok(())
+}
+
+async fn exam_start(
+    state: &mut State,
+    client: Arc<Client>,
+    channel_id: Id<ChannelMarker>,
+    user_id: Id<UserMarker>,
+) -> Result<(), Error> {
+    if state.is_channel_busy(channel_id) || state.is_user_busy(user_id) {
+        // TODO: Can't start exam
+    } else {
+        let seed = 1;
+        let exam = chairmanmao::exam::loader::load_exam("hsk1");
+        let examiner = chairmanmao::exam::Examiner::make(&exam, MILLIS_PER_TICK, seed);
+
+        let active_exam = ActiveExam {
+            user_id,
+            channel_id,
+            examiner,
+            exam,
+            seed,
+        };
+        message::exam_start(&client, &active_exam).await.unwrap();
+        state.active_exams.push(active_exam);
+    }
+
+    Ok(())
+}
+
+async fn exam_stop(
+    state: &mut State,
+    _client: Arc<Client>,
+    channel_id: Id<ChannelMarker>,
+    user_id: Id<UserMarker>,
+) -> Result<(), Error> {
+    if state.is_user_busy(user_id) {
+        let active_exam = state.active_exam_for(channel_id, user_id).unwrap();
+        active_exam.examiner.give_up();
+    }
+
+    Ok(())
 }
 
 
