@@ -185,6 +185,54 @@ impl Api {
         }
     }
 
+    pub async fn hsk(
+        &self,
+        user_id: u64,
+    ) -> ApiResult<Option<u8>> {
+        if let Some(profile) = self.profile(user_id).await? {
+            if profile.roles.contains(&"Hsk6".to_string()) {
+                Ok(Some(6))
+            } else if profile.roles.contains(&"Hsk5".to_string()) {
+                Ok(Some(5))
+            } else if profile.roles.contains(&"Hsk4".to_string()) {
+                Ok(Some(4))
+            } else if profile.roles.contains(&"Hsk3".to_string()) {
+                Ok(Some(3))
+            } else if profile.roles.contains(&"Hsk2".to_string()) {
+                Ok(Some(2))
+            } else if profile.roles.contains(&"Hsk1".to_string()) {
+                Ok(Some(1))
+            } else {
+                Ok(None)
+            }
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub async fn set_hsk(
+        &self,
+        user_id: u64,
+        hsk: Option<u8>,
+    ) -> ApiResult<Profile> {
+        let hsk_role = hsk.map(|n| format!("Hsk{n}"));
+
+        self.update_profile(
+            user_id,
+            |profile| {
+                profile.remove_role("Hsk1");
+                profile.remove_role("Hsk2");
+                profile.remove_role("Hsk3");
+                profile.remove_role("Hsk4");
+                profile.remove_role("Hsk5");
+                profile.remove_role("Hsk6");
+                if let Some(hsk_role) = hsk_role {
+                    profile.add_role(&hsk_role);
+                }
+            },
+        ).await
+    }
+
     pub async fn jail(
         &self,
         user_id: u64,
@@ -282,6 +330,14 @@ async fn test_jail_unjail() -> ApiResult<()> {
     api.unjail(user_id).await.unwrap();
     let profile = api.profile(user_id).await.unwrap().unwrap();
     assert!(!profile.roles.contains(&"Jailed".to_string()));
+
+    api.set_hsk(user_id, Some(4)).await.unwrap();
+    let hsk = api.hsk(user_id).await.unwrap();
+    assert_eq!(hsk, Some(4));
+
+    api.set_hsk(user_id, None).await.unwrap();
+    let hsk = api.hsk(user_id).await.unwrap();
+    assert_eq!(hsk, None);
 
     Ok(())
 }

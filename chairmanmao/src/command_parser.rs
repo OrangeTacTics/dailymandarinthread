@@ -120,6 +120,7 @@ impl Parser {
 
 #[cfg(test)]
 mod test {
+    /*
     use super::*;
 
     #[test]
@@ -146,5 +147,6 @@ mod test {
         assert_eq!(amount, Some(10));
         assert_eq!(reason, "You smell nice.".to_string());
     }
+    */
 }
 
