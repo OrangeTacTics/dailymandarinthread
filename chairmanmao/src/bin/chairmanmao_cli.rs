@@ -34,6 +34,7 @@ enum CliCommand {
     ChannelHistory { channel_id: u64 },
     CreateCommands,
     DownloadEmojis,
+    SendMessage { channel_id: u64, message: String },
 }
 
 
@@ -55,6 +56,7 @@ async fn main() -> Result<(), Error> {
         CliCommand::ChannelHistory { channel_id } => channel_history(*channel_id).await,
         CliCommand::CreateCommands => create_commands().await,
         CliCommand::DownloadEmojis => download_emojis().await,
+        CliCommand::SendMessage { channel_id, message } => send_message(*channel_id, message).await,
     }
 }
 
@@ -472,6 +474,17 @@ async fn create_commands() -> Result<(), Error> {
         println!("    {:20} {}", command.name, command.description);
     }
 
+
+    Ok(())
+}
+
+async fn send_message(channel_id: u64, message: &str) -> Result<(), Error> {
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    client.create_message(Id::new(channel_id))
+        .content(message)?
+        .exec().await?;
 
     Ok(())
 }
