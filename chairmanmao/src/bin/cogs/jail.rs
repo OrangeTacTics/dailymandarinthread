@@ -10,9 +10,10 @@ use twilight_model::application::interaction::application_command::CommandOption
 use twilight_model::id::{Id, marker::UserMarker};
 
 use crate::ChairmanMao;
+use crate::Error;
 
 
-pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) {
+pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) -> Result<(), Error> {
     let client = chairmanmao.client();
     match event {
         Event::InteractionCreate(payload) => {
@@ -43,7 +44,7 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) {
                                 _ => unreachable!(),
                             };
 
-                            cmd_sync(chairmanmao.clone(), &app_command, user_id).await;
+                            cmd_sync(chairmanmao.clone(), &app_command, user_id).await?;
                         }
                         "name" => {
                             let user_id = app_command.member.as_ref().unwrap().user.as_ref().unwrap().id.into();
@@ -74,19 +75,32 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) {
         },
         _ => (),
     }
+
+    Ok(())
 }
 
 async fn cmd_sync(
     chairmanmao: ChairmanMao,
     app_command: &ApplicationCommand,
     user_id: Option<Id<UserMarker>>,
-) {
-    match user_id {
-        Some(user_id) => {
-            chairmanmao.push_nick_change(user_id).await;
-            chairmanmao.push_role_change(user_id).await;
+) -> Result<(), Error> {
+    let user_ids: Vec<Id<UserMarker>> = match user_id {
+        Some(user_id) => vec![user_id],
+        None => {
+            let members = chairmanmao
+                .client()
+                .guild_members(chairmanmao.constants().guild.id)
+                .limit(999)?
+                .exec().await?
+                .model().await?;
+
+            members.iter().map(|member| member.user.id).collect()
         },
-        None => (),
+    };
+
+    for user_id in &user_ids {
+        chairmanmao.push_nick_change(*user_id).await;
+        chairmanmao.push_role_change(*user_id).await;
     }
 
     let callback_data = CallbackDataBuilder::new()
@@ -95,6 +109,8 @@ async fn cmd_sync(
         .build();
 
     send_response(chairmanmao.client(), app_command, callback_data).await;
+
+    Ok(())
 }
 
 async fn cmd_name(
@@ -114,6 +130,7 @@ async fn cmd_name(
         .build();
 
     send_response(chairmanmao.client(), app_command, callback_data).await;
+    chairmanmao.push_nick_change(Id::new(user_id)).await;
 }
 
 async fn send_response(client: &Client, application_command: &ApplicationCommand, callback_data: CallbackData) {

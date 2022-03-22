@@ -5,7 +5,7 @@ use tokio::sync::Mutex;
 use std::sync::Arc;
 
 use futures_util::StreamExt;
-use std::{env, error::Error};
+use std::env;
 use twilight_gateway::{Intents, Shard};
 use twilight_http::Client;
 use chairmanmao::discord::DiscordConstants;
@@ -14,6 +14,7 @@ use twilight_model::gateway::event::Event;
 use twilight_model::id::{Id, marker::UserMarker, marker::RoleMarker};
 
 use chairmanmao::api::Api;
+use chairmanmao::Error;
 
 #[derive(Debug)]
 pub enum PendingSync {
@@ -31,7 +32,7 @@ pub struct ChairmanMao {
 }
 
 impl ChairmanMao {
-    pub async fn connect() -> Result<ChairmanMao, Box<dyn Error + Send + Sync>> {
+    pub async fn connect() -> Result<ChairmanMao, Error> {
         let intents =
             Intents::GUILD_MESSAGES |
             Intents::GUILD_MESSAGE_REACTIONS |
@@ -102,7 +103,7 @@ impl ChairmanMao {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn main() -> Result<(), Error> {
     let chairmanmao = ChairmanMao::connect().await?;
 
     let h1 = tokio::spawn(event_loop(chairmanmao.clone()));
@@ -123,7 +124,7 @@ async fn event_loop(chairmanmao: ChairmanMao) {
     }
 }
 
-async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Error> {
     match &event {
         Event::Ready(_e) => {
             let channel_id = chairmanmao.constants().tiananmen_channel.id();
@@ -175,7 +176,7 @@ async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Box<
     }
     cogs::welcome::on_event(&chairmanmao.client(), &event).await;
     cogs::social_credit::on_event(&chairmanmao.client(), &event).await;
-    cogs::jail::on_event(&chairmanmao, &event).await;
+    cogs::jail::on_event(&chairmanmao, &event).await?;
 
     Ok(())
 }
@@ -191,7 +192,7 @@ async fn sync_loop(chairmanmao: ChairmanMao) {
     }
 }
 
-async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
     if chairmanmao.has_pending_syncs().await {
         println!("Has pending syncs:");
         for pending_sync in &chairmanmao.pop_all_syncs().await {
