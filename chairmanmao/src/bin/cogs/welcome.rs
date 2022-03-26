@@ -15,7 +15,7 @@ pub async fn on_event(client: &Client, event: &Event) {
         },
         Event::MemberAdd(payload) => {
             let member = &payload.0;
-            dbg!(&member);
+            println!("{}     {}", member.user.id, member.user.name);
         },
         _ => (),
     }
