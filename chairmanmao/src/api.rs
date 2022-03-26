@@ -315,7 +315,15 @@ impl Api {
     ) -> ApiResult<Vec<String>> {
         match self.profile(user_id).await? {
             None => Ok(Vec::new()),
-            Some(profile) => Ok(profile.roles.clone()),
+            Some(profile) => {
+                let mut roles = profile.roles.clone();
+                roles.push("Comrade".to_string());
+                if roles.contains(&"Jailed".to_string()) {
+                    Ok(vec!["Jailed".to_string()])
+                } else {
+                    Ok(roles)
+                }
+            },
         }
     }
 }
