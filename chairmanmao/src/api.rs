@@ -100,9 +100,12 @@ pub struct Api {
 
 impl Api {
     pub async fn new() -> Api {
-        let client_options = ClientOptions::parse("mongodb://localhost:27017/").await.unwrap();
+        let mongodb_uri = std::env::var("MONGODB_URI").expect("MONGODB_URI not defined in envrionment");
+        let mongodb_db = std::env::var("MONGODB_DB").expect("MONGODB_DB not defined in envrionment");
+
+        let client_options = ClientOptions::parse(mongodb_uri).await.unwrap();
         let client = Client::with_options(client_options).unwrap();
-        let db = client.database("DailyMandarinThread");
+        let db = client.database(&mongodb_db);
 
         let profiles_collection = db.collection::<Profile>("Profiles");
         let serversettings_collection = db.collection::<ServerSettings>("ServerSettings");
