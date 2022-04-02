@@ -201,7 +201,7 @@ async fn list_channels() -> Result<(), Error> {
 
     println!("Channels:");
     for channel in channels.iter() {
-        println!("    {}    {}", channel.id() , channel.name());
+        println!("    {}    {}", channel.id , channel.name.as_ref().unwrap_or(&"".to_string()));
     }
 
     Ok(())
@@ -218,7 +218,7 @@ async fn list_threads() -> Result<(), Error> {
 
     println!("Threads:");
     for thread in threads.threads.iter() {
-        println!("    {}    {}", thread.id() , thread.name().unwrap_or_default());
+        println!("    {}    {}", thread.id , thread.name.as_ref().unwrap_or(&"".to_string()));
     }
 
     Ok(())

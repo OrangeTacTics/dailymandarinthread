@@ -2,7 +2,7 @@ use twilight_model::gateway::event::Event;
 use twilight_http::Client;
 use twilight_model::id::{Id};
 use twilight_model::id::marker::{UserMarker};
-use twilight_model::channel::PrivateChannel;
+use twilight_model::channel::Channel;
 
 pub async fn on_event(client: &Client, event: &Event) {
     match event {
@@ -33,7 +33,7 @@ pub async fn send_welcome(client: &Client, user_id: Id<UserMarker>) {
             return;
         }
         Ok(channel) => {
-            let channel: PrivateChannel = channel.model().await.unwrap();
+            let channel: Channel = channel.model().await.unwrap();
             client.create_message(channel.id)
                 .content(welcome_text).unwrap()
                 .exec()

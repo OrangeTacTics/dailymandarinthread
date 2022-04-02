@@ -1,13 +1,14 @@
 use twilight_model::gateway::event::Event;
+use twilight_model::http::interaction::InteractionResponse;
 use twilight_http::Client;
 use twilight_model::application::interaction::Interaction;
-use twilight_util::builder::CallbackDataBuilder;
-use twilight_model::application::callback::InteractionResponse::ChannelMessageWithSource;
+use twilight_model::http::interaction::InteractionResponseType::ChannelMessageWithSource;
 use twilight_model::channel::message::MessageFlags;
 use twilight_model::application::interaction::ApplicationCommand;
-use twilight_model::application::callback::CallbackData;
+use twilight_model::http::interaction::InteractionResponseData;
 use twilight_model::application::interaction::application_command::CommandOptionValue;
 use twilight_model::id::{Id, marker::UserMarker};
+use twilight_util::builder::InteractionResponseDataBuilder;
 
 use crate::ChairmanMao;
 use crate::Error;
@@ -29,7 +30,7 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) -> Result<(), Er
                     println!("Command: {}", command_name);
                     match command_name.as_ref() {
                         "jail" => {
-                            let callback_data = CallbackDataBuilder::new()
+                            let callback_data = InteractionResponseDataBuilder::new()
                                 .content("Callback message".to_string())
                                 .flags(MessageFlags::EPHEMERAL)
                                 .build();
@@ -52,7 +53,7 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) -> Result<(), Er
                             cmd_name(chairmanmao.clone(), app_command, user_id, new_display_name).await;
                         },
                         command_name => {
-                            let callback_data = CallbackDataBuilder::new()
+                            let callback_data = InteractionResponseDataBuilder::new()
                                 .content(format!("Not implemented: {command_name}"))
                                 .flags(MessageFlags::EPHEMERAL)
                                 .build();
@@ -103,7 +104,7 @@ async fn cmd_sync(
         chairmanmao.push_role_change(*user_id).await;
     }
 
-    let callback_data = CallbackDataBuilder::new()
+    let callback_data = InteractionResponseDataBuilder::new()
         .content("Synced".to_string())
         .flags(MessageFlags::EPHEMERAL)
         .build();
@@ -124,7 +125,7 @@ async fn cmd_name(
         new_display_name.map(|n| n.to_string()),
     ).await.unwrap();
 
-    let callback_data = CallbackDataBuilder::new()
+    let callback_data = InteractionResponseDataBuilder::new()
         .content(format!("Your name has been changed to: {:?}", &new_display_name))
         .flags(MessageFlags::EPHEMERAL)
         .build();
@@ -133,7 +134,7 @@ async fn cmd_name(
     chairmanmao.push_nick_change(Id::new(user_id)).await;
 }
 
-async fn send_response(client: &Client, application_command: &ApplicationCommand, callback_data: CallbackData) {
+async fn send_response(client: &Client, application_command: &ApplicationCommand, callback_data: InteractionResponseData) {
     let application_id = {
         let response = client.current_user_application().exec().await.unwrap();
         response.model().await.unwrap().id
@@ -143,8 +144,12 @@ async fn send_response(client: &Client, application_command: &ApplicationCommand
     let interaction_id = &application_command.id;
     let interaction_token = &application_command.token;
 
-    let callback_data = &ChannelMessageWithSource(callback_data);
-    interaction_client.interaction_callback(
+    let callback_data = &InteractionResponse {
+        kind: ChannelMessageWithSource,
+        data: Some(callback_data),
+    };
+
+    interaction_client.create_response(
         *interaction_id,
         interaction_token,
         callback_data,

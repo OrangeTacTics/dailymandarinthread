@@ -127,7 +127,7 @@ async fn event_loop(chairmanmao: ChairmanMao) {
 async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Error> {
     match &event {
         Event::Ready(_e) => {
-            let channel_id = chairmanmao.constants().tiananmen_channel.id();
+            let channel_id = chairmanmao.constants().tiananmen_channel.id;
             chairmanmao.client().create_message(channel_id)
                 .content(&format!("<@{}> is online", chairmanmao.constants().bot_user.id)).unwrap()
                 .exec()

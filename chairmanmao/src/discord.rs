@@ -2,7 +2,7 @@ use crate::Error;
 use twilight_http::Client;
 use twilight_model::guild::{Role, Emoji};
 use twilight_model::user::{CurrentUser, CurrentUserGuild};
-use twilight_model::channel::GuildChannel;
+use twilight_model::channel::Channel;
 use twilight_model::id::{Id, marker::GuildMarker};
 
 
@@ -20,19 +20,19 @@ pub struct DiscordConstants {
 
     // CHANNELS
     // NEWS
-    pub news_channel: GuildChannel,
-    pub rules_channel: GuildChannel,
+    pub news_channel: Channel,
+    pub rules_channel: Channel,
     // GENERAL
-    pub general_channel: GuildChannel,
-    pub exam_channel: GuildChannel,
-    pub learners_channel: GuildChannel,
-    pub apologies_channel: GuildChannel,
-    //pub voice_channel: GuildChannel,
+    pub general_channel: Channel,
+    pub exam_channel: Channel,
+    pub learners_channel: Channel,
+    pub apologies_channel: Channel,
+    //pub voice_channel: Channel,
     // SPECIAL
-    pub party_channel: GuildChannel,
-    pub art_channel: GuildChannel,
-    pub bump_channel: GuildChannel,
-    pub tiananmen_channel: GuildChannel,
+    pub party_channel: Channel,
+    pub art_channel: Channel,
+    pub bump_channel: Channel,
+    pub tiananmen_channel: Channel,
 
     // EMOJIS
     pub mao_emoji: Emoji,
@@ -159,11 +159,11 @@ async fn find_role(
 async fn find_channel(
     client: &Client,
     guild_id: Id<GuildMarker>,
-    channels: &[GuildChannel],
+    channels: &[Channel],
     name: &str,
-) -> Result<GuildChannel, Error> {
+) -> Result<Channel, Error> {
     for channel in channels {
-        if channel.name().contains(name) {
+        if channel.name.as_ref().unwrap_or(&"".to_string()).contains(name) {
             return Ok(channel.clone());
         }
     }

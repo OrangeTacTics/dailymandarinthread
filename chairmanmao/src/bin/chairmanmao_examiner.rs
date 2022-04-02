@@ -104,7 +104,7 @@ async fn main() -> Result<(), Error> {
     println!("Running");
 
     let constants = DiscordConstants::load(&client).await?;
-    channel_ids.push(constants.exam_channel.id());
+    channel_ids.push(constants.exam_channel.id);
 
     tokio::spawn(tick_loop(client.clone(), state.clone()));
 
@@ -251,7 +251,7 @@ pub struct ActiveExam {
 pub mod message {
     use chairmanmao::Error;
     use twilight_http::Client;
-    use twilight_http::request::AttachmentFile;
+    use twilight_model::http::attachment::Attachment;
     use super::{
         ActiveExam,
         ExamScore,
@@ -305,11 +305,11 @@ pub mod message {
         }
         let image_bytes = image_bytes.unwrap();
         let image_name = "image";
-        let filename = &format!("{image_name}.png");
-        let attachment = AttachmentFile::from_bytes(filename, &image_bytes);
+        let filename = format!("{image_name}.png");
+        let attachment = Attachment::from_bytes(filename, image_bytes);
 
         client.create_message(active_exam.channel_id)
-            .attach(&[attachment])
+            .attachments(&[attachment])?
             .exec()
             .await?;
         Ok(())
