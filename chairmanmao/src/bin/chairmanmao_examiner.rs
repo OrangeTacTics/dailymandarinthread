@@ -87,12 +87,13 @@ async fn main() -> Result<(), Error> {
         .collect();
 
     let intents =
+        Intents::DIRECT_MESSAGES |
+        Intents::GUILDS |
+        Intents::GUILD_MEMBERS |
         Intents::GUILD_MESSAGES |
         Intents::GUILD_MESSAGE_REACTIONS |
-        Intents::DIRECT_MESSAGES |
         Intents::GUILD_VOICE_STATES |
-        Intents::GUILDS |
-        Intents::GUILD_MEMBERS;
+        Intents::MESSAGE_CONTENT;
 
 
     let state = State::new();

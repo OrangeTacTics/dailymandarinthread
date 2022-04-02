@@ -34,12 +34,13 @@ pub struct ChairmanMao {
 impl ChairmanMao {
     pub async fn connect() -> Result<ChairmanMao, Error> {
         let intents =
+            Intents::DIRECT_MESSAGES |
+            Intents::GUILDS |
+            Intents::GUILD_MEMBERS |
             Intents::GUILD_MESSAGES |
             Intents::GUILD_MESSAGE_REACTIONS |
-            Intents::DIRECT_MESSAGES |
             Intents::GUILD_VOICE_STATES |
-            Intents::GUILDS |
-            Intents::GUILD_MEMBERS;
+            Intents::MESSAGE_CONTENT;
 
         let token = env::var("DISCORD_TOKEN")?;
 
