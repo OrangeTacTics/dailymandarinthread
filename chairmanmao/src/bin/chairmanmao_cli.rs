@@ -4,6 +4,8 @@ use twilight_http::Client;
 use clap::{Parser, Subcommand};
 use twilight_model::id::Id;
 use twilight_model::application::command::CommandOption;
+use twilight_model::application::command::OptionsCommandOptionData;
+
 use twilight_model::application::command::{
     NumberCommandOptionData,
     BaseCommandOptionData,
@@ -439,6 +441,50 @@ async fn create_commands() -> Result<(), Error> {
         .model()
         .await?;
 
+    // [5]
+    let exam_command = interaction_client
+        .create_guild_command(guild_id)
+        .chat_input("exam", "Administer an Exam")?
+        .command_options(
+            &[
+                CommandOption::SubCommand(
+                    OptionsCommandOptionData {
+                        name:  "start".to_string(),
+                        description: "Start an exam".to_string(),
+                        options: vec![
+                            CommandOption::String(
+                                ChoiceCommandOptionData {
+                                    autocomplete: false,
+                                    choices: vec![
+                                        CommandOptionChoice::String { name: "hsk1".to_string(), value: "hsk1".to_string(), },
+                                        CommandOptionChoice::String { name: "hsk2".to_string(), value: "hsk2".to_string(), },
+                                        CommandOptionChoice::String { name: "hsk3".to_string(), value: "hsk3".to_string(), },
+                                        CommandOptionChoice::String { name: "hsk4".to_string(), value: "hsk4".to_string(), },
+                                        CommandOptionChoice::String { name: "hsk5".to_string(), value: "hsk5".to_string(), },
+                                        CommandOptionChoice::String { name: "hsk6".to_string(), value: "hsk6".to_string(), },
+                                    ],
+                                    name: "exam".into(),
+                                    required: false,
+                                    description: "Which exam to run".into(),
+                                },
+                            ),
+                        ],
+                    }
+                ),
+                CommandOption::SubCommand(
+                    OptionsCommandOptionData {
+                        name:  "quit".to_string(),
+                        description: "Quit an exam in progress".to_string(),
+                        options: vec![],
+                    }
+                ),
+            ],
+        )?
+        .exec()
+        .await?
+        .model()
+        .await?;
+
     let commands = interaction_client
         .set_guild_commands(
             guild_id,
@@ -448,6 +494,7 @@ async fn create_commands() -> Result<(), Error> {
                 dishonor_command,
                 sync_command,
                 name_command,
+                exam_command,
             ],
         )
         .exec()
@@ -463,6 +510,7 @@ async fn create_commands() -> Result<(), Error> {
             (commands[2].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
             (commands[3].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
             //(commands[4].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
+            //(commands[5].id.unwrap(), CommandPermissions { id: CommandPermissionsType::Role(constants.party_role.id), permission: true}),
         ],
     )
         .unwrap()

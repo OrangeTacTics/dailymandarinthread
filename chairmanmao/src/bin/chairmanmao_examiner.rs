@@ -11,6 +11,12 @@ use clap::Parser;
 use twilight_model::id::Id;
 use twilight_model::id::marker::{ChannelMarker, UserMarker};
 use chairmanmao::discord::DiscordConstants;
+use twilight_model::application::interaction::Interaction;
+use twilight_model::application::interaction::application_command::CommandData;
+use twilight_model::application::interaction::application_command::CommandOptionValue;
+use twilight_model::application::interaction::ApplicationCommand;
+
+
 
 const MILLIS_PER_TICK: usize = 100;
 
@@ -120,6 +126,14 @@ async fn main() -> Result<(), Error> {
                     }
                 }
             },
+            Event::InteractionCreate(e) => {
+                let interaction: &Interaction = &e.0;
+                if let Interaction::ApplicationCommand(application_command) = interaction {
+                    if let Some(exam_command) = parse_exam_command(application_command) {
+                        handle_exam_command(state.clone(), client.clone(), &exam_command).await?;
+                    }
+                }
+            },
             _ => (),
         }
     }
@@ -133,7 +147,9 @@ async fn handle_message(
     message: &Message,
 ) -> Result<(), Error> {
     if message.content.starts_with("!exam ") {
-        handle_exam_command(state_lock, client.clone(), message).await?;
+        if let Some(exam_command) = message_to_exam_command(message) {
+            handle_exam_command(state_lock, client.clone(), &exam_command).await?;
+        }
     } else {
         let mut state = state_lock.lock().await;
         if let Some(active_exam) = state.active_exam_for(message.channel_id, message.author.id) {
@@ -149,14 +165,17 @@ async fn handle_message(
 async fn handle_exam_command(
     state_lock: StateLock,
     client: Arc<Client>,
-    message: &Message,
+    exam_command: &ExamCommand,
 ) -> Result<(), Error> {
-    if message.content == "!exam start" {
-        let mut state = state_lock.lock().await;
-        exam_start(&mut state, client, message.channel_id, message.author.id).await?;
-    } else if message.content == "!exam quit" {
-        let mut state = state_lock.lock().await;
-        exam_stop(&mut state, client, message.channel_id, message.author.id).await?;
+    match exam_command {
+        ExamCommand::Start { channel_id, exam, user_id }=> {
+            let mut state = state_lock.lock().await;
+            exam_start(&mut state, client, *channel_id, *user_id).await?;
+        },
+        ExamCommand::Quit { user_id, channel_id } => {
+            let mut state = state_lock.lock().await;
+            exam_stop(&mut state, client, *channel_id, *user_id).await?;
+        },
     }
 
     Ok(())
@@ -401,5 +420,71 @@ pub mod message {
             Answer::Timeout => "\\*timeout\\*",
             Answer::Quit => "\\*quit\\*",
         }
+    }
+}
+
+#[derive(Debug)]
+enum ExamCommand {
+    Start {
+        user_id: Id<UserMarker>,
+        channel_id: Id<ChannelMarker>,
+        exam: Option<String>,
+    },
+    Quit {
+        user_id: Id<UserMarker>,
+        channel_id: Id<ChannelMarker>,
+    },
+}
+
+fn parse_exam_command(application_command: &ApplicationCommand) -> Option<ExamCommand> {
+    match application_command.data.name.as_str() {
+        "exam" => {
+            let subcommand = &application_command.data.options[0];
+            let subcommand_name = &subcommand.name;
+            let user_id = application_command.member.as_ref().unwrap().user.as_ref().unwrap().id;
+            let channel_id = application_command.channel_id;
+
+            match subcommand_name.as_str() {
+                "start" => {
+                    if let CommandOptionValue::SubCommand(subcommand_options) = &subcommand.value {
+                        let exam = if subcommand_options.is_empty() {
+                             None
+                        } else if let CommandOptionValue::String(exam) = &subcommand_options[0].value {
+                            Some(exam.clone())
+                        } else {
+                            panic!("Command option 'exam' should be a string.");
+                        };
+                        Some(ExamCommand::Start {
+                            user_id,
+                            channel_id,
+                            exam,
+                        })
+                    } else {
+                        None
+                    }
+                },
+                "quit" => {
+                    Some(ExamCommand::Quit {
+                        user_id,
+                        channel_id,
+                    })
+                },
+                name => panic!("Unexpected exam subcommand: {name}"),
+            }
+        },
+        _name => None,
+    }
+}
+
+fn message_to_exam_command(message: &Message) -> Option<ExamCommand> {
+    let user_id = message.author.id;
+    let channel_id = message.channel_id;
+
+    if message.content == "!exam start" {
+        Some(ExamCommand::Start { exam: None, user_id, channel_id })
+    } else if message.content == "!exam quit" {
+        Some(ExamCommand::Quit { user_id, channel_id })
+    } else {
+        None
     }
 }

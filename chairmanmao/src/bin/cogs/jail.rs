@@ -53,12 +53,14 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) -> Result<(), Er
                             cmd_name(chairmanmao.clone(), app_command, user_id, new_display_name).await;
                         },
                         command_name => {
+                            /*
                             let callback_data = InteractionResponseDataBuilder::new()
                                 .content(format!("Not implemented: {command_name}"))
                                 .flags(MessageFlags::EPHEMERAL)
                                 .build();
 
                             send_response(client, app_command, callback_data).await;
+                            */
                         },
                     }
 
