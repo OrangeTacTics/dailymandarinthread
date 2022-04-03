@@ -160,6 +160,14 @@ impl Api {
         }
     }
 
+    pub async fn profile_exists(&self, user_id: u64) -> ApiResult<bool> {
+        if let Some(_profile) = self.profiles_collection.find_one(doc! { "user_id": Bson::Int64(user_id as i64) }, None).await? {
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+
     pub async fn profile(&self, user_id: u64) -> ApiResult<Profile> {
         if let Some(profile) = self.profiles_collection.find_one(doc! { "user_id": Bson::Int64(user_id as i64) }, None).await? {
             Ok(profile)

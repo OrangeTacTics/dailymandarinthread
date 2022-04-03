@@ -5,6 +5,7 @@ use clap::{Parser, Subcommand};
 use twilight_model::id::Id;
 use twilight_model::application::command::CommandOption;
 use twilight_model::application::command::OptionsCommandOptionData;
+use chairmanmao::api::Api;
 
 use twilight_model::application::command::{
     NumberCommandOptionData,
@@ -26,6 +27,7 @@ struct Cli {
 #[derive(Subcommand, Debug)]
 enum CliCommand {
     ListUsers,
+    ListUnregisteredUsers,
     ListNoRoleUsers,
     ListRoles,
     ListEmojis,
@@ -48,6 +50,7 @@ async fn main() -> Result<(), Error> {
 
     match &command {
         CliCommand::ListUsers => list_users().await,
+        CliCommand::ListUnregisteredUsers => list_unregistered_users().await,
         CliCommand::ListNoRoleUsers => list_no_role_users().await,
         CliCommand::ListRoles => list_roles().await,
         CliCommand::ListEmojis => list_emojis().await,
@@ -85,6 +88,38 @@ async fn list_users() -> Result<(), Error> {
             None => &member.user.name,
         };
         println!("   {:>6}    {:>20}    {:32}    {}", i, member.user.id, nick, username);
+    }
+
+    Ok(())
+}
+
+async fn list_unregistered_users() -> Result<(), Error> {
+    let api = Api::new().await;
+    let token = std::env::var("DISCORD_TOKEN")?.to_owned();
+    let client = Client::new(token);
+
+    let guilds = client.current_user_guilds().exec().await?.model().await?;
+    let guild_id = guilds[0].id;
+
+    let mut members = client.guild_members(guild_id).limit(999)?.exec().await?.model().await?;
+
+    members.sort_by(|member1, member2| {
+        let joined_1 = member1.joined_at.as_micros();
+        let joined_2 = member2.joined_at.as_micros();
+        joined_1.cmp(&joined_2)
+    });
+
+    println!("Members who are not registered:");
+    for (i, member) in members.iter().enumerate() {
+        let user_id = member.user.id;
+        if !api.profile_exists(user_id.get()).await? {
+            let username = format!("{}#{:04}", member.user.name, member.user.discriminator);
+            let nick = match member.nick.as_ref() {
+                Some(n) => n,
+                None => &member.user.name,
+            };
+            println!("   {:>6}    {:>20}    {:32}    {}", i, member.user.id, nick, username);
+        }
     }
 
     Ok(())
