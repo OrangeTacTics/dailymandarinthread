@@ -19,6 +19,7 @@ use twilight_util::builder::InteractionResponseDataBuilder;
 use twilight_model::http::interaction::InteractionResponse;
 use twilight_model::http::interaction::InteractionResponseType;
 use twilight_model::channel::message::MessageFlags;
+use chairmanmao::api::Api;
 
 const MILLIS_PER_TICK: usize = 100;
 
@@ -114,9 +115,11 @@ async fn main() -> Result<(), Error> {
     let constants = DiscordConstants::load(&client).await?;
     channel_ids.push(constants.exam_channel.id);
 
+
+    let api = Api::new().await;
     let state = State::new(channel_ids.clone());
 
-    tokio::spawn(tick_loop(client.clone(), state.clone()));
+    tokio::spawn(tick_loop(api.clone(), client.clone(), state.clone()));
 
     while let Some(event) = events.next().await {
         match &event {
@@ -125,7 +128,7 @@ async fn main() -> Result<(), Error> {
                 if channel_ids.contains(&message.channel_id) {
                     let author = &message.author;
                     if !author.bot {
-                        handle_message(state.clone(), client.clone(), &message).await?;
+                        handle_message(api.clone(), state.clone(), client.clone(), &message).await?;
                     }
                 }
             },
@@ -157,7 +160,7 @@ async fn main() -> Result<(), Error> {
                         .await.unwrap();
 
                     if let Some(exam_command) = parse_exam_command(application_command) {
-                        handle_exam_command(state.clone(), client.clone(), &exam_command).await?;
+                        handle_exam_command(api.clone(), state.clone(), client.clone(), &exam_command).await?;
                     }
                 }
             },
@@ -169,13 +172,14 @@ async fn main() -> Result<(), Error> {
 }
 
 async fn handle_message(
+    api: Api,
     state_lock: StateLock,
     client: Arc<Client>,
     message: &Message,
 ) -> Result<(), Error> {
     if message.content.starts_with("!exam ") {
         if let Some(exam_command) = message_to_exam_command(message) {
-            handle_exam_command(state_lock, client.clone(), &exam_command).await?;
+            handle_exam_command(api, state_lock, client.clone(), &exam_command).await?;
         }
     } else {
         let mut state = state_lock.lock().await;
@@ -190,6 +194,7 @@ async fn handle_message(
 }
 
 async fn handle_exam_command(
+    api: Api,
     state_lock: StateLock,
     client: Arc<Client>,
     exam_command: &ExamCommand,
@@ -197,7 +202,13 @@ async fn handle_exam_command(
     match exam_command {
         ExamCommand::Start { channel_id, exam, user_id }=> {
             let mut state = state_lock.lock().await;
-            exam_start(&mut state, client, *channel_id, *user_id, exam.clone()).await?;
+            let exam = if let Some(specified_exam) = exam {
+                specified_exam
+            } else {
+                let hsk = api.hsk(user_id.get()).await?;
+                next_exam(hsk).unwrap_or("hsk6")
+            };
+            exam_start(&mut state, client, *channel_id, *user_id, exam).await?;
         },
         ExamCommand::Quit { user_id, channel_id } => {
             let mut state = state_lock.lock().await;
@@ -208,12 +219,25 @@ async fn handle_exam_command(
     Ok(())
 }
 
+fn next_exam(hsk: Option<u8>) -> Option<&'static str> {
+    match hsk {
+        None => Some("hsk1"),
+        Some(1) => Some("hsk2"),
+        Some(2) => Some("hsk3"),
+        Some(3) => Some("hsk4"),
+        Some(4) => Some("hsk5"),
+        Some(5) => Some("hsk6"),
+        Some(6) => None,
+        Some(_) => None,
+    }
+}
+
 async fn exam_start(
     state: &mut State,
     client: Arc<Client>,
     channel_id: Id<ChannelMarker>,
     user_id: Id<UserMarker>,
-    exam_name: Option<String>,
+    exam_name: &str,
 ) -> Result<(), Error> {
     if !state.allowed_channels.contains(&channel_id) {
         println!("Can't start exam. This is not a valid channel.");
@@ -223,7 +247,6 @@ async fn exam_start(
         println!("Can't start exam for user {user_id}. User is already busy.");
     } else {
         let seed = 1;
-        let exam_name = &exam_name.unwrap_or("hsk1".to_string());
         let exam = chairmanmao::exam::loader::load_exam(exam_name);
         let examiner = chairmanmao::exam::Examiner::make(&exam, MILLIS_PER_TICK, seed);
 
@@ -256,7 +279,7 @@ async fn exam_stop(
 }
 
 
-async fn tick_loop(client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
+async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
     loop {
         let mut state = state_lock.lock().await;
 
