@@ -128,29 +128,28 @@ impl Api {
     ) -> ApiResult<Profile> {
         let now = DateTime::now();
 
-        let profile = Profile {
-            _id: ObjectId::new(),
-            user_id,
-            discord_username: None,
-            created: now,
-            last_seen: now,
-            roles: Vec::new(),
-            display_name: None,
-            credit: 1000,
-            yuan: 0,
-            hanzi: Vec::new(),
-            mined_words: Vec::new(),
-            defected: false,
-        };
-
         let query = doc! { "user_id": Bson::Int64(user_id as i64) };
-        if let Some(_profile) = self.profiles_collection.find_one(query, None).await? {
-            return Err(format!("Profile already exists with user_id: {user_id}").into());
+        if let Some(profile) = self.profiles_collection.find_one(query, None).await? {
+            Ok(profile)
+        } else {
+            let profile = Profile {
+                _id: ObjectId::new(),
+                user_id,
+                discord_username: None,
+                created: now,
+                last_seen: now,
+                roles: Vec::new(),
+                display_name: None,
+                credit: 1000,
+                yuan: 0,
+                hanzi: Vec::new(),
+                mined_words: Vec::new(),
+                defected: false,
+            };
+
+            self.profiles_collection.insert_one(&profile, None).await?;
+            Ok(profile)
         }
-
-        self.profiles_collection.insert_one(&profile, None).await?;
-
-        Ok(profile)
     }
 
     pub async fn serversettings (&self) -> ApiResult<ServerSettings> {
@@ -161,9 +160,12 @@ impl Api {
         }
     }
 
-    pub async fn profile(&self, user_id: u64) -> ApiResult<Option<Profile>> {
-        let profile = self.profiles_collection.find_one(doc! { "user_id": Bson::Int64(user_id as i64) }, None).await?;
-        Ok(profile)
+    pub async fn profile(&self, user_id: u64) -> ApiResult<Profile> {
+        if let Some(profile) = self.profiles_collection.find_one(doc! { "user_id": Bson::Int64(user_id as i64) }, None).await? {
+            Ok(profile)
+        } else {
+            self.register(user_id).await
+        }
     }
 
     async fn set_profile(&self, user_id: u64, profile: Profile) -> ApiResult<()> {
@@ -177,37 +179,30 @@ impl Api {
         update: impl FnOnce(&mut Profile),
     ) -> ApiResult<Profile> {
 
-        let profile = self.profile(user_id).await?;
-        match profile {
-            None => return Err(format!("Profile does not exist with user_id: {user_id}").into()),
-            Some(mut profile) => {
-                update(&mut profile);
-                self.set_profile(user_id, profile.clone()).await?;
-                Ok(profile)
-            },
-        }
+        let mut profile = self.profile(user_id).await?;
+        update(&mut profile);
+        self.set_profile(user_id, profile.clone()).await?;
+        Ok(profile)
     }
 
     pub async fn hsk(
         &self,
         user_id: u64,
     ) -> ApiResult<Option<u8>> {
-        if let Some(profile) = self.profile(user_id).await? {
-            if profile.roles.contains(&"Hsk6".to_string()) {
-                Ok(Some(6))
-            } else if profile.roles.contains(&"Hsk5".to_string()) {
-                Ok(Some(5))
-            } else if profile.roles.contains(&"Hsk4".to_string()) {
-                Ok(Some(4))
-            } else if profile.roles.contains(&"Hsk3".to_string()) {
-                Ok(Some(3))
-            } else if profile.roles.contains(&"Hsk2".to_string()) {
-                Ok(Some(2))
-            } else if profile.roles.contains(&"Hsk1".to_string()) {
-                Ok(Some(1))
-            } else {
-                Ok(None)
-            }
+        let profile = self.profile(user_id).await?;
+
+        if profile.roles.contains(&"Hsk6".to_string()) {
+            Ok(Some(6))
+        } else if profile.roles.contains(&"Hsk5".to_string()) {
+            Ok(Some(5))
+        } else if profile.roles.contains(&"Hsk4".to_string()) {
+            Ok(Some(4))
+        } else if profile.roles.contains(&"Hsk3".to_string()) {
+            Ok(Some(3))
+        } else if profile.roles.contains(&"Hsk2".to_string()) {
+            Ok(Some(2))
+        } else if profile.roles.contains(&"Hsk1".to_string()) {
+            Ok(Some(1))
         } else {
             Ok(None)
         }
@@ -290,40 +285,32 @@ impl Api {
         &self,
         user_id: u64,
     ) -> ApiResult<Option<String>> {
-        match self.profile(user_id).await? {
-            None => Ok(None),
-            Some(profile) => {
-                let display_name = profile.display_name.unwrap_or_else(|| profile.discord_username.unwrap_or_else(|| "unknown".to_string()));
+        let profile = self.profile(user_id).await?;
+        let display_name = profile.display_name.unwrap_or_else(|| profile.discord_username.unwrap_or_else(|| "unknown".to_string()));
 
-                let suffix = format!(" [{}]", profile.credit);
+        let suffix = format!(" [{}]", profile.credit);
 
-                let len_display_name = display_name.chars().collect::<Vec<char>>().len();
-                let len_suffix = suffix.chars().collect::<Vec<char>>().len();
-                let chars_to_keep = (len_display_name + len_suffix).min(32) - len_suffix;
+        let len_display_name = display_name.chars().collect::<Vec<char>>().len();
+        let len_suffix = suffix.chars().collect::<Vec<char>>().len();
+        let chars_to_keep = (len_display_name + len_suffix).min(32) - len_suffix;
 
-                let display_name_trimmed = display_name.chars().take(chars_to_keep).collect::<String>();
+        let display_name_trimmed = display_name.chars().take(chars_to_keep).collect::<String>();
 
-                let nick = format!("{}{}", display_name_trimmed, suffix);
-                Ok(Some(nick))
-            },
-        }
+        let nick = format!("{}{}", display_name_trimmed, suffix);
+        Ok(Some(nick))
     }
 
     pub async fn get_roles(
         &self,
         user_id: u64,
     ) -> ApiResult<Vec<String>> {
-        match self.profile(user_id).await? {
-            None => Ok(Vec::new()),
-            Some(profile) => {
-                let mut roles = profile.roles.clone();
-                roles.push("Comrade".to_string());
-                if roles.contains(&"Jailed".to_string()) {
-                    Ok(vec!["Jailed".to_string()])
-                } else {
-                    Ok(roles)
-                }
-            },
+        let profile = self.profile(user_id).await?;
+        let mut roles = profile.roles.clone();
+        roles.push("Comrade".to_string());
+        if roles.contains(&"Jailed".to_string()) {
+            Ok(vec!["Jailed".to_string()])
+        } else {
+            Ok(roles)
         }
     }
 }
