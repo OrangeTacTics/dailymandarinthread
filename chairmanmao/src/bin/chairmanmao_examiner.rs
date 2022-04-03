@@ -15,8 +15,10 @@ use twilight_model::application::interaction::Interaction;
 use twilight_model::application::interaction::application_command::CommandData;
 use twilight_model::application::interaction::application_command::CommandOptionValue;
 use twilight_model::application::interaction::ApplicationCommand;
-
-
+use twilight_util::builder::InteractionResponseDataBuilder;
+use twilight_model::http::interaction::InteractionResponse;
+use twilight_model::http::interaction::InteractionResponseType;
+use twilight_model::channel::message::MessageFlags;
 
 const MILLIS_PER_TICK: usize = 100;
 
@@ -128,7 +130,31 @@ async fn main() -> Result<(), Error> {
             },
             Event::InteractionCreate(e) => {
                 let interaction: &Interaction = &e.0;
+
                 if let Interaction::ApplicationCommand(application_command) = interaction {
+                    let application_id = application_command.application_id;
+                    let interaction_client = client.interaction(application_id);
+                    let interaction_id = &application_command.id;
+                    let interaction_token = &application_command.token;
+
+                    let interaction_response_data = InteractionResponseDataBuilder::new()
+                        .content("Starting exam".to_string())
+                        .flags(MessageFlags::EPHEMERAL)
+                        .build();
+
+                    let callback_data = &InteractionResponse {
+                        kind: InteractionResponseType::ChannelMessageWithSource,
+                        data: Some(interaction_response_data),
+                    };
+
+                    interaction_client.create_response(
+                        *interaction_id,
+                        interaction_token,
+                        callback_data,
+                    )
+                        .exec()
+                        .await.unwrap();
+
                     if let Some(exam_command) = parse_exam_command(application_command) {
                         handle_exam_command(state.clone(), client.clone(), &exam_command).await?;
                     }
@@ -170,7 +196,7 @@ async fn handle_exam_command(
     match exam_command {
         ExamCommand::Start { channel_id, exam, user_id }=> {
             let mut state = state_lock.lock().await;
-            exam_start(&mut state, client, *channel_id, *user_id).await?;
+            exam_start(&mut state, client, *channel_id, *user_id, exam.clone()).await?;
         },
         ExamCommand::Quit { user_id, channel_id } => {
             let mut state = state_lock.lock().await;
@@ -186,12 +212,14 @@ async fn exam_start(
     client: Arc<Client>,
     channel_id: Id<ChannelMarker>,
     user_id: Id<UserMarker>,
+    exam_name: Option<String>,
 ) -> Result<(), Error> {
     if state.is_channel_busy(channel_id) || state.is_user_busy(user_id) {
         // TODO: Can't start exam
     } else {
         let seed = 1;
-        let exam = chairmanmao::exam::loader::load_exam("hsk1");
+        let exam_name = &exam_name.unwrap_or("hsk1".to_string());
+        let exam = chairmanmao::exam::loader::load_exam(exam_name);
         let examiner = chairmanmao::exam::Examiner::make(&exam, MILLIS_PER_TICK, seed);
 
         let active_exam = ActiveExam {
