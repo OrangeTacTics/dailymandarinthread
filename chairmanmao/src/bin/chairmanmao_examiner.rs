@@ -29,14 +29,16 @@ struct Cli {
 }
 
 struct State {
+    allowed_channels: Vec<Id<ChannelMarker>>,
     active_exams: Vec<ActiveExam>,
 }
 
 type StateLock = Arc<Mutex<State>>;
 
 impl State {
-    fn new() -> StateLock {
+    fn new(allowed_channels: Vec<Id<ChannelMarker>>) -> StateLock {
         Arc::new(Mutex::new(State {
+            allowed_channels,
             active_exams: Vec::new(),
         }))
     }
@@ -103,9 +105,6 @@ async fn main() -> Result<(), Error> {
         Intents::GUILD_VOICE_STATES |
         Intents::MESSAGE_CONTENT;
 
-
-    let state = State::new();
-
     let token = std::env::var("DISCORD_TOKEN")?;
     let (shard, mut events) = Shard::new(token.clone(), intents);
     let client = Arc::new(Client::new(token));
@@ -114,6 +113,8 @@ async fn main() -> Result<(), Error> {
 
     let constants = DiscordConstants::load(&client).await?;
     channel_ids.push(constants.exam_channel.id);
+
+    let state = State::new(channel_ids.clone());
 
     tokio::spawn(tick_loop(client.clone(), state.clone()));
 
@@ -214,8 +215,12 @@ async fn exam_start(
     user_id: Id<UserMarker>,
     exam_name: Option<String>,
 ) -> Result<(), Error> {
-    if state.is_channel_busy(channel_id) || state.is_user_busy(user_id) {
-        // TODO: Can't start exam
+    if !state.allowed_channels.contains(&channel_id) {
+        println!("Can't start exam. This is not a valid channel.");
+    } else if state.is_channel_busy(channel_id) {
+        println!("Can't start exam in channel {channel_id}. Channel is already busy.");
+    } else if state.is_user_busy(user_id) {
+        println!("Can't start exam for user {user_id}. User is already busy.");
     } else {
         let seed = 1;
         let exam_name = &exam_name.unwrap_or("hsk1".to_string());
