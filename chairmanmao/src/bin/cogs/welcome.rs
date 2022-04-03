@@ -3,19 +3,19 @@ use twilight_http::Client;
 use twilight_model::id::{Id};
 use twilight_model::id::marker::{UserMarker};
 use twilight_model::channel::Channel;
+use chairmanmao::api::Api;
 
-pub async fn on_event(client: &Client, event: &Event) {
+pub async fn on_event(_client: &Client, event: &Event) {
     match event {
-        Event::MessageCreate(payload) => {
-            let message = &payload.0;
-            if message.content.starts_with("~welcome") {
-                println!("WELCOME!");
-                send_welcome(client, message.author.id).await;
-            }
+        Event::MessageCreate(_payload) => {
+            //let message = &payload.0;
+            ()
         },
         Event::MemberAdd(payload) => {
             let member = &payload.0;
             println!("{}     {}", member.user.id, member.user.name);
+            let api = Api::new().await;
+            api.register(member.user.id.get()).await.unwrap();
         },
         _ => (),
     }
