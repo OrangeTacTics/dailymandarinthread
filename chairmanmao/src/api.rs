@@ -85,6 +85,24 @@ impl Profile {
         self.roles = roles.into_iter().collect();
         self.roles.sort();
     }
+
+    pub fn hsk(&self) -> Option<u8> {
+        if self.roles.contains(&"Hsk6".to_string()) {
+            Some(6)
+        } else if self.roles.contains(&"Hsk5".to_string()) {
+            Some(5)
+        } else if self.roles.contains(&"Hsk4".to_string()) {
+            Some(4)
+        } else if self.roles.contains(&"Hsk3".to_string()) {
+            Some(3)
+        } else if self.roles.contains(&"Hsk2".to_string()) {
+            Some(2)
+        } else if self.roles.contains(&"Hsk1".to_string()) {
+            Some(1)
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -198,22 +216,7 @@ impl Api {
         user_id: u64,
     ) -> ApiResult<Option<u8>> {
         let profile = self.profile(user_id).await?;
-
-        if profile.roles.contains(&"Hsk6".to_string()) {
-            Ok(Some(6))
-        } else if profile.roles.contains(&"Hsk5".to_string()) {
-            Ok(Some(5))
-        } else if profile.roles.contains(&"Hsk4".to_string()) {
-            Ok(Some(4))
-        } else if profile.roles.contains(&"Hsk3".to_string()) {
-            Ok(Some(3))
-        } else if profile.roles.contains(&"Hsk2".to_string()) {
-            Ok(Some(2))
-        } else if profile.roles.contains(&"Hsk1".to_string()) {
-            Ok(Some(1))
-        } else {
-            Ok(None)
-        }
+        Ok(profile.hsk())
     }
 
     pub async fn set_hsk(

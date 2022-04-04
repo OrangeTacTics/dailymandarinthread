@@ -12,7 +12,7 @@ pub async fn get_nick(
     let profile = api.profile(user_id.get()).await?;
     let nick = nick_base(client, &profile).await?;
 
-    let suffix = format!(" [{}]", profile.credit);
+    let suffix = suffix(&profile).await?;
 
     let len_display_name = nick.chars().collect::<Vec<char>>().len();
     let len_suffix = suffix.chars().collect::<Vec<char>>().len();
@@ -38,4 +38,25 @@ async fn nick_base(
 
         Ok(format!("{}#{}", user.name, user.discriminator))
     }
+}
+
+async fn suffix(
+    profile: &Profile,
+) -> Result<String, Error> {
+    let maru = [
+        " ➀ ",
+        " ➁ " ,
+        " ➂ ",
+        " ➃",
+        " ➄ ",
+        " ➅ ",
+    ];
+
+    let hsk_str = if let Some(n) = profile.hsk() {
+        maru[n as usize - 1]
+    } else {
+        ""
+    };
+
+    Ok(format!(" {}[{}]", hsk_str, profile.credit))
 }
