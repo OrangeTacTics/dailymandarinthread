@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use serde::{Deserialize};
 use serde_json;
 use crate::exam::exam::{Exam, Question};

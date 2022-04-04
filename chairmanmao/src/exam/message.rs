@@ -10,7 +10,7 @@ use super::{
     Answer,
     Question,
 };
-use twilight_embed_builder::{EmbedBuilder, EmbedFieldBuilder, EmbedAuthorBuilder, ImageSource};
+use twilight_util::builder::embed::{EmbedBuilder, EmbedFieldBuilder, EmbedAuthorBuilder, ImageSource};
 
 pub async fn exam_start(client: &Client, active_exam: &ActiveExam) -> Result<(), Error> {
     let user = client.user(active_exam.user_id).exec().await?.model().await?;
@@ -39,7 +39,7 @@ pub async fn exam_start(client: &Client, active_exam: &ActiveExam) -> Result<(),
         .field(EmbedFieldBuilder::new("Time Limit", timelimit))
         .field(EmbedFieldBuilder::new("Mistakes Allowed", max_wrong))
         .color(0xFFA500)
-        .build()?;
+        .build();
 
     client.create_message(active_exam.channel_id)
         .embeds(&[embed])?
@@ -82,7 +82,7 @@ pub async fn show_answer(client: &Client, active_exam: &ActiveExam, question: &Q
     let embed = EmbedBuilder::new()
         .description(description)
         .color(color)
-        .build()?;
+        .build();
 
     client.create_message(active_exam.channel_id)
         .embeds(&[embed])?
@@ -135,7 +135,7 @@ pub async fn exam_end(client: &Client, active_exam: &ActiveExam, exam_score: Exa
         .description(description)
 //            .field(EmbedFieldBuilder::new("Mistakes Allowed", max_wrong)) // TODO
         .color(color)
-        .build()?;
+        .build();
 
     client.create_message(active_exam.channel_id)
         .embeds(&[embed])?

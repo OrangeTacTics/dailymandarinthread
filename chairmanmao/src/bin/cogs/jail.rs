@@ -52,7 +52,7 @@ pub async fn on_event(chairmanmao: &ChairmanMao, event: &Event) -> Result<(), Er
                             let new_display_name = get_name(&app_command);
                             cmd_name(chairmanmao.clone(), app_command, user_id, new_display_name).await;
                         },
-                        command_name => {
+                        _command_name => {
                             /*
                             let callback_data = InteractionResponseDataBuilder::new()
                                 .content(format!("Not implemented: {command_name}"))

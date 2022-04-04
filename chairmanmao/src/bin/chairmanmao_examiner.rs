@@ -278,8 +278,7 @@ async fn exam_stop(
     Ok(())
 }
 
-
-async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
+async fn tick_loop(_api: Api, client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
     loop {
         let mut state = state_lock.lock().await;
 
