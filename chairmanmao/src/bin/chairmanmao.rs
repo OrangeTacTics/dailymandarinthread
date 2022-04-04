@@ -198,12 +198,18 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
         println!("Has pending syncs:");
         for pending_sync in &chairmanmao.pop_all_syncs().await {
             println!("{:?}", pending_sync);
-                let guild_id = chairmanmao.constants().guild.id;
+            let guild_id = chairmanmao.constants().guild.id;
+
             match pending_sync {
                 PendingSync::UpdateNick(user_id) => {
-                    let nick: Option<String> = chairmanmao.api().get_nick(user_id.get()).await?;
+                    let nick: String = chairmanmao::sync::get_nick(
+                        chairmanmao.api(),
+                        chairmanmao.client(),
+                        *user_id,
+                    ).await?;
+
                     chairmanmao.client().update_guild_member(guild_id, *user_id)
-                        .nick(nick.as_deref())?
+                        .nick(Some(&nick))?
                         .exec()
                         .await?;
                     println!("Update user {} to {:?}", user_id.to_string(), nick);

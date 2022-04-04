@@ -289,25 +289,6 @@ impl Api {
         ).await
     }
 
-    pub async fn get_nick(
-        &self,
-        user_id: u64,
-    ) -> ApiResult<Option<String>> {
-        let profile = self.profile(user_id).await?;
-        let display_name = profile.display_name.unwrap_or_else(|| profile.discord_username.unwrap_or_else(|| "unknown".to_string()));
-
-        let suffix = format!(" [{}]", profile.credit);
-
-        let len_display_name = display_name.chars().collect::<Vec<char>>().len();
-        let len_suffix = suffix.chars().collect::<Vec<char>>().len();
-        let chars_to_keep = (len_display_name + len_suffix).min(32) - len_suffix;
-
-        let display_name_trimmed = display_name.chars().take(chars_to_keep).collect::<String>();
-
-        let nick = format!("{}{}", display_name_trimmed, suffix);
-        Ok(Some(nick))
-    }
-
     pub async fn get_roles(
         &self,
         user_id: u64,
