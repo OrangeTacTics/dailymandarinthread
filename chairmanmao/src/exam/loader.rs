@@ -71,16 +71,10 @@ fn convert_exam(json_exam: &JsonExam) -> Exam {
 
 
 pub fn load_exam(exam_name: &str) -> Exam {
-    let mut exams: HashMap<String, Exam> = HashMap::new();
-
-    let exam_json = std::fs::read_to_string("data/exams.json").unwrap();
+    let exam_dirname = std::path::Path::new(&std::env::var("DATA_DIR").unwrap()).join("exams");
+    let exam_filepath = exam_dirname.join(format!("{}.json", exam_name));
+    let exam_json = std::fs::read_to_string(exam_filepath).unwrap();
     let exam_data: serde_json::Value = serde_json::from_str(&exam_json).unwrap();
-    for exam in exam_data["data"]["exams"].as_array().unwrap().iter() {
-        let json_exam: JsonExam = JsonExam::deserialize(exam).unwrap();
-        let exam_name = json_exam.name.clone();
-        let exam = convert_exam(&json_exam);
-        exams.insert(exam_name, exam);
-    }
-
-    exams[exam_name].clone()
+    let json_exam: JsonExam = JsonExam::deserialize(exam_data).unwrap();
+    convert_exam(&json_exam)
 }

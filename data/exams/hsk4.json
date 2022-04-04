@@ -1,0 +1,4210 @@
+{
+    "name": "hsk4",
+    "numQuestions": 20,
+    "maxWrong": 2,
+    "timelimit": 7,
+    "hskLevel": 4,
+    "deck": [
+        {
+            "question": "得",
+            "validAnswers": [
+                "de5",
+                "de2"
+            ],
+            "meaning": "obtain | must | (complement particle)"
+        },
+        {
+            "question": "死",
+            "validAnswers": [
+                "si3"
+            ],
+            "meaning": "to die"
+        },
+        {
+            "question": "干",
+            "validAnswers": [
+                "gan4"
+            ],
+            "meaning": "to work; do; manage; tree trunk | to concern; shield; dry; clean (Kangxi radical 51)"
+        },
+        {
+            "question": "而",
+            "validAnswers": [
+                "er2"
+            ],
+            "meaning": "and"
+        },
+        {
+            "question": "等",
+            "validAnswers": [
+                "deng3"
+            ],
+            "meaning": "to wait"
+        },
+        {
+            "question": "当",
+            "validAnswers": [
+                "dang1"
+            ],
+            "meaning": "to serve as"
+        },
+        {
+            "question": "所有",
+            "validAnswers": [
+                "suo3 you3"
+            ],
+            "meaning": "to have; all"
+        },
+        {
+            "question": "也许",
+            "validAnswers": [
+                "ye3 xu3"
+            ],
+            "meaning": "perhaps"
+        },
+        {
+            "question": "行",
+            "validAnswers": [
+                "xing2"
+            ],
+            "meaning": "row"
+        },
+        {
+            "question": "不过",
+            "validAnswers": [
+                "bu2 guo4"
+            ],
+            "meaning": "only; merely; but; however ???"
+        },
+        {
+            "question": "发生",
+            "validAnswers": [
+                "fa1 sheng1"
+            ],
+            "meaning": "to take place, occur"
+        },
+        {
+            "question": "一切",
+            "validAnswers": [
+                "yi2 qie4"
+            ],
+            "meaning": "all, every"
+        },
+        {
+            "question": "抱",
+            "validAnswers": [
+                "bao4"
+            ],
+            "meaning": "to hold; to hug; carry in one's arms; to cradle"
+        },
+        {
+            "question": "抱歉",
+            "validAnswers": [
+                "bao4 qian4"
+            ],
+            "meaning": "be sorry; feel apologetic; to regret"
+        },
+        {
+            "question": "感觉",
+            "validAnswers": [
+                "gan3 jue2"
+            ],
+            "meaning": "to feel; become aware of; feeling"
+        },
+        {
+            "question": "肯定",
+            "validAnswers": [
+                "ken3 ding4"
+            ],
+            "meaning": "sure; definite; affirm; approve"
+        },
+        {
+            "question": "棒",
+            "validAnswers": [
+                "bang4"
+            ],
+            "meaning": "stick; club; good; excellent"
+        },
+        {
+            "question": "以",
+            "validAnswers": [
+                "yi3"
+            ],
+            "meaning": "to use; according to; so as to; for; by"
+        },
+        {
+            "question": "以为",
+            "validAnswers": [
+                "yi3 wei2"
+            ],
+            "meaning": "think (mistakenly); consider (that); believe"
+        },
+        {
+            "question": "掉",
+            "validAnswers": [
+                "diao4"
+            ],
+            "meaning": "to drop; to fall"
+        },
+        {
+            "question": "生活",
+            "validAnswers": [
+                "sheng1 huo2"
+            ],
+            "meaning": "life; livelihood; to live"
+        },
+        {
+            "question": "之",
+            "validAnswers": [
+                "zhi1"
+            ],
+            "meaning": "(literary equivalent to 的); (pronoun); of"
+        },
+        {
+            "question": "任何",
+            "validAnswers": [
+                "ren4 he2"
+            ],
+            "meaning": "any; whatever; whichever"
+        },
+        {
+            "question": "与",
+            "validAnswers": [
+                "yu3"
+            ],
+            "meaning": "(formal) and; to give; together with; participate; final particle expressing doubt or surprise"
+        },
+        {
+            "question": "弄",
+            "validAnswers": [
+                "nong4"
+            ],
+            "meaning": "do; manage; to handle; make | lane; alley"
+        },
+        {
+            "question": "却",
+            "validAnswers": [
+                "que4"
+            ],
+            "meaning": "but; yet; however"
+        },
+        {
+            "question": "继续",
+            "validAnswers": [
+                "ji4 xu4"
+            ],
+            "meaning": "to continue; to go on; to proceed"
+        },
+        {
+            "question": "够",
+            "validAnswers": [
+                "gou4"
+            ],
+            "meaning": "enough; to reach"
+        },
+        {
+            "question": "父亲",
+            "validAnswers": [
+                "fu4 qin5"
+            ],
+            "meaning": "father"
+        },
+        {
+            "question": "完全",
+            "validAnswers": [
+                "wan2 quan2"
+            ],
+            "meaning": "complete; whole; totally"
+        },
+        {
+            "question": "可是",
+            "validAnswers": [
+                "ke3 shi4"
+            ],
+            "meaning": "but; however"
+        },
+        {
+            "question": "谈",
+            "validAnswers": [
+                "tan2"
+            ],
+            "meaning": "to talk; to chat; discuss"
+        },
+        {
+            "question": "好像",
+            "validAnswers": [
+                "hao3 xiang4"
+            ],
+            "meaning": "as if; seem to be"
+        },
+        {
+            "question": "警察",
+            "validAnswers": [
+                "jing3 cha2"
+            ],
+            "meaning": "police"
+        },
+        {
+            "question": "场",
+            "validAnswers": [
+                "chang3"
+            ],
+            "meaning": "field"
+        },
+        {
+            "question": "刚",
+            "validAnswers": [
+                "gang1"
+            ],
+            "meaning": "just (indicating the immediate past); recently; firm"
+        },
+        {
+            "question": "呀",
+            "validAnswers": [
+                "ya5"
+            ],
+            "meaning": "ah; oh; (used for 啊 after words ending with a, e, i, o, or ü)"
+        },
+        {
+            "question": "情况",
+            "validAnswers": [
+                "qing2 kuang4"
+            ],
+            "meaning": "circumstance; state of affairs; situation"
+        },
+        {
+            "question": "只要",
+            "validAnswers": [
+                "zhi3 yao4"
+            ],
+            "meaning": "so long as; if only; provided that"
+        },
+        {
+            "question": "份",
+            "validAnswers": [
+                "fen4"
+            ],
+            "meaning": "part; portion; (mw for documents, papers, jobs, etc.)"
+        },
+        {
+            "question": "底",
+            "validAnswers": [
+                "di3"
+            ],
+            "meaning": "bottom; background; base"
+        },
+        {
+            "question": "到底",
+            "validAnswers": [
+                "dao4 di3"
+            ],
+            "meaning": "after all; in the end (used in a question)"
+        },
+        {
+            "question": "成为",
+            "validAnswers": [
+                "cheng2 wei2"
+            ],
+            "meaning": "become; turn into"
+        },
+        {
+            "question": "永远",
+            "validAnswers": [
+                "yong3 yuan3"
+            ],
+            "meaning": "forever; eternal; always"
+        },
+        {
+            "question": "安全",
+            "validAnswers": [
+                "an1 quan2"
+            ],
+            "meaning": "safe; safety; secure; security"
+        },
+        {
+            "question": "留",
+            "validAnswers": [
+                "liu2"
+            ],
+            "meaning": "to leave (behind, a message); to retain; to stay"
+        },
+        {
+            "question": "计划",
+            "validAnswers": [
+                "ji4 hua4"
+            ],
+            "meaning": "plan; project"
+        },
+        {
+            "question": "俩",
+            "validAnswers": [
+                "lia3"
+            ],
+            "meaning": "(colloquial) two (people)"
+        },
+        {
+            "question": "停",
+            "validAnswers": [
+                "ting2"
+            ],
+            "meaning": "to stop; to halt; to park (a car)"
+        },
+        {
+            "question": "感谢",
+            "validAnswers": [
+                "gan3 xie4"
+            ],
+            "meaning": "thank; be grateful"
+        },
+        {
+            "question": "敢",
+            "validAnswers": [
+                "gan3"
+            ],
+            "meaning": "to dare"
+        },
+        {
+            "question": "从来",
+            "validAnswers": [
+                "cong2 lai2"
+            ],
+            "meaning": "have always (from the beginning); never (with negative)"
+        },
+        {
+            "question": "赢",
+            "validAnswers": [
+                "ying2"
+            ],
+            "meaning": "to win; to beat; to profit"
+        },
+        {
+            "question": "消息",
+            "validAnswers": [
+                "xiao1 xi5"
+            ],
+            "meaning": "news; information"
+        },
+        {
+            "question": "拉",
+            "validAnswers": [
+                "la1"
+            ],
+            "meaning": "to pull; to play (string instruments); to drag | to slash; to chat"
+        },
+        {
+            "question": "原因",
+            "validAnswers": [
+                "yuan2 yin1"
+            ],
+            "meaning": "cause; reason"
+        },
+        {
+            "question": "连",
+            "validAnswers": [
+                "lian2"
+            ],
+            "meaning": "even; including; join"
+        },
+        {
+            "question": "确实",
+            "validAnswers": [
+                "que4 shi2"
+            ],
+            "meaning": "indeed; in truth; reliable"
+        },
+        {
+            "question": "挺",
+            "validAnswers": [
+                "ting3"
+            ],
+            "meaning": "straighten up; stick out; rather (good); very"
+        },
+        {
+            "question": "保证",
+            "validAnswers": [
+                "bao3 zheng4"
+            ],
+            "meaning": "to guarantee; ensure"
+        },
+        {
+            "question": "接受",
+            "validAnswers": [
+                "jie1 shou4"
+            ],
+            "meaning": "accept; receive (honors, etc.)"
+        },
+        {
+            "question": "改变",
+            "validAnswers": [
+                "gai3 bian4"
+            ],
+            "meaning": "to change; alter; to transform"
+        },
+        {
+            "question": "麻烦",
+            "validAnswers": [
+                "ma2 fan5"
+            ],
+            "meaning": "trouble (someone); troubling; bothersome"
+        },
+        {
+            "question": "出现",
+            "validAnswers": [
+                "chu1 xian4"
+            ],
+            "meaning": "appear; arise; emerge"
+        },
+        {
+            "question": "不管",
+            "validAnswers": [
+                "bu4 guan3"
+            ],
+            "meaning": "no matter (what, how, etc.); regardless of"
+        },
+        {
+            "question": "甚至",
+            "validAnswers": [
+                "shen4 zhi4"
+            ],
+            "meaning": "even (to the point of); so much so that"
+        },
+        {
+            "question": "保护",
+            "validAnswers": [
+                "bao3 hu4"
+            ],
+            "meaning": "to protect; to defend"
+        },
+        {
+            "question": "真正",
+            "validAnswers": [
+                "zhen1 zheng4"
+            ],
+            "meaning": "genuine; real; true"
+        },
+        {
+            "question": "结果",
+            "validAnswers": [
+                "jie2 guo3"
+            ],
+            "meaning": "result; outcome; finally"
+        },
+        {
+            "question": "当时",
+            "validAnswers": [
+                "dang1 shi2"
+            ],
+            "meaning": "then; at that time; while"
+        },
+        {
+            "question": "至少",
+            "validAnswers": [
+                "zhi4 shao3"
+            ],
+            "meaning": "at least; (to say the) least"
+        },
+        {
+            "question": "律师",
+            "validAnswers": [
+                "lv4 shi1"
+            ],
+            "meaning": "lawyer"
+        },
+        {
+            "question": "表演",
+            "validAnswers": [
+                "biao3 yan3"
+            ],
+            "meaning": "perform; to play"
+        },
+        {
+            "question": "无",
+            "validAnswers": [
+                "wu2"
+            ],
+            "meaning": "have not; without; not (Kangxi radical 71)"
+        },
+        {
+            "question": "猜",
+            "validAnswers": [
+                "cai1"
+            ],
+            "meaning": "to guess"
+        },
+        {
+            "question": "咱们",
+            "validAnswers": [
+                "zan2 men5"
+            ],
+            "meaning": "we (including the listener); us; our"
+        },
+        {
+            "question": "进行",
+            "validAnswers": [
+                "jin4 xing2"
+            ],
+            "meaning": "carry on; carry out; undertake"
+        },
+        {
+            "question": "内",
+            "validAnswers": [
+                "nei4"
+            ],
+            "meaning": "inside; inner; internal; within"
+        },
+        {
+            "question": "是否",
+            "validAnswers": [
+                "shi4 fou3"
+            ],
+            "meaning": "whether (or not); if"
+        },
+        {
+            "question": "调查",
+            "validAnswers": [
+                "diao4 cha2"
+            ],
+            "meaning": "investigate; survey; inquiry"
+        },
+        {
+            "question": "成功",
+            "validAnswers": [
+                "cheng2 gong1"
+            ],
+            "meaning": "success; to succeed"
+        },
+        {
+            "question": "考虑",
+            "validAnswers": [
+                "kao3 lv4"
+            ],
+            "meaning": "think over; consider"
+        },
+        {
+            "question": "约会",
+            "validAnswers": [
+                "yue1 hui4"
+            ],
+            "meaning": "appointment; engagement; date"
+        },
+        {
+            "question": "通过",
+            "validAnswers": [
+                "tong1 guo4"
+            ],
+            "meaning": "by means of; through (a method); pass through; via"
+        },
+        {
+            "question": "开心",
+            "validAnswers": [
+                "kai1 xin1"
+            ],
+            "meaning": "feel happy; have a great time; make fun of somebody"
+        },
+        {
+            "question": "母亲",
+            "validAnswers": [
+                "mu3 qin5"
+            ],
+            "meaning": "mother"
+        },
+        {
+            "question": "主意",
+            "validAnswers": [
+                "zhu3 yi5"
+            ],
+            "meaning": "plan; idea; decision"
+        },
+        {
+            "question": "倒",
+            "validAnswers": [
+                "dao3"
+            ],
+            "meaning": "to collapse; to fall; fail; to exchange | to pour; contrary to expectations"
+        },
+        {
+            "question": "解释",
+            "validAnswers": [
+                "jie3 shi4"
+            ],
+            "meaning": "to explain"
+        },
+        {
+            "question": "联系",
+            "validAnswers": [
+                "lian2 xi4"
+            ],
+            "meaning": "integrate; link; connection; contact"
+        },
+        {
+            "question": "证明",
+            "validAnswers": [
+                "zheng4 ming2"
+            ],
+            "meaning": "proof; testify; confirm; certificate"
+        },
+        {
+            "question": "生命",
+            "validAnswers": [
+                "sheng1 ming4"
+            ],
+            "meaning": "life"
+        },
+        {
+            "question": "难道",
+            "validAnswers": [
+                "nan2 dao4"
+            ],
+            "meaning": "could it be that ...?; don't tell me ..."
+        },
+        {
+            "question": "由",
+            "validAnswers": [
+                "you2"
+            ],
+            "meaning": "follow; from; by; through"
+        },
+        {
+            "question": "指",
+            "validAnswers": [
+                "zhi3"
+            ],
+            "meaning": "finger; to point (at, to, out); refer to"
+        },
+        {
+            "question": "危险",
+            "validAnswers": [
+                "wei1 xian3"
+            ],
+            "meaning": "danger; dangerous; perilous"
+        },
+        {
+            "question": "讨厌",
+            "validAnswers": [
+                "tao3 yan4"
+            ],
+            "meaning": "to hate; loathe; disgusting; troublesome"
+        },
+        {
+            "question": "醒",
+            "validAnswers": [
+                "xing3"
+            ],
+            "meaning": "wake up"
+        },
+        {
+            "question": "样子",
+            "validAnswers": [
+                "yang4 zi5"
+            ],
+            "meaning": "manner; air; appearance; looks"
+        },
+        {
+            "question": "有趣",
+            "validAnswers": [
+                "you3 qu4"
+            ],
+            "meaning": "interesting; fascinating; amusing"
+        },
+        {
+            "question": "提",
+            "validAnswers": [
+                "ti2"
+            ],
+            "meaning": "to carry; to lift; to raise (an issue)"
+        },
+        {
+            "question": "部分",
+            "validAnswers": [
+                "bu4 fen5"
+            ],
+            "meaning": "part; share; section"
+        },
+        {
+            "question": "理解",
+            "validAnswers": [
+                "li3 jie3"
+            ],
+            "meaning": "comprehend; understand"
+        },
+        {
+            "question": "重",
+            "validAnswers": [
+                "zhong4"
+            ],
+            "meaning": "heavy; serious; important | repeat; again; overlap"
+        },
+        {
+            "question": "任务",
+            "validAnswers": [
+                "ren4 wu5"
+            ],
+            "meaning": "a mission; an assignment; a task"
+        },
+        {
+            "question": "使",
+            "validAnswers": [
+                "shi3"
+            ],
+            "meaning": "to use; to make; to cause; enable; envoy; messenger"
+        },
+        {
+            "question": "转",
+            "validAnswers": [
+                "zhuan3"
+            ],
+            "meaning": "to turn; to change; pass on | revolve; rotate"
+        },
+        {
+            "question": "博士",
+            "validAnswers": [
+                "bo2 shi4"
+            ],
+            "meaning": "doctor; PhD"
+        },
+        {
+            "question": "紧张",
+            "validAnswers": [
+                "jin3 zhang1"
+            ],
+            "meaning": "nervous; tension; strain"
+        },
+        {
+            "question": "放弃",
+            "validAnswers": [
+                "fang4 qi4"
+            ],
+            "meaning": "abandon; renounce; give up"
+        },
+        {
+            "question": "大概",
+            "validAnswers": [
+                "da4 gai4"
+            ],
+            "meaning": "probably; roughly; approximate"
+        },
+        {
+            "question": "重新",
+            "validAnswers": [
+                "chong2 xin1"
+            ],
+            "meaning": "again; anew; once more"
+        },
+        {
+            "question": "其中",
+            "validAnswers": [
+                "qi2 zhong1"
+            ],
+            "meaning": "among; in; included among these"
+        },
+        {
+            "question": "来自",
+            "validAnswers": [
+                "lai2 zi4"
+            ],
+            "meaning": "come from (a place)"
+        },
+        {
+            "question": "本来",
+            "validAnswers": [
+                "ben3 lai2"
+            ],
+            "meaning": "originally; at first"
+        },
+        {
+            "question": "并且",
+            "validAnswers": [
+                "bing4 qie3"
+            ],
+            "meaning": "and; besides; moreover"
+        },
+        {
+            "question": "直接",
+            "validAnswers": [
+                "zhi2 jie1"
+            ],
+            "meaning": "direct; immediate"
+        },
+        {
+            "question": "对于",
+            "validAnswers": [
+                "dui4 yu2"
+            ],
+            "meaning": "regarding; as far as sth. is concerned; with regards to; for"
+        },
+        {
+            "question": "正常",
+            "validAnswers": [
+                "zheng4 chang2"
+            ],
+            "meaning": "normal; regular; ordinary"
+        },
+        {
+            "question": "遍",
+            "validAnswers": [
+                "bian4"
+            ],
+            "meaning": "a time; everywhere; turn; (mw for times or turns)"
+        },
+        {
+            "question": "冷静",
+            "validAnswers": [
+                "leng3 jing4"
+            ],
+            "meaning": "calm; cool-headed; sober"
+        },
+        {
+            "question": "方法",
+            "validAnswers": [
+                "fang1 fa3"
+            ],
+            "meaning": "method; way; means"
+        },
+        {
+            "question": "扔",
+            "validAnswers": [
+                "reng1"
+            ],
+            "meaning": "to throw; throw away"
+        },
+        {
+            "question": "能力",
+            "validAnswers": [
+                "neng2 li4"
+            ],
+            "meaning": "capability; capable; ability"
+        },
+        {
+            "question": "另外",
+            "validAnswers": [
+                "ling4 wai4"
+            ],
+            "meaning": "another; in addition; besides"
+        },
+        {
+            "question": "放松",
+            "validAnswers": [
+                "fang4 song1"
+            ],
+            "meaning": "relax; loosen; slacken"
+        },
+        {
+            "question": "丢",
+            "validAnswers": [
+                "diu1"
+            ],
+            "meaning": "lose (something); throw; put aside"
+        },
+        {
+            "question": "负责",
+            "validAnswers": [
+                "fu4 ze2"
+            ],
+            "meaning": "responsible for (something); in charge of"
+        },
+        {
+            "question": "梦",
+            "validAnswers": [
+                "meng4"
+            ],
+            "meaning": "to dream"
+        },
+        {
+            "question": "戴",
+            "validAnswers": [
+                "dai4"
+            ],
+            "meaning": "put on; to wear; to respect"
+        },
+        {
+            "question": "错误",
+            "validAnswers": [
+                "cuo4 wu4"
+            ],
+            "meaning": "error; mistake; mistaken"
+        },
+        {
+            "question": "随便",
+            "validAnswers": [
+                "sui2 bian4"
+            ],
+            "meaning": "as one pleases; informal; random; casual"
+        },
+        {
+            "question": "经历",
+            "validAnswers": [
+                "jing1 li4"
+            ],
+            "meaning": "undergo; to experience"
+        },
+        {
+            "question": "支持",
+            "validAnswers": [
+                "zhi1 chi2"
+            ],
+            "meaning": "sustain; hold out; | support; stand by (e.g. international support)"
+        },
+        {
+            "question": "建议",
+            "validAnswers": [
+                "jian4 yi4"
+            ],
+            "meaning": "to propose; to suggest; recommend"
+        },
+        {
+            "question": "否则",
+            "validAnswers": [
+                "fou3 ze2"
+            ],
+            "meaning": "if not; otherwise; or else"
+        },
+        {
+            "question": "光",
+            "validAnswers": [
+                "guang1"
+            ],
+            "meaning": "light; ray; bright; only; merely; used up"
+        },
+        {
+            "question": "安排",
+            "validAnswers": [
+                "an1 pai2"
+            ],
+            "meaning": "arrange; to plan"
+        },
+        {
+            "question": "钥匙",
+            "validAnswers": [
+                "yao4 shi5"
+            ],
+            "meaning": "key"
+        },
+        {
+            "question": "信息",
+            "validAnswers": [
+                "xin4 xi1"
+            ],
+            "meaning": "information; news; message"
+        },
+        {
+            "question": "全部",
+            "validAnswers": [
+                "quan2 bu4"
+            ],
+            "meaning": "whole; entire; complete"
+        },
+        {
+            "question": "首先",
+            "validAnswers": [
+                "shou3 xian1"
+            ],
+            "meaning": "first (of all); in the first place; firstly"
+        },
+        {
+            "question": "照",
+            "validAnswers": [
+                "zhao4"
+            ],
+            "meaning": "to shine; illuminate; according to"
+        },
+        {
+            "question": "交",
+            "validAnswers": [
+                "jiao1"
+            ],
+            "meaning": "deliver; turn over; intersect; to pay (money); friendship"
+        },
+        {
+            "question": "台",
+            "validAnswers": [
+                "tai2"
+            ],
+            "meaning": "platform; Taiwan (abbr.); desk; stage; typhoon; (mw for machines); (classical) you (in letters)"
+        },
+        {
+            "question": "坚持",
+            "validAnswers": [
+                "jian1 chi2"
+            ],
+            "meaning": "persist in; persevere"
+        },
+        {
+            "question": "生意",
+            "validAnswers": [
+                "sheng1 yi5"
+            ],
+            "meaning": "business; trade"
+        },
+        {
+            "question": "火",
+            "validAnswers": [
+                "huo3"
+            ],
+            "meaning": "fire (Kangxi radical 86)"
+        },
+        {
+            "question": "即使",
+            "validAnswers": [
+                "ji2 shi3"
+            ],
+            "meaning": "even if; even though"
+        },
+        {
+            "question": "到处",
+            "validAnswers": [
+                "dao4 chu4"
+            ],
+            "meaning": "everywhere; in all places; all over"
+        },
+        {
+            "question": "挂",
+            "validAnswers": [
+                "gua4"
+            ],
+            "meaning": "hang; put up; suspend"
+        },
+        {
+            "question": "道歉",
+            "validAnswers": [
+                "dao4 qian4"
+            ],
+            "meaning": "apologize; make an apology"
+        },
+        {
+            "question": "可怜",
+            "validAnswers": [
+                "ke3 lian2"
+            ],
+            "meaning": "pitiful; poor; pathetic"
+        },
+        {
+            "question": "实在",
+            "validAnswers": [
+                "shi2 zai4"
+            ],
+            "meaning": "honest; in reality; honestly; indeed; certainly"
+        },
+        {
+            "question": "骗",
+            "validAnswers": [
+                "pian4"
+            ],
+            "meaning": "to cheat; to swindle; deceive"
+        },
+        {
+            "question": "原谅",
+            "validAnswers": [
+                "yuan2 liang4"
+            ],
+            "meaning": "to excuse; forgive; to pardon"
+        },
+        {
+            "question": "乱",
+            "validAnswers": [
+                "luan4"
+            ],
+            "meaning": "disorder; confusion; arbitrarily"
+        },
+        {
+            "question": "差不多",
+            "validAnswers": [
+                "cha4 bu5 duo1"
+            ],
+            "meaning": "almost; about the same"
+        },
+        {
+            "question": "满",
+            "validAnswers": [
+                "man3"
+            ],
+            "meaning": "full; abbreviation for Manchurian"
+        },
+        {
+            "question": "假",
+            "validAnswers": [
+                "jia3"
+            ],
+            "meaning": "fake; if; borrow | vacation; holiday"
+        },
+        {
+            "question": "研究",
+            "validAnswers": [
+                "yan2 jiu1"
+            ],
+            "meaning": "to study; to research"
+        },
+        {
+            "question": "打扰",
+            "validAnswers": [
+                "da3 rao3"
+            ],
+            "meaning": "disturb"
+        },
+        {
+            "question": "正确",
+            "validAnswers": [
+                "zheng4 que4"
+            ],
+            "meaning": "correct; proper"
+        },
+        {
+            "question": "收",
+            "validAnswers": [
+                "shou1"
+            ],
+            "meaning": "receive; accept; collect; to harvest"
+        },
+        {
+            "question": "秒",
+            "validAnswers": [
+                "miao3"
+            ],
+            "meaning": "second (unit of time or angle)"
+        },
+        {
+            "question": "同时",
+            "validAnswers": [
+                "tong2 shi2"
+            ],
+            "meaning": "at the same time; simultaneously"
+        },
+        {
+            "question": "提供",
+            "validAnswers": [
+                "ti2 gong1"
+            ],
+            "meaning": "to supply; provide; furnish"
+        },
+        {
+            "question": "输",
+            "validAnswers": [
+                "shu1"
+            ],
+            "meaning": "to transport; to lose (a game, etc.)"
+        },
+        {
+            "question": "号码",
+            "validAnswers": [
+                "hao4 ma3"
+            ],
+            "meaning": "number"
+        },
+        {
+            "question": "座",
+            "validAnswers": [
+                "zuo4"
+            ],
+            "meaning": "(mw for mountains, bridges, tall buildings, etc.); | seat; base; stand; constellation"
+        },
+        {
+            "question": "比如",
+            "validAnswers": [
+                "bi3 ru2"
+            ],
+            "meaning": "for example; for instance; such as"
+        },
+        {
+            "question": "严重",
+            "validAnswers": [
+                "yan2 zhong4"
+            ],
+            "meaning": "grave; serious; critical"
+        },
+        {
+            "question": "脱",
+            "validAnswers": [
+                "tuo1"
+            ],
+            "meaning": "to shed; take off; to escape"
+        },
+        {
+            "question": "陪",
+            "validAnswers": [
+                "pei2"
+            ],
+            "meaning": "accompany; keep company"
+        },
+        {
+            "question": "法律",
+            "validAnswers": [
+                "fa3 lv4"
+            ],
+            "meaning": "law; statute"
+        },
+        {
+            "question": "值得",
+            "validAnswers": [
+                "zhi2 de5"
+            ],
+            "meaning": "be worth; deserve"
+        },
+        {
+            "question": "使用",
+            "validAnswers": [
+                "shi3 yong4"
+            ],
+            "meaning": "to use; employ; apply; administer; manipulate"
+        },
+        {
+            "question": "方面",
+            "validAnswers": [
+                "fang1 mian4"
+            ],
+            "meaning": "aspect; field; side"
+        },
+        {
+            "question": "原来",
+            "validAnswers": [
+                "yuan2 lai2"
+            ],
+            "meaning": "original; former; as it turns out"
+        },
+        {
+            "question": "讨论",
+            "validAnswers": [
+                "tao3 lun4"
+            ],
+            "meaning": "to discuss; discussion; to talk over"
+        },
+        {
+            "question": "说明",
+            "validAnswers": [
+                "shuo1 ming2"
+            ],
+            "meaning": "explain; explanation; illustrate; to show"
+        },
+        {
+            "question": "仍然",
+            "validAnswers": [
+                "reng2 ran2"
+            ],
+            "meaning": "still; yet"
+        },
+        {
+            "question": "动作",
+            "validAnswers": [
+                "dong4 zuo4"
+            ],
+            "meaning": "movement; motion; action"
+        },
+        {
+            "question": "受到",
+            "validAnswers": [
+                "shou4 dao4"
+            ],
+            "meaning": "receive (influence, restriction, etc.); be subjected to"
+        },
+        {
+            "question": "赶",
+            "validAnswers": [
+                "gan3"
+            ],
+            "meaning": "catch up; overtake; drive away"
+        },
+        {
+            "question": "怀疑",
+            "validAnswers": [
+                "huai2 yi2"
+            ],
+            "meaning": "doubt; to suspect; be skeptical"
+        },
+        {
+            "question": "拒绝",
+            "validAnswers": [
+                "ju4 jue2"
+            ],
+            "meaning": "to refuse; to decline; to reject"
+        },
+        {
+            "question": "演员",
+            "validAnswers": [
+                "yan3 yuan2"
+            ],
+            "meaning": "actor or actress; performer"
+        },
+        {
+            "question": "破",
+            "validAnswers": [
+                "po4"
+            ],
+            "meaning": "broken; damaged; to split"
+        },
+        {
+            "question": "因此",
+            "validAnswers": [
+                "yin1 ci3"
+            ],
+            "meaning": "therefore; thus; that is why; because of this"
+        },
+        {
+            "question": "答案",
+            "validAnswers": [
+                "da2 an4"
+            ],
+            "meaning": "answer; solution"
+        },
+        {
+            "question": "活动",
+            "validAnswers": [
+                "huo2 dong4"
+            ],
+            "meaning": "activity; exercise; move about"
+        },
+        {
+            "question": "既然",
+            "validAnswers": [
+                "ji4 ran2"
+            ],
+            "meaning": "since; given that; now that"
+        },
+        {
+            "question": "通知",
+            "validAnswers": [
+                "tong1 zhi1"
+            ],
+            "meaning": "notify; to inform; notice"
+        },
+        {
+            "question": "不得不",
+            "validAnswers": [
+                "bu4 de2 bu4"
+            ],
+            "meaning": "have to; have no choice but to; cannot but"
+        },
+        {
+            "question": "无论",
+            "validAnswers": [
+                "wu2 lun4"
+            ],
+            "meaning": "no matter what; regardless of whether..."
+        },
+        {
+            "question": "刀",
+            "validAnswers": [
+                "dao1"
+            ],
+            "meaning": "knife; blade (Kangxi radical 18)"
+        },
+        {
+            "question": "适合",
+            "validAnswers": [
+                "shi4 he2"
+            ],
+            "meaning": "to suit; to fit"
+        },
+        {
+            "question": "失望",
+            "validAnswers": [
+                "shi1 wang4"
+            ],
+            "meaning": "disappointed; lose hope"
+        },
+        {
+            "question": "允许",
+            "validAnswers": [
+                "yun3 xu3"
+            ],
+            "meaning": "to permit; allow"
+        },
+        {
+            "question": "意见",
+            "validAnswers": [
+                "yi4 jian4"
+            ],
+            "meaning": "opinion; view; suggestion; complaint"
+        },
+        {
+            "question": "获得",
+            "validAnswers": [
+                "huo4 de2"
+            ],
+            "meaning": "obtain; acquire; to gain"
+        },
+        {
+            "question": "要是",
+            "validAnswers": [
+                "yao4 shi5"
+            ],
+            "meaning": "if; suppose; in case"
+        },
+        {
+            "question": "邀请",
+            "validAnswers": [
+                "yao1 qing3"
+            ],
+            "meaning": "to invite"
+        },
+        {
+            "question": "尽管",
+            "validAnswers": [
+                "jin3 guan3"
+            ],
+            "meaning": "despite; although; even though | freely; without hesitation"
+        },
+        {
+            "question": "浪费",
+            "validAnswers": [
+                "lang4 fei4"
+            ],
+            "meaning": "to waste; squander"
+        },
+        {
+            "question": "失败",
+            "validAnswers": [
+                "shi1 bai4"
+            ],
+            "meaning": "be defeated; fail; lose"
+        },
+        {
+            "question": "责任",
+            "validAnswers": [
+                "ze2 ren4"
+            ],
+            "meaning": "responsibility; blame; duty"
+        },
+        {
+            "question": "美丽",
+            "validAnswers": [
+                "mei3 li4"
+            ],
+            "meaning": "beautiful"
+        },
+        {
+            "question": "压力",
+            "validAnswers": [
+                "ya1 li4"
+            ],
+            "meaning": "pressure; stress"
+        },
+        {
+            "question": "味道",
+            "validAnswers": [
+                "wei4 dao5"
+            ],
+            "meaning": "flavor; taste"
+        },
+        {
+            "question": "厉害",
+            "validAnswers": [
+                "li4 hai5"
+            ],
+            "meaning": "terrible; formidable; fierce; cool; awesome"
+        },
+        {
+            "question": "出发",
+            "validAnswers": [
+                "chu1 fa1"
+            ],
+            "meaning": "start out; set off"
+        },
+        {
+            "question": "兴奋",
+            "validAnswers": [
+                "xing1 fen4"
+            ],
+            "meaning": "excitement; be excited"
+        },
+        {
+            "question": "观众",
+            "validAnswers": [
+                "guan1 zhong4"
+            ],
+            "meaning": "spectator; audience"
+        },
+        {
+            "question": "反对",
+            "validAnswers": [
+                "fan3 dui4"
+            ],
+            "meaning": "oppose; fight against"
+        },
+        {
+            "question": "精彩",
+            "validAnswers": [
+                "jing1 cai3"
+            ],
+            "meaning": "brilliant; spectacular; wonderful"
+        },
+        {
+            "question": "感情",
+            "validAnswers": [
+                "gan3 qing2"
+            ],
+            "meaning": "feeling; emotion; sensation"
+        },
+        {
+            "question": "演出",
+            "validAnswers": [
+                "yan3 chu1"
+            ],
+            "meaning": "to act (in a play); to perform; to put on a show; performance"
+        },
+        {
+            "question": "愉快",
+            "validAnswers": [
+                "yu2 kuai4"
+            ],
+            "meaning": "happy; cheerful; delightful"
+        },
+        {
+            "question": "开玩笑",
+            "validAnswers": [
+                "kai1 wan2 xiao4"
+            ],
+            "meaning": "joke; play a joke; make fun of"
+        },
+        {
+            "question": "杂志",
+            "validAnswers": [
+                "za2 zhi4"
+            ],
+            "meaning": "magazine"
+        },
+        {
+            "question": "合适",
+            "validAnswers": [
+                "he2 shi4"
+            ],
+            "meaning": "suitable; proper; appropriate"
+        },
+        {
+            "question": "广告",
+            "validAnswers": [
+                "guang3 gao4"
+            ],
+            "meaning": "advertisement; a commercial"
+        },
+        {
+            "question": "自然",
+            "validAnswers": [
+                "zi4 ran2"
+            ],
+            "meaning": "nature; natural"
+        },
+        {
+            "question": "深",
+            "validAnswers": [
+                "shen1"
+            ],
+            "meaning": "deep; profound; dark (of colors)"
+        },
+        {
+            "question": "取",
+            "validAnswers": [
+                "qu3"
+            ],
+            "meaning": "to take; get; choose"
+        },
+        {
+            "question": "短信",
+            "validAnswers": [
+                "duan3 xin4"
+            ],
+            "meaning": "text message; SMS"
+        },
+        {
+            "question": "地球",
+            "validAnswers": [
+                "di4 qiu2"
+            ],
+            "meaning": "the Earth; planet"
+        },
+        {
+            "question": "帅",
+            "validAnswers": [
+                "shuai4"
+            ],
+            "meaning": "handsome; graceful; commander-in-chief"
+        },
+        {
+            "question": "推",
+            "validAnswers": [
+                "tui1"
+            ],
+            "meaning": "to push; to scrape; to decline; postpone; elect"
+        },
+        {
+            "question": "关键",
+            "validAnswers": [
+                "guan1 jian4"
+            ],
+            "meaning": "crucial; key; pivotal"
+        },
+        {
+            "question": "空",
+            "validAnswers": [
+                "kong1"
+            ],
+            "meaning": "empty; sky | leave blank; leisure"
+        },
+        {
+            "question": "究竟",
+            "validAnswers": [
+                "jiu1 jing4"
+            ],
+            "meaning": "after all; when all is said and done; actually"
+        },
+        {
+            "question": "恐怕",
+            "validAnswers": [
+                "kong3 pa4"
+            ],
+            "meaning": "be afraid; to fear; I'm afraid that..."
+        },
+        {
+            "question": "躺",
+            "validAnswers": [
+                "tang3"
+            ],
+            "meaning": "recline; lie down (on back or side)"
+        },
+        {
+            "question": "聚会",
+            "validAnswers": [
+                "ju4 hui4"
+            ],
+            "meaning": "hold a meeting; get together; a party"
+        },
+        {
+            "question": "方向",
+            "validAnswers": [
+                "fang1 xiang4"
+            ],
+            "meaning": "direction; orientation"
+        },
+        {
+            "question": "幸福",
+            "validAnswers": [
+                "xing4 fu2"
+            ],
+            "meaning": "happy; blessed; fortunate"
+        },
+        {
+            "question": "接着",
+            "validAnswers": [
+                "jie1 zhe5"
+            ],
+            "meaning": "continue; carry on; to catch; follow"
+        },
+        {
+            "question": "技术",
+            "validAnswers": [
+                "ji4 shu4"
+            ],
+            "meaning": "technology; technique; skill"
+        },
+        {
+            "question": "困",
+            "validAnswers": [
+                "kun4"
+            ],
+            "meaning": "sleepy; surround; hard-pressed"
+        },
+        {
+            "question": "困难",
+            "validAnswers": [
+                "kun4 nan5"
+            ],
+            "meaning": "difficulty; difficult; problem"
+        },
+        {
+            "question": "正好",
+            "validAnswers": [
+                "zheng4 hao3"
+            ],
+            "meaning": "just (in time); just right; just enough; happen to; by chance"
+        },
+        {
+            "question": "提醒",
+            "validAnswers": [
+                "ti2 xing3"
+            ],
+            "meaning": "remind; call attention to; warn of"
+        },
+        {
+            "question": "旅行",
+            "validAnswers": [
+                "lv3 xing2"
+            ],
+            "meaning": "travel"
+        },
+        {
+            "question": "激动",
+            "validAnswers": [
+                "ji1 dong4"
+            ],
+            "meaning": "excite; agitate"
+        },
+        {
+            "question": "骄傲",
+            "validAnswers": [
+                "jiao1 ao4"
+            ],
+            "meaning": "proud; arrogant; conceited; take pride in"
+        },
+        {
+            "question": "毛",
+            "validAnswers": [
+                "mao2"
+            ],
+            "meaning": "hair; fur; feather; dime (Kangxi radical 82)"
+        },
+        {
+            "question": "节",
+            "validAnswers": [
+                "jie2"
+            ],
+            "meaning": "section; part; festival; moral integrity; save; (mw for class periods)"
+        },
+        {
+            "question": "许多",
+            "validAnswers": [
+                "xu3 duo1"
+            ],
+            "meaning": "many; a lot; much"
+        },
+        {
+            "question": "顺利",
+            "validAnswers": [
+                "shun4 li4"
+            ],
+            "meaning": "go smoothly; without a hitch; successful"
+        },
+        {
+            "question": "职业",
+            "validAnswers": [
+                "zhi2 ye4"
+            ],
+            "meaning": "profession; occupation"
+        },
+        {
+            "question": "赚",
+            "validAnswers": [
+                "zhuan4"
+            ],
+            "meaning": "earn; make a profit | to cheat; to swindle"
+        },
+        {
+            "question": "地址",
+            "validAnswers": [
+                "di4 zhi3"
+            ],
+            "meaning": "address"
+        },
+        {
+            "question": "于是",
+            "validAnswers": [
+                "yu2 shi4"
+            ],
+            "meaning": "as a result; thus; therefore"
+        },
+        {
+            "question": "收拾",
+            "validAnswers": [
+                "shou1 shi5"
+            ],
+            "meaning": "to tidy; put in order; to repair; to settle with; punish"
+        },
+        {
+            "question": "周围",
+            "validAnswers": [
+                "zhou1 wei2"
+            ],
+            "meaning": "surroundings; vicinity; environment"
+        },
+        {
+            "question": "爱情",
+            "validAnswers": [
+                "ai4 qing2"
+            ],
+            "meaning": "(romantic) love"
+        },
+        {
+            "question": "尊重",
+            "validAnswers": [
+                "zun1 zhong4"
+            ],
+            "meaning": "esteem; to respect; to value; to honor"
+        },
+        {
+            "question": "十分",
+            "validAnswers": [
+                "shi2 fen1"
+            ],
+            "meaning": "very; fully; 100%"
+        },
+        {
+            "question": "教授",
+            "validAnswers": [
+                "jiao4 shou4"
+            ],
+            "meaning": "professor; instruct; to lecture"
+        },
+        {
+            "question": "超过",
+            "validAnswers": [
+                "chao1 guo4"
+            ],
+            "meaning": "surpass; exceed; outstrip"
+        },
+        {
+            "question": "寄",
+            "validAnswers": [
+                "ji4"
+            ],
+            "meaning": "send by mail"
+        },
+        {
+            "question": "顺便",
+            "validAnswers": [
+                "shun4 bian4"
+            ],
+            "meaning": "conveniently; in passing; on the way"
+        },
+        {
+            "question": "无聊",
+            "validAnswers": [
+                "wu2 liao2"
+            ],
+            "meaning": "nonsense; bored; silly; stupid"
+        },
+        {
+            "question": "目的",
+            "validAnswers": [
+                "mu4 di4"
+            ],
+            "meaning": "purpose; aim; goal"
+        },
+        {
+            "question": "低",
+            "validAnswers": [
+                "di1"
+            ],
+            "meaning": "low; to lower (one's head); droop"
+        },
+        {
+            "question": "剩",
+            "validAnswers": [
+                "sheng4"
+            ],
+            "meaning": "have as remainder; be left over; surplus"
+        },
+        {
+            "question": "复杂",
+            "validAnswers": [
+                "fu4 za2"
+            ],
+            "meaning": "complicated; complex"
+        },
+        {
+            "question": "社会",
+            "validAnswers": [
+                "she4 hui4"
+            ],
+            "meaning": "society"
+        },
+        {
+            "question": "故意",
+            "validAnswers": [
+                "gu4 yi4"
+            ],
+            "meaning": "deliberately; intentional; on purpose"
+        },
+        {
+            "question": "好处",
+            "validAnswers": [
+                "hao3 chu5"
+            ],
+            "meaning": "benefit; advantage"
+        },
+        {
+            "question": "竟然",
+            "validAnswers": [
+                "jing4 ran2"
+            ],
+            "meaning": "unexpectedly; to one's surprise; go so far as to"
+        },
+        {
+            "question": "表示",
+            "validAnswers": [
+                "biao3 shi4"
+            ],
+            "meaning": "express; show; indicate"
+        },
+        {
+            "question": "印象",
+            "validAnswers": [
+                "yin4 xiang4"
+            ],
+            "meaning": "impression"
+        },
+        {
+            "question": "出生",
+            "validAnswers": [
+                "chu1 sheng1"
+            ],
+            "meaning": "be born"
+        },
+        {
+            "question": "估计",
+            "validAnswers": [
+                "gu1 ji4"
+            ],
+            "meaning": "appraise; estimate"
+        },
+        {
+            "question": "地点",
+            "validAnswers": [
+                "di4 dian3"
+            ],
+            "meaning": "place; site; location"
+        },
+        {
+            "question": "轻",
+            "validAnswers": [
+                "qing1"
+            ],
+            "meaning": "light; easy; gentle; soft"
+        },
+        {
+            "question": "轻松",
+            "validAnswers": [
+                "qing1 song1"
+            ],
+            "meaning": "relaxed; gentle; easygoing"
+        },
+        {
+            "question": "作用",
+            "validAnswers": [
+                "zuo4 yong4"
+            ],
+            "meaning": "action; activity; effect"
+        },
+        {
+            "question": "举",
+            "validAnswers": [
+                "ju3"
+            ],
+            "meaning": "lift; raise; cite"
+        },
+        {
+            "question": "小伙子",
+            "validAnswers": [
+                "xiao3 huo3 zi5"
+            ],
+            "meaning": "young man; lad; youngster"
+        },
+        {
+            "question": "著名",
+            "validAnswers": [
+                "zhu4 ming2"
+            ],
+            "meaning": "famous; well-known; celebration"
+        },
+        {
+            "question": "免费",
+            "validAnswers": [
+                "mian3 fei4"
+            ],
+            "meaning": "free (of charge); no cost"
+        },
+        {
+            "question": "伤心",
+            "validAnswers": [
+                "shang1 xin1"
+            ],
+            "meaning": "sad; grieve; brokenhearted"
+        },
+        {
+            "question": "记者",
+            "validAnswers": [
+                "ji4 zhe3"
+            ],
+            "meaning": "reporter; journalist"
+        },
+        {
+            "question": "仔细",
+            "validAnswers": [
+                "zi3 xi4"
+            ],
+            "meaning": "careful; attentive; cautious"
+        },
+        {
+            "question": "巧克力",
+            "validAnswers": [
+                "qiao3 ke4 li4"
+            ],
+            "meaning": "chocolate"
+        },
+        {
+            "question": "辣",
+            "validAnswers": [
+                "la4"
+            ],
+            "meaning": "hot (spicy)"
+        },
+        {
+            "question": "互相",
+            "validAnswers": [
+                "hu4 xiang1"
+            ],
+            "meaning": "mutually; with each other"
+        },
+        {
+            "question": "厕所",
+            "validAnswers": [
+                "ce4 suo3"
+            ],
+            "meaning": "bathroom; toilet; lavatory"
+        },
+        {
+            "question": "过程",
+            "validAnswers": [
+                "guo4 cheng2"
+            ],
+            "meaning": "course of events; process"
+        },
+        {
+            "question": "申请",
+            "validAnswers": [
+                "shen1 qing3"
+            ],
+            "meaning": "apply for; application"
+        },
+        {
+            "question": "引起",
+            "validAnswers": [
+                "yin3 qi3"
+            ],
+            "meaning": "give rise to; lead to; to cause; arouse"
+        },
+        {
+            "question": "发展",
+            "validAnswers": [
+                "fa1 zhan3"
+            ],
+            "meaning": "develop; development; growth"
+        },
+        {
+            "question": "毕业",
+            "validAnswers": [
+                "bi4 ye4"
+            ],
+            "meaning": "to graduate; to finish school"
+        },
+        {
+            "question": "正式",
+            "validAnswers": [
+                "zheng4 shi4"
+            ],
+            "meaning": "formal; official"
+        },
+        {
+            "question": "厨房",
+            "validAnswers": [
+                "chu2 fang2"
+            ],
+            "meaning": "kitchen"
+        },
+        {
+            "question": "专业",
+            "validAnswers": [
+                "zhuan1 ye4"
+            ],
+            "meaning": "profession; specialized field of study; major"
+        },
+        {
+            "question": "吸引",
+            "validAnswers": [
+                "xi1 yin3"
+            ],
+            "meaning": "attract (interest, investment, etc.)"
+        },
+        {
+            "question": "心情",
+            "validAnswers": [
+                "xin1 qing2"
+            ],
+            "meaning": "mood; state of mind"
+        },
+        {
+            "question": "祝贺",
+            "validAnswers": [
+                "zhu4 he4"
+            ],
+            "meaning": "congratulate"
+        },
+        {
+            "question": "条件",
+            "validAnswers": [
+                "tiao2 jian4"
+            ],
+            "meaning": "condition; circumstances; prerequisite"
+        },
+        {
+            "question": "千万",
+            "validAnswers": [
+                "qian1 wan4"
+            ],
+            "meaning": "ten million; be sure to; must"
+        },
+        {
+            "question": "糖",
+            "validAnswers": [
+                "tang2"
+            ],
+            "meaning": "sugar; candy; sweets"
+        },
+        {
+            "question": "趟",
+            "validAnswers": [
+                "tang4"
+            ],
+            "meaning": "trips [counter word]"
+        },
+        {
+            "question": "由于",
+            "validAnswers": [
+                "you2 yu2"
+            ],
+            "meaning": "due to; owing to; as a result of; thanks to"
+        },
+        {
+            "question": "密码",
+            "validAnswers": [
+                "mi4 ma3"
+            ],
+            "meaning": "password; secret code"
+        },
+        {
+            "question": "倍",
+            "validAnswers": [
+                "bei4"
+            ],
+            "meaning": "(two, three, etc)-fold; times (multiplier)"
+        },
+        {
+            "question": "擦",
+            "validAnswers": [
+                "ca1"
+            ],
+            "meaning": "to wipe; to rub; to polish"
+        },
+        {
+            "question": "尤其",
+            "validAnswers": [
+                "you2 qi2"
+            ],
+            "meaning": "especially; particularly"
+        },
+        {
+            "question": "经验",
+            "validAnswers": [
+                "jing1 yan4"
+            ],
+            "meaning": "experience"
+        },
+        {
+            "question": "盒子",
+            "validAnswers": [
+                "he2 zi5"
+            ],
+            "meaning": "box"
+        },
+        {
+            "question": "干杯",
+            "validAnswers": [
+                "gan1 bei1"
+            ],
+            "meaning": "to drink a toast; cheers!; bottoms up!"
+        },
+        {
+            "question": "看法",
+            "validAnswers": [
+                "kan4 fa3"
+            ],
+            "meaning": "point of view; opinion"
+        },
+        {
+            "question": "脏",
+            "validAnswers": [
+                "zang1"
+            ],
+            "meaning": "filthy; dirty | internal organs; viscera"
+        },
+        {
+            "question": "艺术",
+            "validAnswers": [
+                "yi4 shu4"
+            ],
+            "meaning": "art"
+        },
+        {
+            "question": "速度",
+            "validAnswers": [
+                "su4 du4"
+            ],
+            "meaning": "speed; rate; velocity"
+        },
+        {
+            "question": "勇敢",
+            "validAnswers": [
+                "yong3 gan3"
+            ],
+            "meaning": "brave; courageous"
+        },
+        {
+            "question": "数字",
+            "validAnswers": [
+                "shu4 zi4"
+            ],
+            "meaning": "number; numeral; figure; digit"
+        },
+        {
+            "question": "暂时",
+            "validAnswers": [
+                "zan4 shi2"
+            ],
+            "meaning": "temporary; transient; for the moment"
+        },
+        {
+            "question": "优秀",
+            "validAnswers": [
+                "you1 xiu4"
+            ],
+            "meaning": "outstanding; excellent"
+        },
+        {
+            "question": "笑话",
+            "validAnswers": [
+                "xiao4 hua5"
+            ],
+            "meaning": "joke; laugh at"
+        },
+        {
+            "question": "可惜",
+            "validAnswers": [
+                "ke3 xi1"
+            ],
+            "meaning": "it's a pity; regrettable; too bad"
+        },
+        {
+            "question": "响",
+            "validAnswers": [
+                "xiang3"
+            ],
+            "meaning": "make a sound; to ring; echo"
+        },
+        {
+            "question": "省",
+            "validAnswers": [
+                "sheng3"
+            ],
+            "meaning": "to save; economize; omit; province | examine oneself; to visit; be aware"
+        },
+        {
+            "question": "笨",
+            "validAnswers": [
+                "ben4"
+            ],
+            "meaning": "stupid; foolish; silly; dumb; clumsy"
+        },
+        {
+            "question": "科学",
+            "validAnswers": [
+                "ke1 xue2"
+            ],
+            "meaning": "science; scientific knowledge"
+        },
+        {
+            "question": "餐厅",
+            "validAnswers": [
+                "can1 ting1"
+            ],
+            "meaning": "dining hall; cafeteria; restaurant"
+        },
+        {
+            "question": "各",
+            "validAnswers": [
+                "ge4"
+            ],
+            "meaning": "each; every"
+        },
+        {
+            "question": "距离",
+            "validAnswers": [
+                "ju4 li2"
+            ],
+            "meaning": "distance; be apart; away from"
+        },
+        {
+            "question": "窗户",
+            "validAnswers": [
+                "chuang1 hu5"
+            ],
+            "meaning": "window"
+        },
+        {
+            "question": "空气",
+            "validAnswers": [
+                "kong1 qi4"
+            ],
+            "meaning": "air"
+        },
+        {
+            "question": "护士",
+            "validAnswers": [
+                "hu4 shi5"
+            ],
+            "meaning": "nurse"
+        },
+        {
+            "question": "后悔",
+            "validAnswers": [
+                "hou4 hui3"
+            ],
+            "meaning": "to regret; repent"
+        },
+        {
+            "question": "大约",
+            "validAnswers": [
+                "da4 yue1"
+            ],
+            "meaning": "approximately; about"
+        },
+        {
+            "question": "内容",
+            "validAnswers": [
+                "nei4 rong2"
+            ],
+            "meaning": "content; substance; details"
+        },
+        {
+            "question": "规定",
+            "validAnswers": [
+                "gui1 ding4"
+            ],
+            "meaning": "regulation; stipulate; fix; set"
+        },
+        {
+            "question": "效果",
+            "validAnswers": [
+                "xiao4 guo3"
+            ],
+            "meaning": "effect; result"
+        },
+        {
+            "question": "现金",
+            "validAnswers": [
+                "xian4 jin1"
+            ],
+            "meaning": "cash"
+        },
+        {
+            "question": "儿童",
+            "validAnswers": [
+                "er2 tong2"
+            ],
+            "meaning": "child; children"
+        },
+        {
+            "question": "租",
+            "validAnswers": [
+                "zu1"
+            ],
+            "meaning": "to rent"
+        },
+        {
+            "question": "篇",
+            "validAnswers": [
+                "pian1"
+            ],
+            "meaning": "sheet; (mw for articles); piece of writing"
+        },
+        {
+            "question": "浪漫",
+            "validAnswers": [
+                "lang4 man4"
+            ],
+            "meaning": "romantic"
+        },
+        {
+            "question": "态度",
+            "validAnswers": [
+                "tai4 du5"
+            ],
+            "meaning": "manner; bearing; attitude"
+        },
+        {
+            "question": "自信",
+            "validAnswers": [
+                "zi4 xin4"
+            ],
+            "meaning": "self-confidence"
+        },
+        {
+            "question": "吃惊",
+            "validAnswers": [
+                "chi1 jing1"
+            ],
+            "meaning": "be startled; be shocked; be amazed"
+        },
+        {
+            "question": "熟悉",
+            "validAnswers": [
+                "shu2 xi1"
+            ],
+            "meaning": "familiar with; know well"
+        },
+        {
+            "question": "按照",
+            "validAnswers": [
+                "an4 zhao4"
+            ],
+            "meaning": "according to; in accordance with; in light of"
+        },
+        {
+            "question": "世纪",
+            "validAnswers": [
+                "shi4 ji4"
+            ],
+            "meaning": "century"
+        },
+        {
+            "question": "回忆",
+            "validAnswers": [
+                "hui2 yi4"
+            ],
+            "meaning": "to recall; recollect"
+        },
+        {
+            "question": "相同",
+            "validAnswers": [
+                "xiang1 tong2"
+            ],
+            "meaning": "identical; same; alike"
+        },
+        {
+            "question": "重点",
+            "validAnswers": [
+                "zhong4 dian3"
+            ],
+            "meaning": "emphasis; main point"
+        },
+        {
+            "question": "教育",
+            "validAnswers": [
+                "jiao4 yu4"
+            ],
+            "meaning": "education"
+        },
+        {
+            "question": "受不了",
+            "validAnswers": [
+                "shou4 bu5 liao3"
+            ],
+            "meaning": "cannot endure; unbearable; can't stand"
+        },
+        {
+            "question": "皮肤",
+            "validAnswers": [
+                "pi2 fu1"
+            ],
+            "meaning": "skin"
+        },
+        {
+            "question": "区别",
+            "validAnswers": [
+                "qu1 bie2"
+            ],
+            "meaning": "difference; distinguish"
+        },
+        {
+            "question": "左右",
+            "validAnswers": [
+                "zuo3 you4"
+            ],
+            "meaning": "about; approximate; around | left and right"
+        },
+        {
+            "question": "阳光",
+            "validAnswers": [
+                "yang2 guang1"
+            ],
+            "meaning": "sunshine; sunlight"
+        },
+        {
+            "question": "页",
+            "validAnswers": [
+                "ye4"
+            ],
+            "meaning": "page; leaf (Kangxi radical 181)"
+        },
+        {
+            "question": "文章",
+            "validAnswers": [
+                "wen2 zhang1"
+            ],
+            "meaning": "article; essay"
+        },
+        {
+            "question": "语言",
+            "validAnswers": [
+                "yu3 yan2"
+            ],
+            "meaning": "language"
+        },
+        {
+            "question": "标准",
+            "validAnswers": [
+                "biao1 zhun3"
+            ],
+            "meaning": "(an official) standard; norm; criterion"
+        },
+        {
+            "question": "管理",
+            "validAnswers": [
+                "guan3 li3"
+            ],
+            "meaning": "supervise; manage"
+        },
+        {
+            "question": "误会",
+            "validAnswers": [
+                "wu4 hui4"
+            ],
+            "meaning": "to misunderstand; to mistake"
+        },
+        {
+            "question": "桥",
+            "validAnswers": [
+                "qiao2"
+            ],
+            "meaning": "bridge"
+        },
+        {
+            "question": "举行",
+            "validAnswers": [
+                "ju3 xing2"
+            ],
+            "meaning": "convene; to hold (a meeting, ceremony, etc.)"
+        },
+        {
+            "question": "肚子",
+            "validAnswers": [
+                "du4 zi5"
+            ],
+            "meaning": "belly; abdomen; stomach"
+        },
+        {
+            "question": "不仅",
+            "validAnswers": [
+                "bu4 jin3"
+            ],
+            "meaning": "not only; not just"
+        },
+        {
+            "question": "饼干",
+            "validAnswers": [
+                "bing3 gan1"
+            ],
+            "meaning": "biscuit; cracker; cookie"
+        },
+        {
+            "question": "国际",
+            "validAnswers": [
+                "guo2 ji4"
+            ],
+            "meaning": "international"
+        },
+        {
+            "question": "信心",
+            "validAnswers": [
+                "xin4 xin1"
+            ],
+            "meaning": "confidence; faith (in sb. or sth.)"
+        },
+        {
+            "question": "抬",
+            "validAnswers": [
+                "tai2"
+            ],
+            "meaning": "to lift; to raise (with both palms up); carry (together)"
+        },
+        {
+            "question": "竞争",
+            "validAnswers": [
+                "jing4 zheng1"
+            ],
+            "meaning": "compete"
+        },
+        {
+            "question": "汤",
+            "validAnswers": [
+                "tang1"
+            ],
+            "meaning": "soup; broth"
+        },
+        {
+            "question": "作家",
+            "validAnswers": [
+                "zuo4 jia1"
+            ],
+            "meaning": "author; writer"
+        },
+        {
+            "question": "诚实",
+            "validAnswers": [
+                "cheng2 shi2"
+            ],
+            "meaning": "honest; honorable"
+        },
+        {
+            "question": "顾客",
+            "validAnswers": [
+                "gu4 ke4"
+            ],
+            "meaning": "customer; client"
+        },
+        {
+            "question": "存",
+            "validAnswers": [
+                "cun2"
+            ],
+            "meaning": "exist; to deposit; to store"
+        },
+        {
+            "question": "香",
+            "validAnswers": [
+                "xiang1"
+            ],
+            "meaning": "fragrant; savory (Kangxi radical 186)"
+        },
+        {
+            "question": "打扮",
+            "validAnswers": [
+                "da3 ban5"
+            ],
+            "meaning": "dress up; put on make up"
+        },
+        {
+            "question": "交流",
+            "validAnswers": [
+                "jiao1 liu2"
+            ],
+            "meaning": "communicate; exchange; give and take; interaction; to alternate"
+        },
+        {
+            "question": "年龄",
+            "validAnswers": [
+                "nian2 ling2"
+            ],
+            "meaning": "(a person's) age"
+        },
+        {
+            "question": "小说",
+            "validAnswers": [
+                "xiao3 shuo1"
+            ],
+            "meaning": "novel; fiction"
+        },
+        {
+            "question": "符合",
+            "validAnswers": [
+                "fu2 he2"
+            ],
+            "meaning": "in keeping with; in accordance with; conform"
+        },
+        {
+            "question": "交通",
+            "validAnswers": [
+                "jiao1 tong1"
+            ],
+            "meaning": "traffic; transportation"
+        },
+        {
+            "question": "共同",
+            "validAnswers": [
+                "gong4 tong2"
+            ],
+            "meaning": "together; common; joint"
+        },
+        {
+            "question": "稍微",
+            "validAnswers": [
+                "shao1 wei1"
+            ],
+            "meaning": "a little bit; slightly"
+        },
+        {
+            "question": "增加",
+            "validAnswers": [
+                "zeng1 jia1"
+            ],
+            "meaning": "to increase; to raise; add"
+        },
+        {
+            "question": "敲",
+            "validAnswers": [
+                "qiao1"
+            ],
+            "meaning": "knock; blackmail"
+        },
+        {
+            "question": "适应",
+            "validAnswers": [
+                "shi4 ying4"
+            ],
+            "meaning": "to suit; to fit; adapt"
+        },
+        {
+            "question": "苦",
+            "validAnswers": [
+                "ku3"
+            ],
+            "meaning": "bitter; miserable"
+        },
+        {
+            "question": "辛苦",
+            "validAnswers": [
+                "xin1 ku3"
+            ],
+            "meaning": "hard; exhausting; toilsome; laborious"
+        },
+        {
+            "question": "然而",
+            "validAnswers": [
+                "ran2 er2"
+            ],
+            "meaning": "however; yet; but"
+        },
+        {
+            "question": "耐心",
+            "validAnswers": [
+                "nai4 xin1"
+            ],
+            "meaning": "to be patient"
+        },
+        {
+            "question": "将来",
+            "validAnswers": [
+                "jiang1 lai2"
+            ],
+            "meaning": "the future"
+        },
+        {
+            "question": "沙发",
+            "validAnswers": [
+                "sha1 fa1"
+            ],
+            "meaning": "sofa"
+        },
+        {
+            "question": "最好",
+            "validAnswers": [
+                "zui4 hao3"
+            ],
+            "meaning": "the best; had better ...; it would be best"
+        },
+        {
+            "question": "禁止",
+            "validAnswers": [
+                "jin4 zhi3"
+            ],
+            "meaning": "to ban; prohibit"
+        },
+        {
+            "question": "经济",
+            "validAnswers": [
+                "jing1 ji4"
+            ],
+            "meaning": "economy; economic"
+        },
+        {
+            "question": "座位",
+            "validAnswers": [
+                "zuo4 wei4"
+            ],
+            "meaning": "seat; place"
+        },
+        {
+            "question": "购物",
+            "validAnswers": [
+                "gou4 wu4"
+            ],
+            "meaning": "go shopping; buy goods"
+        },
+        {
+            "question": "抽烟",
+            "validAnswers": [
+                "chou1 yan1"
+            ],
+            "meaning": "to smoke (a cigarette, pipe, etc.)"
+        },
+        {
+            "question": "航班",
+            "validAnswers": [
+                "hang2 ban1"
+            ],
+            "meaning": "scheduled flight; flight number"
+        },
+        {
+            "question": "礼貌",
+            "validAnswers": [
+                "li3 mao4"
+            ],
+            "meaning": "courtesy; politeness; manners"
+        },
+        {
+            "question": "提前",
+            "validAnswers": [
+                "ti2 qian2"
+            ],
+            "meaning": "shift to an earlier date; bring forward; to advance"
+        },
+        {
+            "question": "判断",
+            "validAnswers": [
+                "pan4 duan4"
+            ],
+            "meaning": "to judge; judgment; to decide"
+        },
+        {
+            "question": "胳膊",
+            "validAnswers": [
+                "ge1 bo5"
+            ],
+            "meaning": "arm"
+        },
+        {
+            "question": "整理",
+            "validAnswers": [
+                "zheng3 li3"
+            ],
+            "meaning": "put in order; arrange; straighten up; to tidy; to pack (luggage)"
+        },
+        {
+            "question": "森林",
+            "validAnswers": [
+                "sen1 lin2"
+            ],
+            "meaning": "forest"
+        },
+        {
+            "question": "同情",
+            "validAnswers": [
+                "tong2 qing2"
+            ],
+            "meaning": "compassion; sympathy"
+        },
+        {
+            "question": "网站",
+            "validAnswers": [
+                "wang3 zhan4"
+            ],
+            "meaning": "website"
+        },
+        {
+            "question": "商量",
+            "validAnswers": [
+                "shang1 liang5"
+            ],
+            "meaning": "consult; talk over; discuss"
+        },
+        {
+            "question": "眼镜",
+            "validAnswers": [
+                "yan3 jing4"
+            ],
+            "meaning": "glasses; spectacles"
+        },
+        {
+            "question": "镜子",
+            "validAnswers": [
+                "jing4 zi5"
+            ],
+            "meaning": "mirror"
+        },
+        {
+            "question": "广播",
+            "validAnswers": [
+                "guang3 bo1"
+            ],
+            "meaning": "broadcast; on the air"
+        },
+        {
+            "question": "专门",
+            "validAnswers": [
+                "zhuan1 men2"
+            ],
+            "meaning": "specialized"
+        },
+        {
+            "question": "弹钢琴",
+            "validAnswers": [
+                "tan2 gang1 qin2"
+            ],
+            "meaning": "play the piano"
+        },
+        {
+            "question": "尝",
+            "validAnswers": [
+                "chang2"
+            ],
+            "meaning": "to taste; flavor; (past tense marker)"
+        },
+        {
+            "question": "流行",
+            "validAnswers": [
+                "liu2 xing2"
+            ],
+            "meaning": "spread; prevalent; be popular"
+        },
+        {
+            "question": "材料",
+            "validAnswers": [
+                "cai2 liao4"
+            ],
+            "meaning": "material"
+        },
+        {
+            "question": "对话",
+            "validAnswers": [
+                "dui4 hua4"
+            ],
+            "meaning": "dialogue; conversation"
+        },
+        {
+            "question": "详细",
+            "validAnswers": [
+                "xiang2 xi4"
+            ],
+            "meaning": "detailed; in detail; minute"
+        },
+        {
+            "question": "随着",
+            "validAnswers": [
+                "sui2 zhe5"
+            ],
+            "meaning": "along with; in the wake of"
+        },
+        {
+            "question": "降落",
+            "validAnswers": [
+                "jiang4 luo4"
+            ],
+            "meaning": "descend; to land; put down"
+        },
+        {
+            "question": "功夫",
+            "validAnswers": [
+                "gong1 fu5"
+            ],
+            "meaning": "kung fu; skill; art; labor"
+        },
+        {
+            "question": "严格",
+            "validAnswers": [
+                "yan2 ge2"
+            ],
+            "meaning": "strict; stringent; tight"
+        },
+        {
+            "question": "日记",
+            "validAnswers": [
+                "ri4 ji4"
+            ],
+            "meaning": "diary"
+        },
+        {
+            "question": "偶尔",
+            "validAnswers": [
+                "ou3 er3"
+            ],
+            "meaning": "occasionally; once in a while; sometimes"
+        },
+        {
+            "question": "实际",
+            "validAnswers": [
+                "shi2 ji4"
+            ],
+            "meaning": "actual; reality; practice"
+        },
+        {
+            "question": "友好",
+            "validAnswers": [
+                "you3 hao3"
+            ],
+            "meaning": "friendly (relations); close friends"
+        },
+        {
+            "question": "相反",
+            "validAnswers": [
+                "xiang1 fan3"
+            ],
+            "meaning": "opposite; contrary"
+        },
+        {
+            "question": "大夫",
+            "validAnswers": [
+                "dai4 fu5"
+            ],
+            "meaning": "doctor; physician"
+        },
+        {
+            "question": "友谊",
+            "validAnswers": [
+                "you3 yi4"
+            ],
+            "meaning": "friendship; companionship"
+        },
+        {
+            "question": "准确",
+            "validAnswers": [
+                "zhun3 que4"
+            ],
+            "meaning": "accurate; precise"
+        },
+        {
+            "question": "平时",
+            "validAnswers": [
+                "ping2 shi2"
+            ],
+            "meaning": "ordinarily; in normal times; in peacetime"
+        },
+        {
+            "question": "对面",
+            "validAnswers": [
+                "dui4 mian4"
+            ],
+            "meaning": "opposite; across from; the other side"
+        },
+        {
+            "question": "脾气",
+            "validAnswers": [
+                "pi2 qi5"
+            ],
+            "meaning": "temperament; disposition; temper"
+        },
+        {
+            "question": "价格",
+            "validAnswers": [
+                "jia4 ge2"
+            ],
+            "meaning": "price"
+        },
+        {
+            "question": "性格",
+            "validAnswers": [
+                "xing4 ge2"
+            ],
+            "meaning": "nature; personality; temperament"
+        },
+        {
+            "question": "鼓励",
+            "validAnswers": [
+                "gu3 li4"
+            ],
+            "meaning": "encourage; inspire"
+        },
+        {
+            "question": "及时",
+            "validAnswers": [
+                "ji2 shi2"
+            ],
+            "meaning": "timely; in time; promptly; without delay"
+        },
+        {
+            "question": "迷路",
+            "validAnswers": [
+                "mi2 lu4"
+            ],
+            "meaning": "to get lost"
+        },
+        {
+            "question": "棵",
+            "validAnswers": [
+                "ke1"
+            ],
+            "meaning": "(mw for plants)"
+        },
+        {
+            "question": "理想",
+            "validAnswers": [
+                "li3 xiang3"
+            ],
+            "meaning": "ideal"
+        },
+        {
+            "question": "工资",
+            "validAnswers": [
+                "gong1 zi1"
+            ],
+            "meaning": "wages; pay; earnings; salary"
+        },
+        {
+            "question": "散步",
+            "validAnswers": [
+                "san4 bu4"
+            ],
+            "meaning": "to go for a walk"
+        },
+        {
+            "question": "只好",
+            "validAnswers": [
+                "zhi3 hao3"
+            ],
+            "meaning": "have to; be forced to"
+        },
+        {
+            "question": "感动",
+            "validAnswers": [
+                "gan3 dong4"
+            ],
+            "meaning": "be moved; to touch emotionally"
+        },
+        {
+            "question": "知识",
+            "validAnswers": [
+                "zhi1 shi5"
+            ],
+            "meaning": "knowledge; intellectual"
+        },
+        {
+            "question": "难受",
+            "validAnswers": [
+                "nan2 shou4"
+            ],
+            "meaning": "feel unwell; to suffer pain"
+        },
+        {
+            "question": "奖金",
+            "validAnswers": [
+                "jiang3 jin1"
+            ],
+            "meaning": "bonus"
+        },
+        {
+            "question": "幽默",
+            "validAnswers": [
+                "you1 mo4"
+            ],
+            "meaning": "humorous"
+        },
+        {
+            "question": "孙子",
+            "validAnswers": [
+                "sun1 zi5"
+            ],
+            "meaning": "grandson; son's son"
+        },
+        {
+            "question": "汗",
+            "validAnswers": [
+                "han4"
+            ],
+            "meaning": "sweat; perspiration; Khan"
+        },
+        {
+            "question": "收入",
+            "validAnswers": [
+                "shou1 ru4"
+            ],
+            "meaning": "take in; income; revenue"
+        },
+        {
+            "question": "酸",
+            "validAnswers": [
+                "suan1"
+            ],
+            "meaning": "sour; sore; ache"
+        },
+        {
+            "question": "公里",
+            "validAnswers": [
+                "gong1 li3"
+            ],
+            "meaning": "kilometer"
+        },
+        {
+            "question": "害羞",
+            "validAnswers": [
+                "hai4 xiu1"
+            ],
+            "meaning": "blush; shy"
+        },
+        {
+            "question": "基础",
+            "validAnswers": [
+                "ji1 chu3"
+            ],
+            "meaning": "base; foundation"
+        },
+        {
+            "question": "准时",
+            "validAnswers": [
+                "zhun3 shi2"
+            ],
+            "meaning": "punctually; on time"
+        },
+        {
+            "question": "积极",
+            "validAnswers": [
+                "ji1 ji2"
+            ],
+            "meaning": "active; positive; energetic"
+        },
+        {
+            "question": "富",
+            "validAnswers": [
+                "fu4"
+            ],
+            "meaning": "wealthy"
+        },
+        {
+            "question": "力气",
+            "validAnswers": [
+                "li4 qi5"
+            ],
+            "meaning": "physical strength; effort"
+        },
+        {
+            "question": "入口",
+            "validAnswers": [
+                "ru4 kou3"
+            ],
+            "meaning": "entrance"
+        },
+        {
+            "question": "袜子",
+            "validAnswers": [
+                "wa4 zi5"
+            ],
+            "meaning": "socks; stockings"
+        },
+        {
+            "question": "烦恼",
+            "validAnswers": [
+                "fan2 nao3"
+            ],
+            "meaning": "worried; vexed"
+        },
+        {
+            "question": "举办",
+            "validAnswers": [
+                "ju3 ban4"
+            ],
+            "meaning": "to conduct; to hold"
+        },
+        {
+            "question": "修理",
+            "validAnswers": [
+                "xiu1 li3"
+            ],
+            "meaning": "to repair; perform maintenance; to overhaul"
+        },
+        {
+            "question": "减少",
+            "validAnswers": [
+                "jian3 shao3"
+            ],
+            "meaning": "reduce; to decrease"
+        },
+        {
+            "question": "亲戚",
+            "validAnswers": [
+                "qin1 qi5"
+            ],
+            "meaning": "a relative (i.e. family relation)"
+        },
+        {
+            "question": "参观",
+            "validAnswers": [
+                "can1 guan1"
+            ],
+            "meaning": "to visit (a place, such as a tourist spot); inspect"
+        },
+        {
+            "question": "丰富",
+            "validAnswers": [
+                "feng1 fu4"
+            ],
+            "meaning": "rich; enrich; abundant; plentiful"
+        },
+        {
+            "question": "果汁",
+            "validAnswers": [
+                "guo3 zhi1"
+            ],
+            "meaning": "fruit juice"
+        },
+        {
+            "question": "毛巾",
+            "validAnswers": [
+                "mao2 jin1"
+            ],
+            "meaning": "towel; washcloth"
+        },
+        {
+            "question": "作者",
+            "validAnswers": [
+                "zuo4 zhe3"
+            ],
+            "meaning": "author; writer"
+        },
+        {
+            "question": "海洋",
+            "validAnswers": [
+                "hai3 yang2"
+            ],
+            "meaning": "ocean"
+        },
+        {
+            "question": "批评",
+            "validAnswers": [
+                "pi1 ping2"
+            ],
+            "meaning": "criticize"
+        },
+        {
+            "question": "排队",
+            "validAnswers": [
+                "pai2 dui4"
+            ],
+            "meaning": "queue; stand in line"
+        },
+        {
+            "question": "例如",
+            "validAnswers": [
+                "li4 ru2"
+            ],
+            "meaning": "for example; for instance"
+        },
+        {
+            "question": "植物",
+            "validAnswers": [
+                "zhi2 wu4"
+            ],
+            "meaning": "plant; botanical; vegetation"
+        },
+        {
+            "question": "穷",
+            "validAnswers": [
+                "qiong2"
+            ],
+            "meaning": "poor; exhausted"
+        },
+        {
+            "question": "家具",
+            "validAnswers": [
+                "jia1 ju4"
+            ],
+            "meaning": "furniture"
+        },
+        {
+            "question": "盐",
+            "validAnswers": [
+                "yan2"
+            ],
+            "meaning": "salt"
+        },
+        {
+            "question": "温度",
+            "validAnswers": [
+                "wen1 du4"
+            ],
+            "meaning": "temperature"
+        },
+        {
+            "question": "数量",
+            "validAnswers": [
+                "shu4 liang4"
+            ],
+            "meaning": "amount; quantity; number"
+        },
+        {
+            "question": "逛",
+            "validAnswers": [
+                "guang4"
+            ],
+            "meaning": "to stroll; to visit; go window shopping"
+        },
+        {
+            "question": "厚",
+            "validAnswers": [
+                "hou4"
+            ],
+            "meaning": "thick (for flat things); generous"
+        },
+        {
+            "question": "亚洲",
+            "validAnswers": [
+                "ya4 zhou1"
+            ],
+            "meaning": "Asia"
+        },
+        {
+            "question": "来不及",
+            "validAnswers": [
+                "lai2 bu5 ji2"
+            ],
+            "meaning": "there's not enough time (to do something); it's too late"
+        },
+        {
+            "question": "师傅",
+            "validAnswers": [
+                "shi1 fu5"
+            ],
+            "meaning": "master; qualified worker; teacher"
+        },
+        {
+            "question": "污染",
+            "validAnswers": [
+                "wu1 ran3"
+            ],
+            "meaning": "pollution; contamination"
+        },
+        {
+            "question": "来得及",
+            "validAnswers": [
+                "lai2 de5 ji2"
+            ],
+            "meaning": "there's still time"
+        },
+        {
+            "question": "减肥",
+            "validAnswers": [
+                "jian3 fei2"
+            ],
+            "meaning": "go on a diet; lose weight"
+        },
+        {
+            "question": "客厅",
+            "validAnswers": [
+                "ke4 ting1"
+            ],
+            "meaning": "living room; parlor"
+        },
+        {
+            "question": "缺少",
+            "validAnswers": [
+                "que1 shao3"
+            ],
+            "meaning": "to lack; be short of; be deficient in"
+        },
+        {
+            "question": "老虎",
+            "validAnswers": [
+                "lao3 hu3"
+            ],
+            "meaning": "tiger"
+        },
+        {
+            "question": "降低",
+            "validAnswers": [
+                "jiang4 di1"
+            ],
+            "meaning": "reduce; to lower; to drop"
+        },
+        {
+            "question": "云",
+            "validAnswers": [
+                "yun2"
+            ],
+            "meaning": "cloud; Yunnan province | say; speak"
+        },
+        {
+            "question": "质量",
+            "validAnswers": [
+                "zhi4 liang4"
+            ],
+            "meaning": "quality; mass (physics)"
+        },
+        {
+            "question": "学期",
+            "validAnswers": [
+                "xue2 qi1"
+            ],
+            "meaning": "semester; school term"
+        },
+        {
+            "question": "卫生间",
+            "validAnswers": [
+                "wei4 sheng1 jian1"
+            ],
+            "meaning": "restroom; bathroom; water closet (WC)"
+        },
+        {
+            "question": "网球",
+            "validAnswers": [
+                "wang3 qiu2"
+            ],
+            "meaning": "tennis; tennis ball"
+        },
+        {
+            "question": "其次",
+            "validAnswers": [
+                "qi2 ci4"
+            ],
+            "meaning": "next; secondly"
+        },
+        {
+            "question": "打招呼",
+            "validAnswers": [
+                "da3 zhao1 hu5"
+            ],
+            "meaning": "notify; greet; inform"
+        },
+        {
+            "question": "表格",
+            "validAnswers": [
+                "biao3 ge2"
+            ],
+            "meaning": "form (document)"
+        },
+        {
+            "question": "阅读",
+            "validAnswers": [
+                "yue4 du2"
+            ],
+            "meaning": "read; reading"
+        },
+        {
+            "question": "信封",
+            "validAnswers": [
+                "xin4 feng1"
+            ],
+            "meaning": "envelope"
+        },
+        {
+            "question": "顺序",
+            "validAnswers": [
+                "shun4 xu4"
+            ],
+            "meaning": "sequence; order"
+        },
+        {
+            "question": "放暑假",
+            "validAnswers": [
+                "fang4 shu3 jia4"
+            ],
+            "meaning": "have summer vacation"
+        },
+        {
+            "question": "乘坐",
+            "validAnswers": [
+                "cheng2 zuo4"
+            ],
+            "meaning": "ride; get into (a vehicle)"
+        },
+        {
+            "question": "重视",
+            "validAnswers": [
+                "zhong4 shi4"
+            ],
+            "meaning": "to value; take seriously"
+        },
+        {
+            "question": "推迟",
+            "validAnswers": [
+                "tui1 chi2"
+            ],
+            "meaning": "postpone; defer"
+        },
+        {
+            "question": "缺点",
+            "validAnswers": [
+                "que1 dian3"
+            ],
+            "meaning": "weak point; defect; fault; shortcoming"
+        },
+        {
+            "question": "加油站",
+            "validAnswers": [
+                "jia1 you2 zhan4"
+            ],
+            "meaning": "gas station"
+        },
+        {
+            "question": "首都",
+            "validAnswers": [
+                "shou3 du1"
+            ],
+            "meaning": "capital (city)"
+        },
+        {
+            "question": "羡慕",
+            "validAnswers": [
+                "xian4 mu4"
+            ],
+            "meaning": "to envy; admire"
+        },
+        {
+            "question": "零钱",
+            "validAnswers": [
+                "ling2 qian2"
+            ],
+            "meaning": "small change (of money)"
+        },
+        {
+            "question": "暖和",
+            "validAnswers": [
+                "nuan3 huo5"
+            ],
+            "meaning": "warm; nice and warm"
+        },
+        {
+            "question": "懒",
+            "validAnswers": [
+                "lan3"
+            ],
+            "meaning": "lazy"
+        },
+        {
+            "question": "出差",
+            "validAnswers": [
+                "chu1 chai1"
+            ],
+            "meaning": "go on a business trip"
+        },
+        {
+            "question": "民族",
+            "validAnswers": [
+                "min2 zu2"
+            ],
+            "meaning": "nationality; ethnic group"
+        },
+        {
+            "question": "传真",
+            "validAnswers": [
+                "chuan2 zhen1"
+            ],
+            "meaning": "fax; facsimile"
+        },
+        {
+            "question": "优点",
+            "validAnswers": [
+                "you1 dian3"
+            ],
+            "meaning": "merit; good point; a strength; a benefit"
+        },
+        {
+            "question": "垃圾桶",
+            "validAnswers": [
+                "la1 ji1 tong3"
+            ],
+            "meaning": "garbage can"
+        },
+        {
+            "question": "加班",
+            "validAnswers": [
+                "jia1 ban1"
+            ],
+            "meaning": "work overtime"
+        },
+        {
+            "question": "房东",
+            "validAnswers": [
+                "fang2 dong1"
+            ],
+            "meaning": "landlord"
+        },
+        {
+            "question": "按时",
+            "validAnswers": [
+                "an4 shi2"
+            ],
+            "meaning": "on time; on schedule"
+        },
+        {
+            "question": "葡萄",
+            "validAnswers": [
+                "pu2 tao5"
+            ],
+            "meaning": "grape"
+        },
+        {
+            "question": "往往",
+            "validAnswers": [
+                "wang3 wang3"
+            ],
+            "meaning": "often; frequently; more often than not"
+        },
+        {
+            "question": "高速公路",
+            "validAnswers": [
+                "gao1 su4 gong1 lu4"
+            ],
+            "meaning": "highway"
+        },
+        {
+            "question": "得意",
+            "validAnswers": [
+                "de2 yi4"
+            ],
+            "meaning": "proud of oneself; complacent"
+        },
+        {
+            "question": "特点",
+            "validAnswers": [
+                "te4 dian3"
+            ],
+            "meaning": "a characteristic; trait; feature"
+        },
+        {
+            "question": "合格",
+            "validAnswers": [
+                "he2 ge2"
+            ],
+            "meaning": "qualified; up to standard"
+        },
+        {
+            "question": "性别",
+            "validAnswers": [
+                "xing4 bie2"
+            ],
+            "meaning": "gender; sex; sexual distinction"
+        },
+        {
+            "question": "报名",
+            "validAnswers": [
+                "bao4 ming2"
+            ],
+            "meaning": "sign up; apply"
+        },
+        {
+            "question": "互联网",
+            "validAnswers": [
+                "hu4 lian2 wang3"
+            ],
+            "meaning": "Internet"
+        },
+        {
+            "question": "景色",
+            "validAnswers": [
+                "jing3 se4"
+            ],
+            "meaning": "scenery; landscape; scene; view"
+        },
+        {
+            "question": "大使馆",
+            "validAnswers": [
+                "da4 shi3 guan3"
+            ],
+            "meaning": "embassy"
+        },
+        {
+            "question": "总结",
+            "validAnswers": [
+                "zong3 jie2"
+            ],
+            "meaning": "summarize; conclude"
+        },
+        {
+            "question": "热闹",
+            "validAnswers": [
+                "re4 nao5"
+            ],
+            "meaning": "bustling; lively; busy"
+        },
+        {
+            "question": "郊区",
+            "validAnswers": [
+                "jiao1 qu1"
+            ],
+            "meaning": "suburbs; outskirts"
+        },
+        {
+            "question": "咳嗽",
+            "validAnswers": [
+                "ke2 sou5"
+            ],
+            "meaning": "to cough"
+        },
+        {
+            "question": "签证",
+            "validAnswers": [
+                "qian1 zheng4"
+            ],
+            "meaning": "visa"
+        },
+        {
+            "question": "咸",
+            "validAnswers": [
+                "xian2"
+            ],
+            "meaning": "salty; salted; all"
+        },
+        {
+            "question": "打印",
+            "validAnswers": [
+                "da3 yin4"
+            ],
+            "meaning": "to print"
+        },
+        {
+            "question": "活泼",
+            "validAnswers": [
+                "huo2 po5"
+            ],
+            "meaning": "lively; vivacious"
+        },
+        {
+            "question": "邮局",
+            "validAnswers": [
+                "you2 ju2"
+            ],
+            "meaning": "post office"
+        },
+        {
+            "question": "牙膏",
+            "validAnswers": [
+                "ya2 gao1"
+            ],
+            "meaning": "toothpaste"
+        },
+        {
+            "question": "气候",
+            "validAnswers": [
+                "qi4 hou4"
+            ],
+            "meaning": "climate; atmosphere; weather"
+        },
+        {
+            "question": "勺子",
+            "validAnswers": [
+                "shao2 zi5"
+            ],
+            "meaning": "spoon; scoop; ladle"
+        },
+        {
+            "question": "付款",
+            "validAnswers": [
+                "fu4 kuan3"
+            ],
+            "meaning": "to pay"
+        },
+        {
+            "question": "理发",
+            "validAnswers": [
+                "li3 fa4"
+            ],
+            "meaning": "a barber, hairdressing; haircut"
+        },
+        {
+            "question": "复印",
+            "validAnswers": [
+                "fu4 yin4"
+            ],
+            "meaning": "photocopy; duplicate"
+        },
+        {
+            "question": "词语",
+            "validAnswers": [
+                "ci2 yu3"
+            ],
+            "meaning": "words and expressions; terms"
+        },
+        {
+            "question": "表扬",
+            "validAnswers": [
+                "biao3 yang2"
+            ],
+            "meaning": "to praise; commend"
+        },
+        {
+            "question": "打针",
+            "validAnswers": [
+                "da3 zhen1"
+            ],
+            "meaning": "inject; get a shot"
+        },
+        {
+            "question": "普遍",
+            "validAnswers": [
+                "pu3 bian4"
+            ],
+            "meaning": "common; universal; general; widespread"
+        },
+        {
+            "question": "堵车",
+            "validAnswers": [
+                "du3 che1"
+            ],
+            "meaning": "traffic jam"
+        },
+        {
+            "question": "叶子",
+            "validAnswers": [
+                "ye4 zi5"
+            ],
+            "meaning": "leaves"
+        },
+        {
+            "question": "打折",
+            "validAnswers": [
+                "da3 zhe2"
+            ],
+            "meaning": "sell at a discount"
+        },
+        {
+            "question": "排列",
+            "validAnswers": [
+                "pai2 lie4"
+            ],
+            "meaning": "arrange; align; permutation"
+        },
+        {
+            "question": "凉快",
+            "validAnswers": [
+                "liang2 kuai5"
+            ],
+            "meaning": "nice and cool; pleasantly cool"
+        },
+        {
+            "question": "塑料袋",
+            "validAnswers": [
+                "su4 liao4 dai4"
+            ],
+            "meaning": "plastic bag"
+        },
+        {
+            "question": "导游",
+            "validAnswers": [
+                "dao3 you2"
+            ],
+            "meaning": "tour guide"
+        },
+        {
+            "question": "小吃",
+            "validAnswers": [
+                "xiao3 chi1"
+            ],
+            "meaning": "snack; refreshments"
+        },
+        {
+            "question": "西红柿",
+            "validAnswers": [
+                "xi1 hong2 shi4"
+            ],
+            "meaning": "tomato"
+        },
+        {
+            "question": "招聘",
+            "validAnswers": [
+                "zhao1 pin4"
+            ],
+            "meaning": "recruitment; take job applications for a job"
+        },
+        {
+            "question": "节约",
+            "validAnswers": [
+                "jie2 yue1"
+            ],
+            "meaning": "frugal; to save"
+        },
+        {
+            "question": "硕士",
+            "validAnswers": [
+                "shuo4 shi4"
+            ],
+            "meaning": "Master's degree (M.A.)"
+        },
+        {
+            "question": "乒乓球",
+            "validAnswers": [
+                "ping1 pang1 qiu2"
+            ],
+            "meaning": "ping pong; table tennis"
+        },
+        {
+            "question": "积累",
+            "validAnswers": [
+                "ji1 lei3"
+            ],
+            "meaning": "accumulate; accumulation"
+        },
+        {
+            "question": "橡皮",
+            "validAnswers": [
+                "xiang4 pi2"
+            ],
+            "meaning": "rubber; an eraser"
+        },
+        {
+            "question": "应聘",
+            "validAnswers": [
+                "ying4 pin4"
+            ],
+            "meaning": "accept a job offer; to apply for a job"
+        },
+        {
+            "question": "矿泉水",
+            "validAnswers": [
+                "kuang4 quan2 shui3"
+            ],
+            "meaning": "mineral water"
+        },
+        {
+            "question": "长城",
+            "validAnswers": [
+                "chang2 cheng2"
+            ],
+            "meaning": "the Great Wall"
+        },
+        {
+            "question": "语法",
+            "validAnswers": [
+                "yu3 fa3"
+            ],
+            "meaning": "grammar"
+        },
+        {
+            "question": "礼拜天",
+            "validAnswers": [
+                "li3 bai4 tian1"
+            ],
+            "meaning": "Sunday"
+        },
+        {
+            "question": "饺子",
+            "validAnswers": [
+                "jiao3 zi5"
+            ],
+            "meaning": "dumpling; potsticker"
+        },
+        {
+            "question": "国籍",
+            "validAnswers": [
+                "guo2 ji2"
+            ],
+            "meaning": "nationality"
+        },
+        {
+            "question": "售货员",
+            "validAnswers": [
+                "shou4 huo4 yuan2"
+            ],
+            "meaning": "salesclerk; shop assistant"
+        },
+        {
+            "question": "翻译",
+            "validAnswers": [
+                "fan1 yi4"
+            ],
+            "meaning": "translate; translation; interpret"
+        },
+        {
+            "question": "流利",
+            "validAnswers": [
+                "liu2 li4"
+            ],
+            "meaning": "fluent"
+        },
+        {
+            "question": "粗心",
+            "validAnswers": [
+                "cu1 xin1"
+            ],
+            "meaning": "careless; inadvertent; negligent"
+        },
+        {
+            "question": "养成",
+            "validAnswers": [
+                "yang3 cheng2"
+            ],
+            "meaning": "cultivate; acquire; to form"
+        },
+        {
+            "question": "马虎",
+            "validAnswers": [
+                "ma3 hu5"
+            ],
+            "meaning": "careless; sloppy; casual"
+        },
+        {
+            "question": "百分之",
+            "validAnswers": [
+                "bai3 fen1 zhi1"
+            ],
+            "meaning": "percent"
+        },
+        {
+            "question": "普通话",
+            "validAnswers": [
+                "pu3 tong1 hua4"
+            ],
+            "meaning": "Mandarin (common language)"
+        },
+        {
+            "question": "登机牌",
+            "validAnswers": [
+                "deng1 ji1 pai2"
+            ],
+            "meaning": "boarding pass"
+        },
+        {
+            "question": "占线",
+            "validAnswers": [
+                "zhan4 xian4"
+            ],
+            "meaning": "the (phone) line is busy"
+        },
+        {
+            "question": "包子",
+            "validAnswers": [
+                "bao1 zi5"
+            ],
+            "meaning": "steamed stuffed bun"
+        },
+        {
+            "question": "羽毛球",
+            "validAnswers": [
+                "yu3 mao2 qiu2"
+            ],
+            "meaning": "badminton"
+        },
+        {
+            "question": "烤鸭",
+            "validAnswers": [
+                "kao3 ya1"
+            ],
+            "meaning": "roast duck"
+        },
+        {
+            "question": "寒假",
+            "validAnswers": [
+                "han2 jia4"
+            ],
+            "meaning": "winter vacation"
+        },
+        {
+            "question": "长江",
+            "validAnswers": [
+                "chang2 jiang1"
+            ],
+            "meaning": "the Yangtze River; the Changjiang River"
+        },
+        {
+            "question": "预习",
+            "validAnswers": [
+                "yu4 xi2"
+            ],
+            "meaning": "(of students) prepare a lesson before class; preview"
+        },
+        {
+            "question": "填空",
+            "validAnswers": [
+                "tian2 kong4"
+            ],
+            "meaning": "fill in the blanks; fill a vacancy"
+        },
+        {
+            "question": "京剧",
+            "validAnswers": [
+                "jing1 ju4"
+            ],
+            "meaning": "Beijing Opera"
+        }
+    ]
+}
