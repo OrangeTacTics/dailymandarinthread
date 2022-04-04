@@ -64,11 +64,10 @@ impl State {
 
     fn active_exam_for(
         &mut self,
-        channel_id: Id<ChannelMarker>,
         user_id: Id<UserMarker>,
     ) -> Option<&mut ActiveExam> {
         for active_exam in self.active_exams.iter_mut() {
-            if active_exam.channel_id == channel_id && active_exam.user_id == user_id {
+            if active_exam.user_id == user_id {
                 return Some(active_exam);
             }
         }
@@ -183,7 +182,7 @@ async fn handle_message(
         }
     } else {
         let mut state = state_lock.lock().await;
-        if let Some(active_exam) = state.active_exam_for(message.channel_id, message.author.id) {
+        if let Some(active_exam) = state.active_exam_for(message.author.id) {
             if let Some((question, answer)) = &active_exam.examiner.answer(&message.content) {
                 message::show_answer(&client, &active_exam, &question, &answer).await?
             }
@@ -210,9 +209,9 @@ async fn handle_exam_command(
             };
             exam_start(&mut state, client, *channel_id, *user_id, exam).await?;
         },
-        ExamCommand::Quit { user_id, channel_id } => {
+        ExamCommand::Quit { user_id } => {
             let mut state = state_lock.lock().await;
-            exam_stop(&mut state, client, *channel_id, *user_id).await?;
+            exam_stop(&mut state, client, *user_id).await?;
         },
     }
 
@@ -267,51 +266,65 @@ async fn exam_start(
 async fn exam_stop(
     state: &mut State,
     _client: Arc<Client>,
-    channel_id: Id<ChannelMarker>,
     user_id: Id<UserMarker>,
 ) -> Result<(), Error> {
     if state.is_user_busy(user_id) {
-        let active_exam = state.active_exam_for(channel_id, user_id).unwrap();
+        let active_exam = state.active_exam_for(user_id).unwrap();
         active_exam.examiner.give_up();
     }
 
     Ok(())
 }
 
-async fn tick_loop(_api: Api, client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
+async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
     loop {
         let mut state = state_lock.lock().await;
-
-        let mut remove_user_id: Option<Id<UserMarker>> = None;
+        let mut user_ids_for_completed_exams = vec![];
 
         for active_exam in state.active_exams.iter_mut() {
-            let examiner = &mut active_exam.examiner;
-
-            match examiner.tick() {
-                TickResult::Nothing => (),
-                TickResult::Pause => (),
-                TickResult::Timeout => {
-                    let question = &examiner.current_question().clone();
-                    message::timeout(&client, active_exam, &question).await?;
-                },
-                TickResult::NextQuestion(question) => {
-                    message::pose_question(&client, active_exam, &question).await?;
-                },
-                TickResult::Finished(exam_score) => {
-                    remove_user_id = Some(active_exam.user_id.clone());
-                    message::exam_end(&client, &active_exam, exam_score).await.unwrap();
-                },
+            if !tick_active_exam(&client, active_exam).await? {
+                user_ids_for_completed_exams.push(active_exam.user_id);
             }
-
         }
 
-        if let Some(user_id) = remove_user_id {
+        for user_id in user_ids_for_completed_exams.into_iter() {
+            let active_exam = match state.active_exam_for(user_id) {
+                Some(ae) => ae,
+                None => panic!("A completed exam should exist for user {user_id}, but doesn't"),
+            };
+            api.set_hsk(user_id.get(), Some(active_exam.exam.hsk_level.try_into().unwrap())).await?;
             state.remove_active_exam(user_id);
         }
 
         let milli_interval = (MILLIS_PER_TICK as f64) as u64;
         tokio::time::sleep(std::time::Duration::from_millis(milli_interval)).await;
     }
+}
+
+/// Returns Ok(true) if the exam should continue.
+async fn tick_active_exam(
+    client: &Client,
+    active_exam: &mut ActiveExam,
+) -> Result<bool, Error> {
+    let examiner = &mut active_exam.examiner;
+
+    match examiner.tick() {
+        TickResult::Nothing => (),
+        TickResult::Pause => (),
+        TickResult::Timeout => {
+            let question = &examiner.current_question().clone();
+            message::timeout(&client, active_exam, &question).await?;
+        },
+        TickResult::NextQuestion(question) => {
+            message::pose_question(&client, active_exam, &question).await?;
+        },
+        TickResult::Finished(exam_score) => {
+            message::exam_end(&client, &active_exam, exam_score).await.unwrap();
+            return Ok(false);
+        },
+    }
+
+    Ok(true)
 }
 
 #[derive(Debug)]
@@ -323,7 +336,6 @@ enum ExamCommand {
     },
     Quit {
         user_id: Id<UserMarker>,
-        channel_id: Id<ChannelMarker>,
     },
 }
 
@@ -357,7 +369,6 @@ fn parse_exam_command(application_command: &ApplicationCommand) -> Option<ExamCo
                 "quit" => {
                     Some(ExamCommand::Quit {
                         user_id,
-                        channel_id,
                     })
                 },
                 name => panic!("Unexpected exam subcommand: {name}"),
@@ -374,7 +385,7 @@ fn message_to_exam_command(message: &Message) -> Option<ExamCommand> {
     if message.content == "!exam start" {
         Some(ExamCommand::Start { exam: None, user_id, channel_id })
     } else if message.content == "!exam quit" {
-        Some(ExamCommand::Quit { user_id, channel_id })
+        Some(ExamCommand::Quit { user_id })
     } else {
         None
     }
