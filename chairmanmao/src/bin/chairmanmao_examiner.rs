@@ -135,31 +135,38 @@ async fn main() -> Result<(), Error> {
                 let interaction: &Interaction = &e.0;
 
                 if let Interaction::ApplicationCommand(application_command) = interaction {
-                    let application_id = application_command.application_id;
-                    let interaction_client = client.interaction(application_id);
-                    let interaction_id = &application_command.id;
-                    let interaction_token = &application_command.token;
+                    let command_name = &application_command.data.name;
 
-                    let interaction_response_data = InteractionResponseDataBuilder::new()
-                        .content("Starting exam".to_string())
-                        .flags(MessageFlags::EPHEMERAL)
-                        .build();
+                    match command_name.as_ref() {
+                        "exam" => {
+                            let application_id = application_command.application_id;
+                            let interaction_client = client.interaction(application_id);
+                            let interaction_id = &application_command.id;
+                            let interaction_token = &application_command.token;
 
-                    let callback_data = &InteractionResponse {
-                        kind: InteractionResponseType::ChannelMessageWithSource,
-                        data: Some(interaction_response_data),
-                    };
+                            let interaction_response_data = InteractionResponseDataBuilder::new()
+                                .content("Starting exam".to_string())
+                                .flags(MessageFlags::EPHEMERAL)
+                                .build();
 
-                    interaction_client.create_response(
-                        *interaction_id,
-                        interaction_token,
-                        callback_data,
-                    )
-                        .exec()
-                        .await.unwrap();
+                            let callback_data = &InteractionResponse {
+                                kind: InteractionResponseType::ChannelMessageWithSource,
+                                data: Some(interaction_response_data),
+                            };
 
-                    if let Some(exam_command) = parse_exam_command(application_command) {
-                        handle_exam_command(api.clone(), state.clone(), client.clone(), &exam_command).await?;
+                            interaction_client.create_response(
+                                *interaction_id,
+                                interaction_token,
+                                callback_data,
+                            )
+                                .exec()
+                                .await.unwrap();
+
+                            if let Some(exam_command) = parse_exam_command(application_command) {
+                                handle_exam_command(api.clone(), state.clone(), client.clone(), &exam_command).await?;
+                            }
+                        },
+                        _ => (),
                     }
                 }
             },

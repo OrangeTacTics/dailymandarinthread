@@ -238,6 +238,7 @@ pub async fn create_commands<'a>(
     let tag_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("tag", "Add or remove a tag from a user.")?
+        .default_permission(false)
         .command_options(
             &[
                 CommandOption::User(
@@ -267,7 +268,7 @@ pub async fn create_commands<'a>(
         .model()
         .await?;
 
-    let tag_permissions = vec![];
+    let tag_permissions = vec![CommandPermissions { id: CommandPermissionsType::User(constants.owner_id), permission: true}];
 
     Ok(Commands(vec![
         (jail_command, jail_permissions),
