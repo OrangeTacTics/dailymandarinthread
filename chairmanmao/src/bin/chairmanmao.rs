@@ -228,6 +228,17 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
                     println!("Update user {} to {:?}", user_id.to_string(), nick);
                 },
                 PendingSync::UpdateRoles(user_id) => {
+                    let member = chairmanmao.client().guild_member(guild_id, *user_id)
+                        .exec()
+                        .await?
+                        .model()
+                        .await?;
+
+                    dbg!(member.roles);
+                    println!();
+                    println!("ROLE UPDATE NOT YET IMPLEMENTED!");
+                    /*
+
                     let dmt_roles = chairmanmao.api().get_roles(user_id.get()).await?;
                     let role_ids = dmt_roles_to_discord_role_ids(chairmanmao.clone(), &dmt_roles);
 
@@ -236,6 +247,7 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
                         .roles(&role_ids)
                         .exec()
                         .await?;
+                    */
                 },
             }
 
@@ -246,6 +258,7 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
     Ok(())
 }
 
+/*
 fn dmt_roles_to_discord_role_ids(chairmanmao: ChairmanMao, role_names: &[String]) -> Vec<Id<RoleMarker>> {
     let mut role_ids = std::collections::HashSet::new();
 
@@ -257,3 +270,41 @@ fn dmt_roles_to_discord_role_ids(chairmanmao: ChairmanMao, role_names: &[String]
     }
     role_ids.iter().cloned().collect()
 }
+fn roles_to_add(
+    chairmanmao: &ChairmanMao,
+    role_ids: &[Id<RoleMarker>],
+    role_names: &[String],
+) -> Vec<Id<RoleMarker>> {
+    let mut results = vec![];
+
+    let constants = chairmanmao.constants();
+    for role_name in role_names {
+        if let Some(role) = constants.get_role_by_name(role_name) {
+            if !role_ids.contains(&role.id) {
+                results.push(role.id);
+            }
+        }
+    }
+
+    results
+}
+
+fn roles_to_remove(
+    chairmanmao: &ChairmanMao,
+    role_ids: &[Id<RoleMarker>],
+    role_names: &[String],
+) -> Vec<Id<RoleMarker>> {
+    let mut results = vec![];
+
+    let constants = chairmanmao.constants();
+    for role_name in role_names {
+        if let Some(role) = constants.get_role_by_name(role_name) {
+            if !role_ids.contains(&role.id) {
+                results.push(role.id);
+            }
+        }
+    }
+
+    results
+}
+*/

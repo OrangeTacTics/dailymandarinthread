@@ -15,8 +15,9 @@ pub struct DiscordConstants {
     pub comrade_role: Role,
     pub party_role: Role,
     pub jailed_role: Role,
-    pub learner_role: Role,
     pub bumpers_role: Role,
+    pub learner_role: Role,
+    pub art_role: Role,
 
     // CHANNELS
     // NEWS
@@ -53,6 +54,7 @@ impl DiscordConstants {
         let party_role = find_role(&client, guild_id, &roles, "共产党员").await?;
         let jailed_role = find_role(&client, guild_id, &roles, "劳改").await?;
         let learner_role = find_role(&client, guild_id, &roles, "中文学习者").await?;
+        let art_role = find_role(&client, guild_id, &roles, "文化革命五人小组").await?;
         let bumpers_role = find_role(&client, guild_id, &roles, "Bumpers").await?;
 
         let news_channel = find_channel(&client, guild_id, &channels, "📰人民日报").await?;
@@ -84,6 +86,7 @@ impl DiscordConstants {
             jailed_role,
             learner_role,
             bumpers_role,
+            art_role,
 
             news_channel,
             rules_channel,
@@ -105,6 +108,7 @@ impl DiscordConstants {
         let roles_by_name: std::collections::HashMap<&str, &Role> = vec![
             ("Comrade", &self.comrade_role),
             ("Party", &self.party_role),
+            ("Art", &self.jailed_role),
             ("Jailed", &self.jailed_role),
         ].iter().cloned().collect();
 
@@ -112,13 +116,7 @@ impl DiscordConstants {
             return Some(role);
         }
 
-        let roles = vec![
-            &self.comrade_role,
-            &self.party_role,
-            &self.jailed_role,
-            &self.learner_role,
-            &self.bumpers_role,
-        ];
+        let roles = self.get_all_roles();
 
         for role in &roles {
             if role.name == role_name {
@@ -128,6 +126,15 @@ impl DiscordConstants {
         }
 
         None
+    }
+
+    pub fn get_all_roles(&self) -> Vec<&Role> {
+        vec![
+            &self.comrade_role,
+            &self.party_role,
+            &self.jailed_role,
+            &self.bumpers_role,
+        ]
     }
 }
 

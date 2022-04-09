@@ -297,11 +297,14 @@ impl Api {
         user_id: u64,
     ) -> ApiResult<Vec<String>> {
         let profile = self.profile(user_id).await?;
-        let mut roles = profile.roles.clone();
-        roles.push("Comrade".to_string());
+        let mut roles: HashSet<String> = profile.roles.into_iter().collect();
+        roles.insert("Comrade".to_string());
+
         if roles.contains(&"Jailed".to_string()) {
             Ok(vec!["Jailed".to_string()])
         } else {
+            let mut roles: Vec<String> = roles.into_iter().collect();
+            roles.sort();
             Ok(roles)
         }
     }
