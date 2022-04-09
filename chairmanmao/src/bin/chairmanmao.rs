@@ -11,15 +11,12 @@ use twilight_http::Client;
 use chairmanmao::discord::DiscordConstants;
 use twilight_gateway::shard::Events;
 use twilight_model::gateway::event::Event;
-use twilight_model::id::{Id, marker::UserMarker, marker::RoleMarker};
+use twilight_model::id::{Id, marker::UserMarker};
 
 use chairmanmao::api::Api;
 use chairmanmao::Error;
 
 use crate::cogs::Cog;
-use crate::cogs::jail::JailCog;
-use crate::cogs::sync::SyncCog;
-use crate::cogs::name::NameCog;
 
 #[derive(Debug)]
 pub enum PendingSync {
@@ -184,9 +181,10 @@ async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
     cogs::social_credit::on_event(&chairmanmao.client(), &event).await;
 
     let cogs: &mut [&mut dyn Cog] = &mut [
-        &mut JailCog,
-        &mut SyncCog,
-        &mut NameCog,
+        &mut cogs::jail::JailCog,
+        &mut cogs::sync::SyncCog,
+        &mut cogs::name::NameCog,
+        &mut cogs::tag::TagCog,
     ];
     for cog in cogs.iter_mut() {
         cog.on_event(&chairmanmao, &event);

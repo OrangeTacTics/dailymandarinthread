@@ -308,6 +308,28 @@ impl Api {
             Ok(roles)
         }
     }
+
+    pub async fn toggle_role(
+        &self,
+        user_id: u64,
+        role: &str,
+    ) -> ApiResult<Vec<String>> {
+        let mut profile = self.profile(user_id).await?;
+        let mut roles: HashSet<String> = profile.roles.into_iter().collect();
+        roles.remove("Comrade");
+
+        if roles.contains(role) {
+            roles.remove(role);
+        } else {
+            roles.insert(role.to_string());
+        }
+
+        let mut roles: Vec<String> = roles.into_iter().collect();
+        roles.sort();
+        profile.roles = roles.clone();
+        self.set_profile(user_id, profile).await?;
+        Ok(roles)
+    }
 }
 
 #[tokio::test]

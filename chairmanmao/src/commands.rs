@@ -235,6 +235,40 @@ pub async fn create_commands<'a>(
 
     let exam_permissions = vec![];
 
+    let tag_command = interaction_client
+        .create_guild_command(guild_id)
+        .chat_input("tag", "Add or remove a tag from a user.")?
+        .command_options(
+            &[
+                CommandOption::User(
+                    BaseCommandOptionData {
+                        name: "user".to_string(),
+                        description: "User to be tagged or untagged".to_string(),
+                        required: true,
+                    },
+                ),
+                CommandOption::String(
+                    ChoiceCommandOptionData {
+                        name: "tag".into(),
+                        autocomplete: false,
+                        choices: vec![
+                            CommandOptionChoice::String { name: "Learner".to_string(), value:  "Learner".to_string() },
+                            CommandOptionChoice::String { name: "Party".to_string(), value:  "Party".to_string() },
+                            CommandOptionChoice::String { name: "Art".to_string(), value:  "Art".to_string() },
+                        ],
+                        required: false,
+                        description: "Tag to add or remove.".into(),
+                    },
+                ),
+            ],
+        )?
+        .exec()
+        .await?
+        .model()
+        .await?;
+
+    let tag_permissions = vec![];
+
     Ok(Commands(vec![
         (jail_command, jail_permissions),
         (honor_command, honor_permissions),
@@ -242,5 +276,6 @@ pub async fn create_commands<'a>(
         (sync_command, sync_permissions),
         (name_command, name_permissions),
         (exam_command, exam_permissions),
+        (tag_command, tag_permissions),
     ]))
 }

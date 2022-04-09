@@ -34,7 +34,6 @@ pub async fn on_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
                 Interaction::ApplicationCommand(app_command) => {
                     let command_name = &app_command.data.name;
 
-                    println!("Command: {}", command_name);
                     match command_name.as_ref() {
                         "name" => {
                             let user_id = app_command.member.as_ref().unwrap().user.as_ref().unwrap().id.into();
