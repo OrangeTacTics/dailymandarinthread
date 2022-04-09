@@ -16,6 +16,11 @@ use twilight_model::id::{Id, marker::UserMarker, marker::RoleMarker};
 use chairmanmao::api::Api;
 use chairmanmao::Error;
 
+use crate::cogs::Cog;
+use crate::cogs::jail::JailCog;
+use crate::cogs::sync::SyncCog;
+use crate::cogs::name::NameCog;
+
 #[derive(Debug)]
 pub enum PendingSync {
     UpdateNick(Id<UserMarker>),
@@ -177,7 +182,15 @@ async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
     }
     cogs::welcome::on_event(&chairmanmao.client(), &event).await;
     cogs::social_credit::on_event(&chairmanmao.client(), &event).await;
-    cogs::jail::on_event(&chairmanmao, &event).await?;
+
+    let cogs: &mut [&mut dyn Cog] = &mut [
+        &mut JailCog,
+        &mut SyncCog,
+        &mut NameCog,
+    ];
+    for cog in cogs.iter_mut() {
+        cog.on_event(&chairmanmao, &event);
+    }
 
     Ok(())
 }
