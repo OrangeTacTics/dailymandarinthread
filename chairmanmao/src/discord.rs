@@ -3,13 +3,14 @@ use twilight_http::Client;
 use twilight_model::guild::{Role, Emoji};
 use twilight_model::user::{CurrentUser, CurrentUserGuild};
 use twilight_model::channel::Channel;
-use twilight_model::id::{Id, marker::GuildMarker};
+use twilight_model::id::{Id, marker::GuildMarker, marker::UserMarker};
 
 
 #[derive(Debug, Clone)]
 pub struct DiscordConstants {
     pub guild: CurrentUserGuild,
     pub bot_user: CurrentUser,
+    pub owner_id: Id<UserMarker>,
 
     // ROLES
     pub comrade_role: Role,
@@ -44,6 +45,8 @@ impl DiscordConstants {
         let guilds = client.current_user_guilds().exec().await?.model().await?;
         let guild = guilds[0].clone();
         let guild_id = guild.id;
+        let owner_id_str = std::env::var("OWNER_ID").expect("OWNER_ID environment variable not defined");
+        let owner_id = Id::new(owner_id_str.parse()?);
 
         let bot_user = client.current_user().exec().await?.model().await?;
         let roles = client.roles(guild_id).exec().await?.model().await?;
@@ -80,6 +83,7 @@ impl DiscordConstants {
         Ok(DiscordConstants {
             guild,
             bot_user,
+            owner_id,
 
             comrade_role,
             party_role,
