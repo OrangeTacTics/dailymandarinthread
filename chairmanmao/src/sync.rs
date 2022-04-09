@@ -36,7 +36,8 @@ async fn nick_base(
             .model()
             .await?;
 
-        Ok(format!("{}#{}", user.name, user.discriminator))
+//        Ok(format!("{}#{}", user.name, user.discriminator))
+        Ok(format!("{}", user.name))
     }
 }
 
@@ -44,12 +45,12 @@ async fn suffix(
     profile: &Profile,
 ) -> Result<String, Error> {
     let maru = [
-        " ➀ ",
-        " ➁ " ,
-        " ➂ ",
-        " ➃",
-        " ➄ ",
-        " ➅ ",
+        "➀ ",
+        "➁ " ,
+        "➂ ",
+        "➃",
+        "➄ ",
+        "➅ ",
     ];
 
     let hsk_str = if let Some(n) = profile.hsk() {
