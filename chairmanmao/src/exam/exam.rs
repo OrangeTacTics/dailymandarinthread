@@ -189,7 +189,7 @@ impl Examiner {
     fn passed(&self) -> bool {
         assert!(self.finished(), "Exam is not finished");
         if let Some(max_wrong) = self.max_wrong {
-            self._finished_gave_up() && self.number_wrong() <= max_wrong
+            self.number_wrong() <= max_wrong && !self._finished_gave_up()
         } else {
             false
         }

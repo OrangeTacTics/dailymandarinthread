@@ -1,6 +1,6 @@
 {
     "name": "hsk1",
-    "numQuestions": 10,
+    "numQuestions": 2,
     "maxWrong": 2,
     "timelimit": 10,
     "hskLevel": 1,

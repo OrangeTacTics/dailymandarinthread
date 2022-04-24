@@ -41,7 +41,7 @@ pub async fn on_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
                             let tag: Option<&str> = get_tag(&app_command);
 
                             if let Some(tag) = tag {
-                                let tags = chairmanmao.api().toggle_role(user_id.get(), tag).await?;
+                                let tags = chairmanmao.api().toggle_tag(user_id.get(), tag).await?;
 
                                 let callback_data = InteractionResponseDataBuilder::new()
                                     .content(format!("Tags: {tags:?}"))

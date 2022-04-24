@@ -14,7 +14,8 @@ pub struct Profile {
     pub discord_username: Option<String>,
     pub created: DateTime,
     pub last_seen: DateTime,
-    pub roles: Vec<String>,
+    pub hsk_level: Option<u32>,
+    pub tags: Vec<String>,
     pub display_name: Option<String>,
     pub credit: u32,
     pub yuan: u32,
@@ -72,32 +73,32 @@ impl ServerSettings {
 }
 
 impl Profile {
-    pub fn add_role(&mut self, role: &str) {
-        let mut roles: HashSet<String> = self.roles.iter().cloned().collect();
-        roles.insert(role.to_string());
-        self.roles = roles.into_iter().collect();
-        self.roles.sort();
+    pub fn add_tag(&mut self, tag: &str) {
+        let mut tags: HashSet<String> = self.tags.iter().cloned().collect();
+        tags.insert(tag.to_string());
+        self.tags = tags.into_iter().collect();
+        self.tags.sort();
     }
 
-    pub fn remove_role(&mut self, role: &str) {
-        let mut roles: HashSet<String> = self.roles.iter().cloned().collect();
-        roles.remove(role);
-        self.roles = roles.into_iter().collect();
-        self.roles.sort();
+    pub fn remove_tag(&mut self, tag: &str) {
+        let mut tags: HashSet<String> = self.tags.iter().cloned().collect();
+        tags.remove(tag);
+        self.tags = tags.into_iter().collect();
+        self.tags.sort();
     }
 
     pub fn hsk(&self) -> Option<u8> {
-        if self.roles.contains(&"Hsk6".to_string()) {
+        if self.tags.contains(&"Hsk6".to_string()) {
             Some(6)
-        } else if self.roles.contains(&"Hsk5".to_string()) {
+        } else if self.tags.contains(&"Hsk5".to_string()) {
             Some(5)
-        } else if self.roles.contains(&"Hsk4".to_string()) {
+        } else if self.tags.contains(&"Hsk4".to_string()) {
             Some(4)
-        } else if self.roles.contains(&"Hsk3".to_string()) {
+        } else if self.tags.contains(&"Hsk3".to_string()) {
             Some(3)
-        } else if self.roles.contains(&"Hsk2".to_string()) {
+        } else if self.tags.contains(&"Hsk2".to_string()) {
             Some(2)
-        } else if self.roles.contains(&"Hsk1".to_string()) {
+        } else if self.tags.contains(&"Hsk1".to_string()) {
             Some(1)
         } else {
             None
@@ -156,7 +157,8 @@ impl Api {
                 discord_username: None,
                 created: now,
                 last_seen: now,
-                roles: Vec::new(),
+                tags: Vec::new(),
+                hsk_level: None,
                 display_name: None,
                 credit: 1000,
                 yuan: 0,
@@ -214,30 +216,20 @@ impl Api {
     pub async fn hsk(
         &self,
         user_id: u64,
-    ) -> ApiResult<Option<u8>> {
+    ) -> ApiResult<Option<u32>> {
         let profile = self.profile(user_id).await?;
-        Ok(profile.hsk())
+        Ok(profile.hsk_level)
     }
 
     pub async fn set_hsk(
         &self,
         user_id: u64,
-        hsk: Option<u8>,
+        hsk: Option<u32>,
     ) -> ApiResult<Profile> {
-        let hsk_role = hsk.map(|n| format!("Hsk{n}"));
-
         self.update_profile(
             user_id,
             |profile| {
-                profile.remove_role("Hsk1");
-                profile.remove_role("Hsk2");
-                profile.remove_role("Hsk3");
-                profile.remove_role("Hsk4");
-                profile.remove_role("Hsk5");
-                profile.remove_role("Hsk6");
-                if let Some(hsk_role) = hsk_role {
-                    profile.add_role(&hsk_role);
-                }
+                profile.hsk_level = hsk;
             },
         ).await
     }
@@ -249,7 +241,7 @@ impl Api {
         self.update_profile(
             user_id,
             |profile| {
-                profile.add_role("Jailed");
+                profile.add_tag("Jailed");
             },
         ).await
     }
@@ -261,7 +253,7 @@ impl Api {
         self.update_profile(
             user_id,
             |profile| {
-                profile.remove_role("Jailed");
+                profile.remove_tag("Jailed");
             },
         ).await
     }
@@ -297,7 +289,7 @@ impl Api {
         user_id: u64,
     ) -> ApiResult<Vec<String>> {
         let profile = self.profile(user_id).await?;
-        let mut roles: HashSet<String> = profile.roles.into_iter().collect();
+        let mut roles: HashSet<String> = profile.tags.into_iter().collect();
         roles.insert("Comrade".to_string());
 
         if roles.contains(&"Jailed".to_string()) {
@@ -309,26 +301,26 @@ impl Api {
         }
     }
 
-    pub async fn toggle_role(
+    pub async fn toggle_tag(
         &self,
         user_id: u64,
-        role: &str,
+        tag: &str,
     ) -> ApiResult<Vec<String>> {
         let mut profile = self.profile(user_id).await?;
-        let mut roles: HashSet<String> = profile.roles.into_iter().collect();
-        roles.remove("Comrade");
+        let mut tags: HashSet<String> = profile.tags.into_iter().collect();
+        tags.remove("Comrade");
 
-        if roles.contains(role) {
-            roles.remove(role);
+        if tags.contains(tag) {
+            tags.remove(tag);
         } else {
-            roles.insert(role.to_string());
+            tags.insert(tag.to_string());
         }
 
-        let mut roles: Vec<String> = roles.into_iter().collect();
-        roles.sort();
-        profile.roles = roles.clone();
+        let mut tags: Vec<String> = tags.into_iter().collect();
+        tags.sort();
+        profile.tags = tags.clone();
         self.set_profile(user_id, profile).await?;
-        Ok(roles)
+        Ok(tags)
     }
 }
 
@@ -340,11 +332,11 @@ async fn test_jail_unjail() -> ApiResult<()> {
 
     api.jail(user_id).await.unwrap();
     let profile = api.profile(user_id).await.unwrap().unwrap();
-    assert!(profile.roles.contains(&"Jailed".to_string()));
+    assert!(profile.tags.contains(&"Jailed".to_string()));
 
     api.unjail(user_id).await.unwrap();
     let profile = api.profile(user_id).await.unwrap().unwrap();
-    assert!(!profile.roles.contains(&"Jailed".to_string()));
+    assert!(!profile.tags.contains(&"Jailed".to_string()));
 
     api.set_hsk(user_id, Some(4)).await.unwrap();
     let hsk = api.hsk(user_id).await.unwrap();

@@ -20,6 +20,7 @@ use twilight_model::http::interaction::InteractionResponseType;
 use twilight_model::channel::message::MessageFlags;
 use chairmanmao::api::Api;
 use chairmanmao::exam::message;
+use rand::Rng;
 
 const MILLIS_PER_TICK: usize = 100;
 
@@ -225,7 +226,7 @@ async fn handle_exam_command(
     Ok(())
 }
 
-fn next_exam(hsk: Option<u8>) -> Option<&'static str> {
+fn next_exam(hsk: Option<u32>) -> Option<&'static str> {
     match hsk {
         None => Some("hsk1"),
         Some(1) => Some("hsk2"),
@@ -252,9 +253,17 @@ async fn exam_start(
     } else if state.is_user_busy(user_id) {
         println!("Can't start exam for user {user_id}. User is already busy.");
     } else {
-        let seed = 1;
+        let mut rng = rand::thread_rng();
+
+        let seed = rng.gen::<u64>();
         let exam = chairmanmao::exam::loader::load_exam(exam_name);
         let examiner = chairmanmao::exam::Examiner::make(&exam, MILLIS_PER_TICK, seed);
+
+        println!("Staring exam!");
+        println!("    user_id:    {}", user_id.get());
+        println!("    channel_id: {}", channel_id.get());
+        println!("    exam_name:  {exam_name}");
+        println!("    seed:       {seed}");
 
         let active_exam = ActiveExam {
             user_id,
@@ -289,17 +298,12 @@ async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) -> Resu
         let mut user_ids_for_completed_exams = vec![];
 
         for active_exam in state.active_exams.iter_mut() {
-            if !tick_active_exam(&client, active_exam).await? {
+            if !tick_active_exam(api.clone(), &client, active_exam).await? {
                 user_ids_for_completed_exams.push(active_exam.user_id);
             }
         }
 
         for user_id in user_ids_for_completed_exams.into_iter() {
-            let active_exam = match state.active_exam_for(user_id) {
-                Some(ae) => ae,
-                None => panic!("A completed exam should exist for user {user_id}, but doesn't"),
-            };
-            api.set_hsk(user_id.get(), Some(active_exam.exam.hsk_level.try_into().unwrap())).await?;
             state.remove_active_exam(user_id);
         }
 
@@ -310,6 +314,7 @@ async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) -> Resu
 
 /// Returns Ok(true) if the exam should continue.
 async fn tick_active_exam(
+    api: Api,
     client: &Client,
     active_exam: &mut ActiveExam,
 ) -> Result<bool, Error> {
@@ -319,13 +324,24 @@ async fn tick_active_exam(
         TickResult::Nothing => (),
         TickResult::Pause => (),
         TickResult::Timeout => {
+            println!("Question timed out!");
             let question = &examiner.current_question().clone();
             message::timeout(&client, active_exam, &question).await?;
         },
         TickResult::NextQuestion(question) => {
+            println!("Posing question: {:?}", &question);
             message::pose_question(&client, active_exam, &question).await?;
         },
         TickResult::Finished(exam_score) => {
+            println!("Finished!");
+            println!("    passed: {}", exam_score.passed);
+            println!("    score: {:?}", &exam_score);
+
+            if exam_score.passed {
+                let new_hsk_level = active_exam.exam.hsk_level.try_into().unwrap();
+                println!("    setting HSK level for {} to {}", active_exam.user_id.get(), new_hsk_level);
+                api.set_hsk(active_exam.user_id.get(), Some(new_hsk_level)).await?;
+            }
             message::exam_end(&client, &active_exam, exam_score).await.unwrap();
             return Ok(false);
         },
