@@ -86,24 +86,6 @@ impl Profile {
         self.tags = tags.into_iter().collect();
         self.tags.sort();
     }
-
-    pub fn hsk(&self) -> Option<u8> {
-        if self.tags.contains(&"Hsk6".to_string()) {
-            Some(6)
-        } else if self.tags.contains(&"Hsk5".to_string()) {
-            Some(5)
-        } else if self.tags.contains(&"Hsk4".to_string()) {
-            Some(4)
-        } else if self.tags.contains(&"Hsk3".to_string()) {
-            Some(3)
-        } else if self.tags.contains(&"Hsk2".to_string()) {
-            Some(2)
-        } else if self.tags.contains(&"Hsk1".to_string()) {
-            Some(1)
-        } else {
-            None
-        }
-    }
 }
 
 #[derive(Clone, Debug)]

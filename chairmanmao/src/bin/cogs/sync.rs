@@ -69,6 +69,8 @@ async fn cmd_sync(
                 .exec().await?
                 .model().await?;
 
+//            dbg!(members.len());
+
             members.iter().map(|member| member.user.id).collect()
         },
     };

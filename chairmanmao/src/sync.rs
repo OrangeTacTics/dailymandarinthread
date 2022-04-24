@@ -53,7 +53,7 @@ async fn suffix(
         "➅ ",
     ];
 
-    let hsk_str = if let Some(n) = profile.hsk() {
+    let hsk_str = if let Some(n) = profile.hsk_level {
         maru[n as usize - 1]
     } else {
         ""
