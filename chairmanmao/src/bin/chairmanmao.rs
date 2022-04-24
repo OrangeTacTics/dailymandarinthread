@@ -3,6 +3,7 @@ pub mod cogs;
 use std::borrow::Borrow;
 use tokio::sync::Mutex;
 use std::sync::Arc;
+use std::collections::HashSet;
 
 use futures_util::StreamExt;
 use std::env;
@@ -11,7 +12,7 @@ use twilight_http::Client;
 use chairmanmao::discord::DiscordConstants;
 use twilight_gateway::shard::Events;
 use twilight_model::gateway::event::Event;
-use twilight_model::id::{Id, marker::UserMarker};
+use twilight_model::id::{Id, marker::UserMarker, marker::RoleMarker};
 
 use chairmanmao::api::Api;
 use chairmanmao::Error;
@@ -209,7 +210,9 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
         println!("Has pending syncs:");
         for pending_sync in &chairmanmao.pop_all_syncs().await {
             println!("{:?}", pending_sync);
-            let guild_id = chairmanmao.constants().guild.id;
+
+            let constants = chairmanmao.constants();
+            let guild_id = constants.guild.id;
 
             match pending_sync {
                 PendingSync::UpdateNick(user_id) => {
@@ -232,20 +235,43 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
                         .model()
                         .await?;
 
-                    dbg!(member.roles);
-                    println!();
-                    println!("ROLE UPDATE NOT YET IMPLEMENTED!");
-                    /*
+                    let tags = chairmanmao.api().get_tags(user_id.get()).await?;
 
-                    let dmt_roles = chairmanmao.api().get_roles(user_id.get()).await?;
-                    let role_ids = dmt_roles_to_discord_role_ids(chairmanmao.clone(), &dmt_roles);
+                    let old_roles: HashSet<Id<RoleMarker>> = member.roles.iter().cloned().collect();
+                    let mut new_roles = old_roles.clone();
 
-                    println!("Update roles for {} => {:?} = {:?}", user_id.get(), &dmt_roles, &role_ids);
+                    remove_chairmanmao_managed_roles(&chairmanmao, &mut new_roles);
+
+                    new_roles.insert(constants.comrade_role.id);
+
+                    if tags.contains(&"Party".to_string()) {
+                        new_roles.insert(constants.party_role.id);
+                    }
+
+                    if tags.contains(&"Bumpers".to_string()) {
+                        new_roles.insert(constants.bumpers_role.id);
+                    }
+
+                    if tags.contains(&"Learner".to_string()) {
+                        new_roles.insert(constants.learner_role.id);
+                    }
+
+                    if tags.contains(&"Art".to_string()) {
+                        new_roles.insert(constants.art_role.id);
+                    }
+
+                    if tags.contains(&"Jailed".to_string()) {
+                        new_roles.clear();
+                        new_roles.insert(constants.jailed_role.id);
+                    }
+
+                    println!("Update roles for {}:  {:?} => {:?}", user_id.get(), &old_roles, &new_roles);
+
+                    let roles: Vec<Id<RoleMarker>> = new_roles.into_iter().collect();
                     chairmanmao.client().update_guild_member(guild_id, *user_id)
-                        .roles(&role_ids)
+                        .roles(&roles)
                         .exec()
                         .await?;
-                    */
                 },
             }
 
@@ -256,53 +282,19 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
     Ok(())
 }
 
-/*
-fn dmt_roles_to_discord_role_ids(chairmanmao: ChairmanMao, role_names: &[String]) -> Vec<Id<RoleMarker>> {
-    let mut role_ids = std::collections::HashSet::new();
-
+fn remove_chairmanmao_managed_roles(chairmanmao: &ChairmanMao, roles: &mut HashSet<Id<RoleMarker>>) {
     let constants = chairmanmao.constants();
-    for role_name in role_names {
-        if let Some(role) = constants.get_role_by_name(role_name) {
-            role_ids.insert(role.id);
-        }
+
+    let chairmanmao_managed_roles = &[
+        constants.comrade_role.id,
+        constants.party_role.id,
+        constants.jailed_role.id,
+        constants.bumpers_role.id,
+        constants.learner_role.id,
+        constants.art_role.id,
+    ];
+
+    for role_id in chairmanmao_managed_roles {
+        roles.remove(&role_id);
     }
-    role_ids.iter().cloned().collect()
 }
-fn roles_to_add(
-    chairmanmao: &ChairmanMao,
-    role_ids: &[Id<RoleMarker>],
-    role_names: &[String],
-) -> Vec<Id<RoleMarker>> {
-    let mut results = vec![];
-
-    let constants = chairmanmao.constants();
-    for role_name in role_names {
-        if let Some(role) = constants.get_role_by_name(role_name) {
-            if !role_ids.contains(&role.id) {
-                results.push(role.id);
-            }
-        }
-    }
-
-    results
-}
-
-fn roles_to_remove(
-    chairmanmao: &ChairmanMao,
-    role_ids: &[Id<RoleMarker>],
-    role_names: &[String],
-) -> Vec<Id<RoleMarker>> {
-    let mut results = vec![];
-
-    let constants = chairmanmao.constants();
-    for role_name in role_names {
-        if let Some(role) = constants.get_role_by_name(role_name) {
-            if !role_ids.contains(&role.id) {
-                results.push(role.id);
-            }
-        }
-    }
-
-    results
-}
-*/

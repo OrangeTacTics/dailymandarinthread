@@ -50,7 +50,7 @@ pub async fn on_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
 
                                 send_response(chairmanmao.client(), app_command, callback_data).await;
                             } else {
-                                let tags = chairmanmao.api().get_roles(user_id.get()).await?;
+                                let tags = chairmanmao.api().get_tags(user_id.get()).await?;
                                 let callback_data = InteractionResponseDataBuilder::new()
                                     .content(format!("Tags: {tags:?}"))
                                     .flags(MessageFlags::EPHEMERAL)

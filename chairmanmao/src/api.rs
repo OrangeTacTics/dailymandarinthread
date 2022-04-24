@@ -284,21 +284,14 @@ impl Api {
         ).await
     }
 
-    pub async fn get_roles(
+    pub async fn get_tags(
         &self,
         user_id: u64,
     ) -> ApiResult<Vec<String>> {
         let profile = self.profile(user_id).await?;
-        let mut roles: HashSet<String> = profile.tags.into_iter().collect();
-        roles.insert("Comrade".to_string());
-
-        if roles.contains(&"Jailed".to_string()) {
-            Ok(vec!["Jailed".to_string()])
-        } else {
-            let mut roles: Vec<String> = roles.into_iter().collect();
-            roles.sort();
-            Ok(roles)
-        }
+        let mut tags = profile.tags.clone();
+        tags.sort();
+        Ok(tags)
     }
 
     pub async fn toggle_tag(
@@ -308,7 +301,6 @@ impl Api {
     ) -> ApiResult<Vec<String>> {
         let mut profile = self.profile(user_id).await?;
         let mut tags: HashSet<String> = profile.tags.into_iter().collect();
-        tags.remove("Comrade");
 
         if tags.contains(tag) {
             tags.remove(tag);
