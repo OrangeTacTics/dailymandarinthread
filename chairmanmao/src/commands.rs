@@ -256,6 +256,7 @@ pub async fn create_commands<'a>(
                             CommandOptionChoice::String { name: "Learner".to_string(), value:  "Learner".to_string() },
                             CommandOptionChoice::String { name: "Party".to_string(), value:  "Party".to_string() },
                             CommandOptionChoice::String { name: "Art".to_string(), value:  "Art".to_string() },
+                            CommandOptionChoice::String { name: "Jailed".to_string(), value:  "Jailed".to_string() },
                         ],
                         required: false,
                         description: "Tag to add or remove.".into(),

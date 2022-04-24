@@ -48,6 +48,9 @@ pub async fn on_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
                                     .flags(MessageFlags::EPHEMERAL)
                                     .build();
 
+                                chairmanmao.push_nick_change(user_id).await;
+                                chairmanmao.push_role_change(user_id).await;
+
                                 send_response(chairmanmao.client(), app_command, callback_data).await;
                             } else {
                                 let tags = chairmanmao.api().get_tags(user_id.get()).await?;
