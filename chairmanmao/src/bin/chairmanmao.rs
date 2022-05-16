@@ -50,7 +50,7 @@ impl ChairmanMao {
         let api = Api::new().await;
 
         let client = Arc::new(Client::new(token.clone()));
-        let (shard, shard_events) = Shard::new(token, intents);
+        let (shard, shard_events) = Shard::new(token, intents).await?;
 
         shard.start().await?;
 

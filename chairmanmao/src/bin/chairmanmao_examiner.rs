@@ -107,7 +107,7 @@ async fn main() -> Result<(), Error> {
         Intents::MESSAGE_CONTENT;
 
     let token = std::env::var("DISCORD_TOKEN")?;
-    let (shard, mut events) = Shard::new(token.clone(), intents);
+    let (shard, mut events) = Shard::new(token.clone(), intents).await?;
     let client = Arc::new(Client::new(token));
     shard.start().await?;
     println!("Running");

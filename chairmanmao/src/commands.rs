@@ -26,7 +26,7 @@ use twilight_model::id::marker::CommandMarker;
 use crate::Error;
 
 
-pub struct Commands(Vec<(Command, Vec<CommandPermissions>)>);
+pub struct Commands(pub Vec<(Command, Vec<CommandPermissions>)>);
 
 impl Commands {
     pub fn find(&self, name: &str) -> Option<(Command, Vec<CommandPermissions>)> {
@@ -61,7 +61,6 @@ pub async fn create_commands<'a>(
     let jail_command = interaction_client
         .create_guild_command(guild_id)
         .user("jail")?
-        .default_permission(false)
         .exec()
         .await?
         .model()
@@ -72,7 +71,6 @@ pub async fn create_commands<'a>(
     let honor_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("honor", "Honor a user.")?
-        .default_permission(false)
         .command_options(
             &[
                 CommandOption::User(
@@ -80,22 +78,26 @@ pub async fn create_commands<'a>(
                         name: "honoree".to_string(),
                         description: "User to be honored".to_string(),
                         required: true,
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
                 CommandOption::Integer(
                     NumberCommandOptionData {
                         autocomplete: false,
                         choices: vec![
-                            CommandOptionChoice::Int{name: "1".into(), value: 1},
-                            CommandOptionChoice::Int{name: "5".into(), value: 5},
-                            CommandOptionChoice::Int{name: "10".into(), value: 10},
-                            CommandOptionChoice::Int{name: "25".into(), value: 25},
+                            CommandOptionChoice::Int{name: "1".into(), value: 1, name_localizations: None },
+                            CommandOptionChoice::Int{name: "5".into(), value: 5, name_localizations: None },
+                            CommandOptionChoice::Int{name: "10".into(), value: 10, name_localizations: None },
+                            CommandOptionChoice::Int{name: "25".into(), value: 25, name_localizations: None },
                         ],
                         description: "Amount of social credit to honor".into(),
                         max_value: None,
                         min_value: None,
                         name: "amount".into(),
                         required: false,
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
             ],
@@ -110,7 +112,6 @@ pub async fn create_commands<'a>(
     let dishonor_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("dishonor", "Dishonor a user.")?
-        .default_permission(false)
         .command_options(
             &[
                 CommandOption::User(
@@ -118,22 +119,26 @@ pub async fn create_commands<'a>(
                         name: "dishonoree".to_string(),
                         description: "User to be dishonored".to_string(),
                         required: true,
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
                 CommandOption::Integer(
                     NumberCommandOptionData {
                         autocomplete: false,
                         choices: vec![
-                            CommandOptionChoice::Int{name: "1".into(), value: 1},
-                            CommandOptionChoice::Int{name: "5".into(), value: 5},
-                            CommandOptionChoice::Int{name: "10".into(), value: 10},
-                            CommandOptionChoice::Int{name: "25".into(), value: 25},
+                            CommandOptionChoice::Int{name: "1".into(), value: 1, name_localizations: None },
+                            CommandOptionChoice::Int{name: "5".into(), value: 5, name_localizations: None },
+                            CommandOptionChoice::Int{name: "10".into(), value: 10, name_localizations: None },
+                            CommandOptionChoice::Int{name: "25".into(), value: 25, name_localizations: None },
                         ],
                         description: "Amount of social credit to dishonor".into(),
                         max_value: None,
                         min_value: None,
                         name: "amount".into(),
                         required: false,
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
             ],
@@ -148,7 +153,6 @@ pub async fn create_commands<'a>(
     let sync_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("sync", "Sync a user.")?
-        .default_permission(false)
         .command_options(
             &[
                 CommandOption::User(
@@ -156,6 +160,8 @@ pub async fn create_commands<'a>(
                         name: "syncee".to_string(),
                         description: "User to be synced".to_string(),
                         required: false,
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
             ],
@@ -179,6 +185,8 @@ pub async fn create_commands<'a>(
                         name: "name".into(),
                         required: false,
                         description: "Your new username (max 32 characters)".into(),
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
             ],
@@ -204,19 +212,23 @@ pub async fn create_commands<'a>(
                                 ChoiceCommandOptionData {
                                     autocomplete: false,
                                     choices: vec![
-                                        CommandOptionChoice::String { name: "hsk1".to_string(), value: "hsk1".to_string(), },
-                                        CommandOptionChoice::String { name: "hsk2".to_string(), value: "hsk2".to_string(), },
-                                        CommandOptionChoice::String { name: "hsk3".to_string(), value: "hsk3".to_string(), },
-                                        CommandOptionChoice::String { name: "hsk4".to_string(), value: "hsk4".to_string(), },
-                                        CommandOptionChoice::String { name: "hsk5".to_string(), value: "hsk5".to_string(), },
-                                        CommandOptionChoice::String { name: "hsk6".to_string(), value: "hsk6".to_string(), },
+                                        CommandOptionChoice::String { name: "hsk1".to_string(), value: "hsk1".to_string(), name_localizations: None },
+                                        CommandOptionChoice::String { name: "hsk2".to_string(), value: "hsk2".to_string(), name_localizations: None },
+                                        CommandOptionChoice::String { name: "hsk3".to_string(), value: "hsk3".to_string(), name_localizations: None },
+                                        CommandOptionChoice::String { name: "hsk4".to_string(), value: "hsk4".to_string(), name_localizations: None },
+                                        CommandOptionChoice::String { name: "hsk5".to_string(), value: "hsk5".to_string(), name_localizations: None },
+                                        CommandOptionChoice::String { name: "hsk6".to_string(), value: "hsk6".to_string(), name_localizations: None },
                                     ],
                                     name: "exam".into(),
                                     required: false,
                                     description: "Which exam to run".into(),
+                                    name_localizations: None,
+                                    description_localizations: None,
                                 },
                             ),
                         ],
+                        name_localizations: None,
+                        description_localizations: None,
                     }
                 ),
                 CommandOption::SubCommand(
@@ -224,6 +236,8 @@ pub async fn create_commands<'a>(
                         name:  "quit".to_string(),
                         description: "Quit an exam in progress".to_string(),
                         options: vec![],
+                        name_localizations: None,
+                        description_localizations: None,
                     }
                 ),
             ],
@@ -238,7 +252,6 @@ pub async fn create_commands<'a>(
     let tag_command = interaction_client
         .create_guild_command(guild_id)
         .chat_input("tag", "Add or remove a tag from a user.")?
-        .default_permission(false)
         .command_options(
             &[
                 CommandOption::User(
@@ -246,6 +259,8 @@ pub async fn create_commands<'a>(
                         name: "user".to_string(),
                         description: "User to be tagged or untagged".to_string(),
                         required: true,
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
                 CommandOption::String(
@@ -253,13 +268,15 @@ pub async fn create_commands<'a>(
                         name: "tag".into(),
                         autocomplete: false,
                         choices: vec![
-                            CommandOptionChoice::String { name: "Learner".to_string(), value:  "Learner".to_string() },
-                            CommandOptionChoice::String { name: "Party".to_string(), value:  "Party".to_string() },
-                            CommandOptionChoice::String { name: "Art".to_string(), value:  "Art".to_string() },
-                            CommandOptionChoice::String { name: "Jailed".to_string(), value:  "Jailed".to_string() },
+                            CommandOptionChoice::String { name: "Learner".to_string(), value:  "Learner".to_string(), name_localizations: None },
+                            CommandOptionChoice::String { name: "Party".to_string(), value:  "Party".to_string(), name_localizations: None },
+                            CommandOptionChoice::String { name: "Art".to_string(), value:  "Art".to_string(), name_localizations: None },
+                            CommandOptionChoice::String { name: "Jailed".to_string(), value:  "Jailed".to_string(), name_localizations: None },
                         ],
                         required: false,
                         description: "Tag to add or remove.".into(),
+                        name_localizations: None,
+                        description_localizations: None,
                     },
                 ),
             ],

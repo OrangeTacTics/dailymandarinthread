@@ -347,13 +347,16 @@ async fn create_commands() -> Result<(), Error> {
         .models()
         .await?;
 
-    interaction_client.set_command_permissions(
-        guild_id,
-        commands.command_id_permission().as_slice(),
-    )
-        .unwrap()
-        .exec()
-        .await?;
+    for (command, permissions) in commands.0 {
+        interaction_client.update_command_permissions(
+            guild_id,
+            command.id.unwrap(),
+            &permissions,
+        )
+            .unwrap()
+            .exec()
+            .await?;
+    }
 
     println!("Commands:");
     for command in &command_list {

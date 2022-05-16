@@ -58,7 +58,8 @@ pub async fn pose_question(client: &Client, active_exam: &ActiveExam, question: 
     let image_bytes = image_bytes.unwrap();
     let image_name = "image";
     let filename = format!("{image_name}.png");
-    let attachment = Attachment::from_bytes(filename, image_bytes);
+    let id = 1;
+    let attachment = Attachment::from_bytes(filename, image_bytes, id);
 
     client.create_message(active_exam.channel_id)
         .attachments(&[attachment])?
