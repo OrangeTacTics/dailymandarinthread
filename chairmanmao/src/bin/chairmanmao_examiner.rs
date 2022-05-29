@@ -64,6 +64,18 @@ impl State {
     }
 
     fn active_exam_for(
+        &self,
+        user_id: Id<UserMarker>,
+    ) -> Option<&ActiveExam> {
+        for active_exam in self.active_exams.iter() {
+            if active_exam.user_id == user_id {
+                return Some(active_exam);
+            }
+        }
+        None
+    }
+
+    fn active_exam_for_mut(
         &mut self,
         user_id: Id<UserMarker>,
     ) -> Option<&mut ActiveExam> {
@@ -107,13 +119,15 @@ async fn main() -> Result<(), Error> {
         Intents::MESSAGE_CONTENT;
 
     let token = std::env::var("DISCORD_TOKEN")?;
-    let (shard, mut events) = Shard::new(token.clone(), intents).await?;
+    let (shard, events) = Shard::new(token.clone(), intents).await?;
     let client = Arc::new(Client::new(token));
     shard.start().await?;
     println!("Running");
 
     let constants = DiscordConstants::load(&client).await?;
-    channel_ids.push(constants.exam_channel.id);
+    if channel_ids.is_empty() {
+        channel_ids.push(constants.exam_channel.id);
+    }
 
 
     let api = Api::new().await;
@@ -121,80 +135,46 @@ async fn main() -> Result<(), Error> {
 
     tokio::spawn(tick_loop(api.clone(), client.clone(), state.clone()));
 
+    event_loop(events, client, api, state).await
+}
+
+async fn event_loop(
+    mut events: twilight_gateway::shard::Events,
+    client: Arc<Client>,
+    api: Api,
+    state_lock: StateLock,
+) -> Result<(), Error> {
     while let Some(event) = events.next().await {
-        match &event {
-            Event::MessageCreate(e) => {
-                let message = &e.0;
-                if channel_ids.contains(&message.channel_id) {
-                    let author = &message.author;
-                    if !author.bot {
-                        handle_message(api.clone(), state.clone(), client.clone(), &message).await?;
-                    }
-                }
-            },
-            Event::InteractionCreate(e) => {
-                let interaction: &Interaction = &e.0;
-
-                if let Interaction::ApplicationCommand(application_command) = interaction {
-                    let command_name = &application_command.data.name;
-
-                    match command_name.as_ref() {
-                        "exam" => {
-                            let application_id = application_command.application_id;
-                            let interaction_client = client.interaction(application_id);
-                            let interaction_id = &application_command.id;
-                            let interaction_token = &application_command.token;
-
-                            let interaction_response_data = InteractionResponseDataBuilder::new()
-                                .content("Starting exam".to_string())
-                                .flags(MessageFlags::EPHEMERAL)
-                                .build();
-
-                            let callback_data = &InteractionResponse {
-                                kind: InteractionResponseType::ChannelMessageWithSource,
-                                data: Some(interaction_response_data),
-                            };
-
-                            interaction_client.create_response(
-                                *interaction_id,
-                                interaction_token,
-                                callback_data,
-                            )
-                                .exec()
-                                .await.unwrap();
-
-                            if let Some(exam_command) = parse_exam_command(application_command) {
-                                handle_exam_command(api.clone(), state.clone(), client.clone(), &exam_command).await?;
-                            }
-                        },
-                        _ => (),
-                    }
-                }
-            },
-            _ => (),
+        let mut state = state_lock.lock().await;
+        if let Some(exam_event) = event_to_exam_event(&state, &event) {
+            handle_exam_event(api.clone(), &mut state, client.clone(), &exam_event).await?;
         }
     }
 
     Ok(())
 }
 
-async fn handle_message(
+async fn handle_exam_event(
     api: Api,
-    state_lock: StateLock,
+    mut state: &mut State,
     client: Arc<Client>,
-    message: &Message,
+    exam_event: &ExamEvent,
 ) -> Result<(), Error> {
-    if message.content.starts_with("!exam ") {
-        if let Some(exam_command) = message_to_exam_command(message) {
-            handle_exam_command(api, state_lock, client.clone(), &exam_command).await?;
-        }
-    } else {
-        let mut state = state_lock.lock().await;
-        if let Some(active_exam) = state.active_exam_for(message.author.id) {
-            if let Some((question, answer)) = &active_exam.examiner.answer(&message.content) {
-                message::show_answer(&client, &active_exam, &question, &answer).await?
+    match exam_event {
+        ExamEvent::Command(exam_command, exam_command_source) => {
+            if let ExamCommandSource::ApplicationCommand(application_command) = exam_command_source {
+                respond_to_application_command(client.clone(), application_command, &exam_command).await?;
             }
-        }
+
+            handle_exam_command(api, &mut state, client.clone(), &exam_command).await?;
+        },
+        ExamEvent::Answer(user_id, response) => {
+            if let Some(active_exam) = state.active_exam_for_mut(*user_id) {
+                if let Some((question, answer)) = &active_exam.examiner.answer(&response) {
+                    message::show_answer(&client, &active_exam, &question, &answer).await?
+                }
+            }
+        },
     }
 
     Ok(())
@@ -202,29 +182,64 @@ async fn handle_message(
 
 async fn handle_exam_command(
     api: Api,
-    state_lock: StateLock,
+    mut state: &mut State,
     client: Arc<Client>,
     exam_command: &ExamCommand,
 ) -> Result<(), Error> {
     match exam_command {
         ExamCommand::Start { channel_id, exam, user_id }=> {
-            let mut state = state_lock.lock().await;
             let exam = if let Some(specified_exam) = exam {
                 specified_exam
             } else {
                 let hsk = api.hsk(user_id.get()).await?;
                 next_exam(hsk).unwrap_or("hsk6")
             };
+
             exam_start(&mut state, client, *channel_id, *user_id, exam).await?;
         },
         ExamCommand::Quit { user_id } => {
-            let mut state = state_lock.lock().await;
             exam_stop(&mut state, client, *user_id).await?;
         },
     }
 
     Ok(())
 }
+
+async fn respond_to_application_command(
+    client: Arc<Client>,
+    application_command: &ApplicationCommand,
+    exam_command: &ExamCommand,
+) -> Result<(), Error> {
+    let application_id = application_command.application_id;
+    let interaction_client = client.interaction(application_id);
+    let interaction_id = &application_command.id;
+    let interaction_token = &application_command.token;
+
+    let message = match exam_command {
+        ExamCommand::Start { .. }  => "Starting exam",
+        ExamCommand::Quit { .. }  => "Qutiting exam",
+    };
+
+    let interaction_response_data = InteractionResponseDataBuilder::new()
+        .content(message.to_string())
+        .flags(MessageFlags::EPHEMERAL)
+        .build();
+
+    let callback_data = &InteractionResponse {
+        kind: InteractionResponseType::ChannelMessageWithSource,
+        data: Some(interaction_response_data),
+    };
+
+    interaction_client.create_response(
+        *interaction_id,
+        interaction_token,
+        callback_data,
+    )
+        .exec()
+        .await?;
+    Ok(())
+}
+
 
 fn next_exam(hsk: Option<u32>) -> Option<&'static str> {
     match hsk {
@@ -285,7 +300,7 @@ async fn exam_stop(
     user_id: Id<UserMarker>,
 ) -> Result<(), Error> {
     if state.is_user_busy(user_id) {
-        let active_exam = state.active_exam_for(user_id).unwrap();
+        let active_exam = state.active_exam_for_mut(user_id).unwrap();
         active_exam.examiner.give_up();
     }
 
@@ -360,6 +375,63 @@ enum ExamCommand {
     Quit {
         user_id: Id<UserMarker>,
     },
+}
+
+#[derive(Debug)]
+enum ExamEvent {
+    Command(ExamCommand, ExamCommandSource),
+    Answer(Id<UserMarker>, String),
+}
+
+fn event_to_exam_event(state: &State, event: &Event) -> Option<ExamEvent> {
+    let channel_ids = &state.allowed_channels;
+
+    match event {
+        Event::MessageCreate(e) => {
+            let message = &e.0;
+            if !channel_ids.contains(&message.channel_id) {
+                None
+            } else if message.author.bot {
+                None
+            } else if message.content.starts_with("!exam ") {
+                if let Some(exam_command) = message_to_exam_command(message) {
+                    Some(ExamEvent::Command(exam_command, ExamCommandSource::BangCommand))
+                } else {
+                    None
+                }
+            } else if let Some(_active_exam) = state.active_exam_for(message.author.id) {
+                Some(ExamEvent::Answer(message.author.id, message.content.clone()))
+            } else {
+                None
+            }
+        },
+        Event::InteractionCreate(e) => {
+            let interaction: &Interaction = &e.0;
+
+            if let Interaction::ApplicationCommand(application_command) = interaction {
+                let command_name = &application_command.data.name;
+                match command_name.as_ref() {
+                    "exam" => {
+                        if let Some(exam_command) = parse_exam_command(&application_command) {
+                            Some(ExamEvent::Command(exam_command, ExamCommandSource::ApplicationCommand(*application_command.clone())))
+                        } else {
+                            None
+                        }
+                    },
+                    _ => None,
+                }
+            } else {
+                None
+            }
+        },
+        _ => None,
+    }
+}
+
+#[derive(Debug)]
+enum ExamCommandSource {
+   ApplicationCommand(ApplicationCommand),
+   BangCommand,
 }
 
 fn parse_exam_command(application_command: &ApplicationCommand) -> Option<ExamCommand> {
