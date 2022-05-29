@@ -198,7 +198,7 @@ async fn handle_exam_command(
             exam_start(&mut state, client, *channel_id, *user_id, exam).await?;
         },
         ExamCommand::Quit { user_id } => {
-            exam_stop(&mut state, client, *user_id).await?;
+            exam_stop(&mut state, *user_id);
         },
     }
 
@@ -294,27 +294,30 @@ async fn exam_start(
     Ok(())
 }
 
-async fn exam_stop(
+fn exam_stop(
     state: &mut State,
-    _client: Arc<Client>,
     user_id: Id<UserMarker>,
-) -> Result<(), Error> {
+) {
     if state.is_user_busy(user_id) {
-        let active_exam = state.active_exam_for_mut(user_id).unwrap();
-        active_exam.examiner.give_up();
+        if let Some(active_exam) = state.active_exam_for_mut(user_id) {
+            active_exam.examiner.give_up();
+        }
     }
-
-    Ok(())
 }
 
-async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) -> Result<(), Error> {
+async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) {
     loop {
         let mut state = state_lock.lock().await;
         let mut user_ids_for_completed_exams = vec![];
 
         for active_exam in state.active_exams.iter_mut() {
-            if !tick_active_exam(api.clone(), &client, active_exam).await? {
-                user_ids_for_completed_exams.push(active_exam.user_id);
+            match tick_active_exam(api.clone(), &client, active_exam).await {
+                Ok(true) => user_ids_for_completed_exams.push(active_exam.user_id),
+                Ok(false) => (),
+                Err(e) => {
+                    user_ids_for_completed_exams.push(active_exam.user_id);
+                    println!("{:?}", e);
+                },
             }
         }
 
