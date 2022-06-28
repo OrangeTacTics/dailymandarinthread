@@ -127,7 +127,7 @@ fn serialize_to_json(event: &Event) -> Option<String> {
 //        Event::IntegrationCreate(Box<IntegrationCreate>) => Some(serde_json::to_string(.).unwrap()),
 //        Event::IntegrationDelete(IntegrationDelete) => Some(serde_json::to_string(.).unwrap()),
 //        Event::IntegrationUpdate(Box<IntegrationUpdate>) => Some(serde_json::to_string(.).unwrap()),
-//        Event::InteractionCreate(InteractionCreate) => Some(serde_json::to_string(.).unwrap()),
+        Event::InteractionCreate(interaction_create) => Some(serde_json::to_string(interaction_create).unwrap()),
         Event::InviteCreate(invite_create) => Some(serde_json::to_string(invite_create).unwrap()),
         Event::InviteDelete(invite_delete) => Some(serde_json::to_string(invite_delete).unwrap()),
         Event::MemberAdd(member_add) => Some(serde_json::to_string(member_add).unwrap()),
