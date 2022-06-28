@@ -40,6 +40,10 @@ name = "chairmanmao-cli"
 path = "src/bin/chairmanmao_cli.rs"
 
 [[bin]]
+name = "chairmanmao-eventer"
+path = "src/bin/chairmanmao_eventer.rs"
+
+[[bin]]
 name = "chairmanmao"
 path = "src/bin/chairmanmao.rs"
 
