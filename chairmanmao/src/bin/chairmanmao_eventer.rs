@@ -68,8 +68,10 @@ async fn main() -> Result<(), Error> {
 }
 
 async fn event_loop(chairmanmao: ChairmanMao) {
-    while let Some(event) = chairmanmao.next_event().await {
-        handle_event(&chairmanmao, event).await.unwrap();
+    loop {
+        if let Some(event) = chairmanmao.next_event().await {
+            handle_event(&chairmanmao, event).await.unwrap();
+        }
     }
 }
 
@@ -79,7 +81,7 @@ async fn handle_event(chairmanmao: &ChairmanMao, event: Event) -> Result<(), Err
         _ => {
 //            println!("{:?}", event.kind());
             if let Some(json_event) = serialize_to_json(&event) {
-                //println!("{}", json_event);
+                println!("{}", json_event);
                 let mut redis = chairmanmao.redis.lock().await;
                 redis::cmd("XADD")
                     .arg("events")
