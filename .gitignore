@@ -6,3 +6,5 @@ fonts
 dist
 ca-certificate.crt
 cedict_ts.u8
+dump/**
+.venv/**
