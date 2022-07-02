@@ -42,34 +42,17 @@
         Contains the JSON files which power the HSK exams.
 
 
-/dmt\_chairmanmao/
-
-    The former monolithic Python implemtation of the ChairmanMao bot. Deprecated.
-
-
 /cogs/
 
     A collection of scripts which read from the Redis events stream and issues commands back to
     the server.
 
 
-/dmt\_dailymandarinthreadinfo/
+/dailymandarinthreadinfo/
 
     The static HTML server code for https://dailymandarinthread.info/.
 
 
-/dmt\_graphql/
-
-    The former GraphQL server to control the bot which was located at
-    https://dailymandarinthread.info/graphql. Deprecated.
-
-
-/dmt\_profiles/
-
-    An experimental page to display user profiles which were to be located at
-    https://dailymandarinthread.info/profile. Deprecated.
-
-
-/dmt\_auth/
+/auth/
 
     The former auth server. Currently not in use.

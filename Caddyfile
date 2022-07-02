@@ -1,7 +1,3 @@
 http://localhost:8000
 
-reverse_proxy /leaderboard localhost:8002
-reverse_proxy /graphql localhost:8002
-reverse_proxy /profile localhost:8002
-reverse_proxy /profile/* localhost:8002
 reverse_proxy /* localhost:8001
