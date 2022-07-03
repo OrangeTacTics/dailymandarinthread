@@ -1,7 +1,6 @@
 **/__pycache__
 .env
 db/backups/**
-fonts
 *.egg-info
 dist
 ca-certificate.crt

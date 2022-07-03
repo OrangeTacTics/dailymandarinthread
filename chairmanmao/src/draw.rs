@@ -5,8 +5,8 @@ use image::{DynamicImage, Rgba};
 use rusttype::{point, Font, Scale};
 
 pub fn load_font(font_name: &str) -> Font {
-    let path = format!("data/{}", font_name);
-    let font_data = std::fs::read(path).unwrap();
+    let font_dirname = std::path::Path::new(&std::env::var("DATA_DIR").unwrap()).join("fonts");
+    let font_data = std::fs::read(font_dirname.join(font_name)).unwrap();
     let font = Font::try_from_vec(font_data).unwrap();
     font
 }

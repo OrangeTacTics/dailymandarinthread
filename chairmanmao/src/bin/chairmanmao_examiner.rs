@@ -144,14 +144,14 @@ async fn event_loop(
     api: Api,
     state_lock: StateLock,
 ) -> Result<(), Error> {
-    while let Some(event) = events.next().await {
-        let mut state = state_lock.lock().await;
-        if let Some(exam_event) = event_to_exam_event(&state, &event) {
-            handle_exam_event(api.clone(), &mut state, client.clone(), &exam_event).await?;
+    loop {
+        if let Some(event) = events.next().await {
+            let mut state = state_lock.lock().await;
+            if let Some(exam_event) = event_to_exam_event(&state, &event) {
+                handle_exam_event(api.clone(), &mut state, client.clone(), &exam_event).await?;
+            }
         }
     }
-
-    Ok(())
 }
 
 async fn handle_exam_event(
@@ -301,6 +301,9 @@ fn exam_stop(
     if state.is_user_busy(user_id) {
         if let Some(active_exam) = state.active_exam_for_mut(user_id) {
             active_exam.examiner.give_up();
+            println!("Stopping exam!");
+            println!("    user_id:    {}", active_exam.user_id.get());
+            println!("    channel_id: {}", active_exam.channel_id.get());
         }
     }
 }
@@ -312,8 +315,11 @@ async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) {
 
         for active_exam in state.active_exams.iter_mut() {
             match tick_active_exam(api.clone(), &client, active_exam).await {
-                Ok(true) => user_ids_for_completed_exams.push(active_exam.user_id),
-                Ok(false) => (),
+                Ok(ExamContinue::No) => {
+                    println!("User finished exam: {:?}", active_exam.user_id);
+                    user_ids_for_completed_exams.push(active_exam.user_id);
+                },
+                Ok(ExamContinue::Yes) => (),
                 Err(e) => {
                     user_ids_for_completed_exams.push(active_exam.user_id);
                     println!("{:?}", e);
@@ -330,15 +336,22 @@ async fn tick_loop(api: Api, client: Arc<Client>, state_lock: StateLock) {
     }
 }
 
+enum ExamContinue {
+    Yes,
+    No,
+}
+
 /// Returns Ok(true) if the exam should continue.
 async fn tick_active_exam(
     api: Api,
     client: &Client,
     active_exam: &mut ActiveExam,
-) -> Result<bool, Error> {
+) -> Result<ExamContinue, Error> {
     let examiner = &mut active_exam.examiner;
 
-    match examiner.tick() {
+    let tick_result = examiner.tick();
+    dbg!(&tick_result);
+    match tick_result  {
         TickResult::Nothing => (),
         TickResult::Pause => (),
         TickResult::Timeout => {
@@ -361,11 +374,11 @@ async fn tick_active_exam(
                 api.set_hsk(active_exam.user_id.get(), Some(new_hsk_level)).await?;
             }
             message::exam_end(&client, &active_exam, exam_score).await.unwrap();
-            return Ok(false);
+            return Ok(ExamContinue::No);
         },
     }
 
-    Ok(true)
+    Ok(ExamContinue::Yes)
 }
 
 #[derive(Debug)]
@@ -403,6 +416,7 @@ fn event_to_exam_event(state: &State, event: &Event) -> Option<ExamEvent> {
                     None
                 }
             } else if let Some(_active_exam) = state.active_exam_for(message.author.id) {
+                println!("Answer: {}", message.content.clone());
                 Some(ExamEvent::Answer(message.author.id, message.content.clone()))
             } else {
                 None
