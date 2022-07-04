@@ -341,7 +341,6 @@ enum ExamContinue {
     No,
 }
 
-/// Returns Ok(true) if the exam should continue.
 async fn tick_active_exam(
     api: Api,
     client: &Client,
@@ -349,9 +348,7 @@ async fn tick_active_exam(
 ) -> Result<ExamContinue, Error> {
     let examiner = &mut active_exam.examiner;
 
-    let tick_result = examiner.tick();
-    dbg!(&tick_result);
-    match tick_result  {
+    match examiner.tick() {
         TickResult::Nothing => (),
         TickResult::Pause => (),
         TickResult::Timeout => {

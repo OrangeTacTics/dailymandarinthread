@@ -131,8 +131,15 @@ pub async fn exam_end(client: &Client, active_exam: &ActiveExam, exam_score: Exa
         description.push_str(&format!("{emoji}　{question_str} {answer_str}　*{}*\n", question.meaning));
     }
 
+    let title = if exam_score.passed {
+        format!("EXAM PASSED: {}", active_exam.exam.name)
+    } else {
+        format!("EXAM FAILED: {}", active_exam.exam.name)
+    };
+
     let embed = EmbedBuilder::new()
         .author(author)
+        .title(title.to_owned())
         .description(description)
 //            .field(EmbedFieldBuilder::new("Mistakes Allowed", max_wrong)) // TODO
         .color(color)
