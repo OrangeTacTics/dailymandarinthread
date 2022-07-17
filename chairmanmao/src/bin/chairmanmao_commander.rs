@@ -12,6 +12,7 @@ use std::env;
 //use chairmanmao::discord::DiscordConstants;
 use twilight_model::id::Id;
 use twilight_http::request::channel::reaction::RequestReactionType;
+use twilight_model::channel::message::MessageFlags;
 
 use chairmanmao::Error;
 
@@ -36,6 +37,7 @@ enum Command {
         channel_id: u64,
         content: Option<String>,
         reply: Option<u64>,
+        suppress_embeds: bool,
     },
     DeleteMessage {
         channel_id: u64,
@@ -80,7 +82,7 @@ async fn listen_loop(mut redis: redis::Connection, client: twilight_http::Client
 
 async fn handle_command(client: &twilight_http::Client, command: Command) -> Result<(), Error> {
     match command {
-        Command::CreateMessage { channel_id, content, reply } => {
+        Command::CreateMessage { channel_id, content, reply, suppress_embeds } => {
             let mut req = client.create_message(Id::new(channel_id));
 
             let content_str: String = if let Some(content_str) = &content {
@@ -95,6 +97,10 @@ async fn handle_command(client: &twilight_http::Client, command: Command) -> Res
 
             if let Some(reply_id) = &reply {
                 req = req.reply(Id::new(*reply_id));
+            }
+
+            if suppress_embeds {
+                req = req.flags(MessageFlags::SUPPRESS_EMBEDS);
             }
 
             req.exec().await?;
