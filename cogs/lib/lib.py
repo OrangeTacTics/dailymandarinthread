@@ -19,6 +19,33 @@ class Event:
         return int(self.id.split('-')[0])
 
 
+class Emoji:
+    def to_dict(self) -> dict:
+        ...
+
+
+class UnicodeEmoji(Emoji):
+    def __init__(self, emoji: str) -> None:
+        self.emoji = emoji
+
+    def to_dict(self) -> dict:
+        return {
+            "type": "Unicode",
+            "emoji": self.emoji,
+        }
+
+
+class CustomEmoji(Emoji):
+    def __init__(self, id: int) -> None:
+        self.id = id
+
+    def to_dict(self) -> dict:
+        return {
+            "type": "Unicode",
+            "id": self.id,
+        }
+
+
 class DmtEventer:
     def __init__(self):
         self.redis = Redis()
@@ -71,7 +98,16 @@ class DmtEventer:
         }
         self.redis.rpush('commands', json.dumps(command))
 
-#    async def create_reaction(self,
-#        channel_id,
-#        message_id:
-#        emoji:
+    async def create_reaction(self,
+        channel_id,
+        message_id,
+        emoji,
+    ):
+        assert isinstance(emoji, Emoji), 'emoji must be type Emoji'
+        command = {
+            'type': 'CreateReaction',
+            'channel_id': int(channel_id),
+            'message_id': int(message_id),
+            'emoji': emoji.to_dict(),
+        }
+        self.redis.rpush('commands', json.dumps(command))

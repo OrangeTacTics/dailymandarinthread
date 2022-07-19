@@ -1,1 +1,1 @@
-from .lib import DmtEventer, Event
+from .lib import DmtEventer, Event, UnicodeEmoji, CustomEmoji
