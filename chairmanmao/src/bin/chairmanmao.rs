@@ -178,9 +178,7 @@ async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
             ()
         },
     }
-    cogs::welcome::on_event(&chairmanmao.client(), &event).await;
     cogs::social_credit::on_event(&chairmanmao.client(), &event).await;
-    //cogs::china::on_event(&chairmanmao.client(), &event).await;
 
     let cogs: &mut [&mut dyn Cog] = &mut [
         &mut cogs::jail::JailCog,
