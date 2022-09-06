@@ -23,10 +23,7 @@ async fn main() -> Result<(), Error> {
     let client = twilight_http::Client::new(token);
     let redis = redis::Client::open("redis://127.0.0.1/")?.get_connection()?;
 
-    let h1 = tokio::spawn(listen_loop(redis, client));
-    h1.await?;
-
-    Ok(())
+    listen_loop(redis, client).await
 }
 
 
@@ -62,10 +59,9 @@ enum Emoji {
 }
 
 
-
-async fn listen_loop(mut redis: redis::Connection, client: twilight_http::Client) {
+async fn listen_loop(mut redis: redis::Connection, client: twilight_http::Client) -> Result<(), Error> {
     loop {
-        let (_list_name, cmd): (String, String) = redis::cmd("BLPOP").arg("commands").arg("0").query(&mut redis).unwrap();
+        let (_list_name, cmd): (String, String) = redis::cmd("BLPOP").arg("commands").arg("0").query(&mut redis)?;
         match serde_json::from_str::<Command>(&cmd) {
             Ok(cmd) => {
                 dbg!(&cmd);

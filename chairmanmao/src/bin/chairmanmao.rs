@@ -133,10 +133,9 @@ async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
         Event::Ready(_e) => {
             let channel_id = chairmanmao.constants().tiananmen_channel.id;
             chairmanmao.client().create_message(channel_id)
-                .content(&format!("<@{}> is online", chairmanmao.constants().bot_user.id)).unwrap()
+                .content(&format!("<@{}> is online", chairmanmao.constants().bot_user.id))?
                 .exec()
-                .await
-                .unwrap();
+                .await?;
         },
         Event::MessageCreate(e) => {
             let message = &e.0;
