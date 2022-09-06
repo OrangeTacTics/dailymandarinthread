@@ -3,7 +3,12 @@ use twilight_http::Client;
 use twilight_model::guild::{Role, Emoji};
 use twilight_model::user::{CurrentUser, CurrentUserGuild};
 use twilight_model::channel::Channel;
-use twilight_model::id::{Id, marker::GuildMarker, marker::UserMarker};
+use twilight_model::id::{
+    Id,
+    marker::GuildMarker,
+    marker::UserMarker,
+    marker::ApplicationMarker,
+};
 
 
 #[derive(Debug, Clone)]
@@ -11,6 +16,7 @@ pub struct DiscordConstants {
     pub guild: CurrentUserGuild,
     pub bot_user: CurrentUser,
     pub owner_id: Id<UserMarker>,
+    pub application_id: Id<ApplicationMarker>,
 
     // ROLES
     pub comrade_role: Role,
@@ -80,10 +86,16 @@ impl DiscordConstants {
 //        let rightist_emoji = find_emoji(&guild.emojis, "rightist");
 //        let refold_emoji = find_emoji(&guild.emojis, "refold");
 
+        let application_id = {
+            let response = client.current_user_application().exec().await?;
+            response.model().await?.id
+        };
+
         Ok(DiscordConstants {
             guild,
             bot_user,
             owner_id,
+            application_id,
 
             comrade_role,
             party_role,
