@@ -9,6 +9,7 @@ pub mod commands;
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 
 
+#[derive(Clone)]
 pub enum DiscordEvent {
     MemberAdd { user_id: u64 },
     ReactionAdd { emoji: Emoji, user_id: u64, author_id: u64 },
@@ -17,6 +18,7 @@ pub enum DiscordEvent {
     ToggleTag { user_id: u64, tag: String },
 }
 
+#[derive(Clone)]
 pub enum Emoji {
     Custom(u64),
     Unicode(String),
@@ -35,6 +37,17 @@ use twilight_model::http::interaction::InteractionResponseType::ChannelMessageWi
 use twilight_model::http::interaction::InteractionResponse;
 use twilight_model::channel::message::MessageFlags;
 use twilight_model::id::{Id, marker::RoleMarker, marker::InteractionMarker};
+
+use async_trait::async_trait;
+#[async_trait]
+trait DiscordPortal {
+    async fn next_event(&self) -> DiscordEvent;
+    async fn update_nick(&self, user_id: u64, nick: Option<&str>);
+    async fn update_roles(&self, user_id: u64, roles: &[u64]);
+    async fn member_roles(&self, user_id: u64) -> Vec<u64>;
+    async fn ack_interaction(&self, interaction_id: Id<InteractionMarker>, interaction_token: String, message: String);
+}
+
 
 pub async fn send_discord_command(
     client: &Client,

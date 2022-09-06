@@ -206,7 +206,7 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
         let constants = chairmanmao.constants();
         let guild_id = constants.guild.id;
 
-        match pending_sync {
+        let command = match pending_sync {
             PendingSync::UpdateNick(user_id) => {
                 let nick: String = chairmanmao::sync::get_nick(
                     chairmanmao.api(),
@@ -214,11 +214,8 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
                     *user_id,
                 ).await?;
 
-                chairmanmao.client().update_guild_member(guild_id, *user_id)
-                    .nick(Some(&nick))?
-                    .exec()
-                    .await?;
-                println!("Update user {} to {:?}", user_id.to_string(), nick);
+                println!("Update user {} to {:?}", user_id.to_string(), &nick);
+                chairmanmao::DiscordCommand::UpdateNick { user_id: user_id.get(), nick: Some(nick.clone()) }
             },
             PendingSync::UpdateRoles(user_id) => {
                 let member = chairmanmao.client().guild_member(guild_id, *user_id)
@@ -234,13 +231,18 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
 
                 println!("Update roles for {}:  {:?} => {:?}", user_id.get(), &old_roles, &new_roles);
 
-                let roles: Vec<Id<RoleMarker>> = new_roles.into_iter().collect();
-                chairmanmao.client().update_guild_member(guild_id, *user_id)
-                    .roles(&roles)
-                    .exec()
-                    .await?;
+                let roles: Vec<u64> = new_roles.into_iter().map(|role| role.get()).collect();
+                chairmanmao::DiscordCommand::UpdateRoles {
+                    user_id: user_id.get(),
+                    roles: roles,
+                }
             },
-        }
+        };
+        chairmanmao::send_discord_command(
+            &chairmanmao.client(),
+            constants,
+            command,
+        ).await?;
 
         // TODO: This is a hack to prevent rate-limiting.
         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
