@@ -177,11 +177,8 @@ async fn handle_event(chairmanmao: ChairmanMao, event: Event) -> Result<(), Erro
             ()
         },
     }
-    cogs::social_credit::on_event(&chairmanmao.client(), &event).await;
 
-    let cogs: &mut [&mut dyn Cog] = &mut [
-        &mut cogs::jail::JailCog,
-        &mut cogs::sync::SyncCog,
+    let mut cogs: [&mut dyn Cog; 2] = [
         &mut cogs::name::NameCog,
         &mut cogs::tag::TagCog,
     ];
