@@ -230,32 +230,7 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
                 let tags = chairmanmao.api().get_tags(user_id.get()).await?;
 
                 let old_roles: HashSet<Id<RoleMarker>> = member.roles.iter().cloned().collect();
-                let mut new_roles = old_roles.clone();
-
-                remove_chairmanmao_managed_roles(&chairmanmao, &mut new_roles);
-
-                new_roles.insert(constants.comrade_role.id);
-
-                if tags.contains(&"Party".to_string()) {
-                    new_roles.insert(constants.party_role.id);
-                }
-
-                if tags.contains(&"Bumpers".to_string()) {
-                    new_roles.insert(constants.bumpers_role.id);
-                }
-
-                if tags.contains(&"Learner".to_string()) {
-                    new_roles.insert(constants.learner_role.id);
-                }
-
-                if tags.contains(&"Art".to_string()) {
-                    new_roles.insert(constants.art_role.id);
-                }
-
-                if tags.contains(&"Jailed".to_string()) {
-                    new_roles.clear();
-                    new_roles.insert(constants.jailed_role.id);
-                }
+                let new_roles = new_roles_from(&tags, &old_roles, &constants);
 
                 println!("Update roles for {}:  {:?} => {:?}", user_id.get(), &old_roles, &new_roles);
 
@@ -273,8 +248,12 @@ async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
     Ok(())
 }
 
-fn remove_chairmanmao_managed_roles(chairmanmao: &ChairmanMao, roles: &mut HashSet<Id<RoleMarker>>) {
-    let constants = chairmanmao.constants();
+fn new_roles_from(
+    tags: &[String],
+    old_roles: &HashSet<Id<RoleMarker>>,
+    constants: &DiscordConstants,
+) -> HashSet<Id<RoleMarker>> {
+    let mut new_roles = old_roles.clone();
 
     let chairmanmao_managed_roles = &[
         constants.comrade_role.id,
@@ -286,6 +265,31 @@ fn remove_chairmanmao_managed_roles(chairmanmao: &ChairmanMao, roles: &mut HashS
     ];
 
     for role_id in chairmanmao_managed_roles {
-        roles.remove(&role_id);
+        new_roles.remove(&role_id);
     }
+
+    new_roles.insert(constants.comrade_role.id);
+
+    if tags.contains(&"Party".to_string()) {
+        new_roles.insert(constants.party_role.id);
+    }
+
+    if tags.contains(&"Bumpers".to_string()) {
+        new_roles.insert(constants.bumpers_role.id);
+    }
+
+    if tags.contains(&"Learner".to_string()) {
+        new_roles.insert(constants.learner_role.id);
+    }
+
+    if tags.contains(&"Art".to_string()) {
+        new_roles.insert(constants.art_role.id);
+    }
+
+    if tags.contains(&"Jailed".to_string()) {
+        new_roles.clear();
+        new_roles.insert(constants.jailed_role.id);
+    }
+
+    new_roles
 }
