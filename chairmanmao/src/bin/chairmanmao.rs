@@ -93,16 +93,15 @@ impl ChairmanMao {
         pending_syncs.push(sync);
     }
 
-    pub async fn has_pending_syncs(&self) -> bool {
-        let pending_syncs = self.pending_syncs.lock().await;
-        pending_syncs.len() > 0
-    }
-
     pub async fn pop_all_syncs(&self) -> Vec<PendingSync> {
         let mut pending_syncs = self.pending_syncs.lock().await;
-        let mut result = Vec::new();
-        std::mem::swap(&mut *pending_syncs, &mut result);
-        result
+        if pending_syncs.len() == 0 {
+            vec![]
+        } else {
+            let mut result = Vec::new();
+            std::mem::swap(&mut *pending_syncs, &mut result);
+            result
+        }
     }
 }
 
@@ -201,78 +200,75 @@ async fn sync_loop(chairmanmao: ChairmanMao) {
 }
 
 async fn do_sync(chairmanmao: ChairmanMao) -> Result<(), Error> {
-    if chairmanmao.has_pending_syncs().await {
-        println!("Has pending syncs:");
-        for pending_sync in &chairmanmao.pop_all_syncs().await {
-            println!("{:?}", pending_sync);
+    for pending_sync in &chairmanmao.pop_all_syncs().await {
+        println!("{:?}", pending_sync);
 
-            let constants = chairmanmao.constants();
-            let guild_id = constants.guild.id;
+        let constants = chairmanmao.constants();
+        let guild_id = constants.guild.id;
 
-            match pending_sync {
-                PendingSync::UpdateNick(user_id) => {
-                    let nick: String = chairmanmao::sync::get_nick(
-                        chairmanmao.api(),
-                        chairmanmao.client(),
-                        *user_id,
-                    ).await?;
+        match pending_sync {
+            PendingSync::UpdateNick(user_id) => {
+                let nick: String = chairmanmao::sync::get_nick(
+                    chairmanmao.api(),
+                    chairmanmao.client(),
+                    *user_id,
+                ).await?;
 
-                    chairmanmao.client().update_guild_member(guild_id, *user_id)
-                        .nick(Some(&nick))?
-                        .exec()
-                        .await?;
-                    println!("Update user {} to {:?}", user_id.to_string(), nick);
-                },
-                PendingSync::UpdateRoles(user_id) => {
-                    let member = chairmanmao.client().guild_member(guild_id, *user_id)
-                        .exec()
-                        .await?
-                        .model()
-                        .await?;
+                chairmanmao.client().update_guild_member(guild_id, *user_id)
+                    .nick(Some(&nick))?
+                    .exec()
+                    .await?;
+                println!("Update user {} to {:?}", user_id.to_string(), nick);
+            },
+            PendingSync::UpdateRoles(user_id) => {
+                let member = chairmanmao.client().guild_member(guild_id, *user_id)
+                    .exec()
+                    .await?
+                    .model()
+                    .await?;
 
-                    let tags = chairmanmao.api().get_tags(user_id.get()).await?;
+                let tags = chairmanmao.api().get_tags(user_id.get()).await?;
 
-                    let old_roles: HashSet<Id<RoleMarker>> = member.roles.iter().cloned().collect();
-                    let mut new_roles = old_roles.clone();
+                let old_roles: HashSet<Id<RoleMarker>> = member.roles.iter().cloned().collect();
+                let mut new_roles = old_roles.clone();
 
-                    remove_chairmanmao_managed_roles(&chairmanmao, &mut new_roles);
+                remove_chairmanmao_managed_roles(&chairmanmao, &mut new_roles);
 
-                    new_roles.insert(constants.comrade_role.id);
+                new_roles.insert(constants.comrade_role.id);
 
-                    if tags.contains(&"Party".to_string()) {
-                        new_roles.insert(constants.party_role.id);
-                    }
+                if tags.contains(&"Party".to_string()) {
+                    new_roles.insert(constants.party_role.id);
+                }
 
-                    if tags.contains(&"Bumpers".to_string()) {
-                        new_roles.insert(constants.bumpers_role.id);
-                    }
+                if tags.contains(&"Bumpers".to_string()) {
+                    new_roles.insert(constants.bumpers_role.id);
+                }
 
-                    if tags.contains(&"Learner".to_string()) {
-                        new_roles.insert(constants.learner_role.id);
-                    }
+                if tags.contains(&"Learner".to_string()) {
+                    new_roles.insert(constants.learner_role.id);
+                }
 
-                    if tags.contains(&"Art".to_string()) {
-                        new_roles.insert(constants.art_role.id);
-                    }
+                if tags.contains(&"Art".to_string()) {
+                    new_roles.insert(constants.art_role.id);
+                }
 
-                    if tags.contains(&"Jailed".to_string()) {
-                        new_roles.clear();
-                        new_roles.insert(constants.jailed_role.id);
-                    }
+                if tags.contains(&"Jailed".to_string()) {
+                    new_roles.clear();
+                    new_roles.insert(constants.jailed_role.id);
+                }
 
-                    println!("Update roles for {}:  {:?} => {:?}", user_id.get(), &old_roles, &new_roles);
+                println!("Update roles for {}:  {:?} => {:?}", user_id.get(), &old_roles, &new_roles);
 
-                    let roles: Vec<Id<RoleMarker>> = new_roles.into_iter().collect();
-                    chairmanmao.client().update_guild_member(guild_id, *user_id)
-                        .roles(&roles)
-                        .exec()
-                        .await?;
-                },
-            }
-
-            // TODO: This is a hack to prevent rate-limiting.
-            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                let roles: Vec<Id<RoleMarker>> = new_roles.into_iter().collect();
+                chairmanmao.client().update_guild_member(guild_id, *user_id)
+                    .roles(&roles)
+                    .exec()
+                    .await?;
+            },
         }
+
+        // TODO: This is a hack to prevent rate-limiting.
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
     }
     Ok(())
 }
